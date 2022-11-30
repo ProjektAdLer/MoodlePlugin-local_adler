@@ -8,6 +8,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="scores_types_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_modules_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="score_min" TYPE="number" LENGTH="7" NOTNULL="true" DEFAULT="0.0" SEQUENCE="false" DECIMALS="5" COMMENT="minimum points for a module"/>
         <FIELD NAME="score_max" TYPE="number" LENGTH="7" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="maxmimum points for a module"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -16,6 +17,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="scores_types_id" TYPE="foreign" FIELDS="scores_types_id" REFTABLE="adler_scores_types" REFFIELDS="id"/>
+        <KEY NAME="course_modules_id" TYPE="foreign" FIELDS="course_modules_id" REFTABLE="course_modules" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="adler_scores_types" COMMENT="points / awards / ...">
