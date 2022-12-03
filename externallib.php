@@ -40,8 +40,6 @@ class local_adler_external extends external_api
         global $CFG, $DB;
         $params = self::validate_parameters(self::score_primitive_learning_element_parameters(), array('module_id'=>$module_id, 'value'=>$value));
 
-
-
         $course_module = external_api::call_external_function('core_course_get_course_module', array('cmid'=>$params['module_id']));
         if ($course_module['error']) {
             throw new invalid_parameter_exception('module does not exist or user does not have access to it');
