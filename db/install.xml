@@ -4,10 +4,10 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="adler_scores_items" COMMENT="Metadata for every gradable item (module) like min/max points">
+    <TABLE NAME="local_adler_scores_items" COMMENT="Metadata for every gradable item (module) like min/max points">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="scores_types_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_modules_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="score_min" TYPE="number" LENGTH="12" NOTNULL="true" DEFAULT="0.0" SEQUENCE="false" DECIMALS="5" COMMENT="minimum points for a module"/>
         <FIELD NAME="score_max" TYPE="number" LENGTH="12" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="maxmimum points for a module"/>
@@ -16,24 +16,13 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="scores_types_id" TYPE="foreign" FIELDS="scores_types_id" REFTABLE="adler_scores_types" REFFIELDS="id"/>
         <KEY NAME="course_modules_id" TYPE="foreign" FIELDS="course_modules_id" REFTABLE="course_modules" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="adler_scores_types" COMMENT="points / awards / ...">
+    <TABLE NAME="local_adler_scores_grades" COMMENT="Grades a user received for one item">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="adler_scores_grades" COMMENT="Grades a user received for one item">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="user_id" SEQUENCE="false" TYPE="int" NOTNULL="true" LENGTH="10"/>
         <FIELD NAME="scores_items_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="score" TYPE="number" LENGTH="7" NOTNULL="true" SEQUENCE="false" DECIMALS="5"/>
         <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -46,7 +35,7 @@
         <KEY NAME="scores_items_id" TYPE="foreign" FIELDS="scores_items_id" REFTABLE="adler_scores_items" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="adler_rooms" COMMENT="Metadata for rooms like condition to unlock / points for completion">
+    <TABLE NAME="local_adler_rooms" COMMENT="Metadata for rooms like condition to unlock / points for completion">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="unlock_condition" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -58,7 +47,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="adler_rooms_module_mapping" COMMENT="Mapping between modules and rooms (which module belongs to which room)">
+    <TABLE NAME="local_adler_rooms_modules" COMMENT="Mapping between modules and rooms (which module belongs to which room)">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="module_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
