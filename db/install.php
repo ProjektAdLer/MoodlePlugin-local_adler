@@ -4,7 +4,7 @@ function xmldb_local_adler_install()
 {
     global $DB;
 
-    $course_id = 2;
+    $course_id = 3;
 
     $module_support = array(
         'supported_simple' => array('url', 'page', 'resource'),
@@ -21,16 +21,8 @@ function xmldb_local_adler_install()
                     array('type' => 'score',
                         'course_modules_id' => $module->id,
                         'score_min' => 0,
-                        'score_max' => 100),
+                        'score_max' => random_int(0, 20)),
                     $returnid = true, $bulk = false);
-                if ($i % 2 == 0) {
-                    $DB->insert_record('local_adler_scores_grades',
-                        array('scores_items_id' => $scores_item_id,
-                            'user_id' => 2,
-                            'score' => random_int(0, 100)),
-                        $returnid = false, $bulk = false);
-                }
-                $i += 1;
             } catch (Exception $e) {
                 die($e);
             }
