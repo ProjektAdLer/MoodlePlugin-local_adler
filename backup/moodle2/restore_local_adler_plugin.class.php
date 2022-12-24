@@ -1,19 +1,16 @@
 <?php
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * Restoring logic for the local Adler plugin.
  */
-class restore_local_adler_plugin extends restore_local_plugin
-{
+class restore_local_adler_plugin extends \restore_local_plugin {
     /**
      * Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *
      * @return
      */
-    protected function define_module_plugin_structure()
-    {
+    protected function define_module_plugin_structure() {
         $paths = [
             new restore_path_element('score_item', $this->get_pathfor('/score_items/score_item'))
         ];
@@ -25,8 +22,7 @@ class restore_local_adler_plugin extends restore_local_plugin
      *
      * @param object $data The data for the score item.
      */
-    public function process_score_item($data)
-    {
+    public function process_score_item($data) {
         global $DB;
 
         // Cast $data to object if it is an array

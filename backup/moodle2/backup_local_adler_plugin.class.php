@@ -2,15 +2,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class backup_local_adler_plugin extends backup_local_plugin
-{
+class backup_local_adler_plugin extends backup_local_plugin {
     /**
      * Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *
      * @return
      */
-    protected function define_module_plugin_structure()
-    {
+    protected function define_module_plugin_structure() {
         $plugin = $this->get_plugin_element(null, null, null);
 
         // To know if we are including userinfo
@@ -35,7 +33,7 @@ class backup_local_adler_plugin extends backup_local_plugin
         $score_items->add_child($score_item);
 
         // Define sources
-        $score_item->set_source_table('local_adler_scores_items', array('course_modules_id'=>backup::VAR_MODID));
+        $score_item->set_source_table('local_adler_scores_items', array('course_modules_id' => backup::VAR_MODID));
 
         // Define id annotations
 
