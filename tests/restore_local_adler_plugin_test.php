@@ -58,13 +58,14 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
         $this->stub = $this->createMock(restore_module_structure_step::class);
         $this->stub->method('get_task')
             ->willReturn($stub_task);
+
+        // cleanup after every test
+        $this->resetAfterTest(true);
     }
 
     public function test_process_score_item_one_element() {
         // setup
         global $DB;
-        $this->resetAfterTest(true);          // reset all changes automatically after this test
-
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
@@ -88,8 +89,6 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
     public function test_process_score_item_multiple_elements() {
         // setup
         global $DB;
-        $this->resetAfterTest(true);          // reset all changes automatically after this test
-
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
@@ -119,7 +118,6 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
     public function test_process_score_item_invalid_datatype() {
         // setup
         global $DB;
-        $this->resetAfterTest(true);          // reset all changes automatically after this test
 
         // create invalid data
         $invalid_data = (object)[
@@ -143,7 +141,6 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
     public function test_process_score_item_missing_fields() {
         // setup
         global $DB;
-        $this->resetAfterTest(true);          // reset all changes automatically after this test
 
         // create invalid data
         $invalid_data = (object)[
