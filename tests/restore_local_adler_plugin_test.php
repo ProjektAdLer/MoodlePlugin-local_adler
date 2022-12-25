@@ -17,6 +17,10 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
     public function setUp(): void {
         parent::setUp();
 
+        global $CFG;
+        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+        require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_plugin.class.php');
+
         // generate array of 3 entries with test data not as loop
         $this->data = [
             (object)[
@@ -41,11 +45,6 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
                 "timemodified" => "2"
             ]
         ];
-
-
-        global $CFG;
-        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
-        require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_plugin.class.php');
 
         // stub the get_task() method to return a mock task object
         $stub_task = $this->getMockBuilder(restore_activity_task::class)
