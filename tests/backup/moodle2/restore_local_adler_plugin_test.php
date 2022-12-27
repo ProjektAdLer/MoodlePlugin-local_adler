@@ -1,11 +1,18 @@
 <?php
 
-namespace local_adler;
+namespace local_adler\backup\moodle2;
 
+use advanced_testcase;
 use ArrayIterator;
+use dml_write_exception;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionProperty;
 use restore_activity_task;
 use restore_local_adler_plugin;
 use restore_module_structure_step;
+use restore_path_element;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -13,7 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * PHPunit test for class restore_local_adler_plugin
  */
-class restore_local_adler_plugin_test extends \advanced_testcase {
+class restore_local_adler_plugin_test extends advanced_testcase {
     public function setUp(): void {
         parent::setUp();
 
@@ -67,8 +74,8 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
      * @return ReflectionMethod
      * @throws ReflectionException
      */
-    protected static function getMethodAsPublic($name) {
-        $class = new \ReflectionClass(restore_local_adler_plugin::class);
+    protected static function getMethodAsPublic(string $name): ReflectionMethod {
+        $class = new ReflectionClass(restore_local_adler_plugin::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
         return $method;
@@ -139,7 +146,7 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
             "timemodified" => "0"
         ];
 
-        $this->expectException(\dml_write_exception::class);
+        $this->expectException(dml_write_exception::class);
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
@@ -158,7 +165,7 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
             "type" => "score",
         ];
 
-        $this->expectException(\dml_write_exception::class);
+        $this->expectException(dml_write_exception::class);
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
@@ -172,7 +179,7 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
     public function test_define_module_plugin_structure() {
         // setup
         // create mock for restore_path_element
-        $mock_path_element = $this->getMockBuilder(\restore_path_element::class)
+        $mock_path_element = $this->getMockBuilder(restore_path_element::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['get_path'])
             ->getMockForAbstractClass();
@@ -180,7 +187,7 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
 
         // create plugin object
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
-        $property = new \ReflectionProperty(restore_local_adler_plugin::class, 'connectionpoint');
+        $property = new ReflectionProperty(restore_local_adler_plugin::class, 'connectionpoint');
         $property->setValue($plugin, $mock_path_element);
         $method = self::getMethodAsPublic('define_module_plugin_structure');
 
@@ -188,7 +195,7 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
         $paths = $method->invoke($plugin);
 
         // verify
-        $this->assertEquals(1, count($paths));
+        $this->assertCount(1, $paths);
         $this->assertEquals('score_item', $paths[0]->get_name());
     }
 }

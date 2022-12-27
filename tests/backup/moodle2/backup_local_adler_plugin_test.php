@@ -1,6 +1,11 @@
 <?php
 
-namespace local_adler;
+namespace local_adler\backup\moodle2;
+
+use advanced_testcase;
+use backup;
+use backup_controller;
+use SimpleXMLElement;
 
 /**
  * PHPunit test for class backup_local_adler_plugin
@@ -10,7 +15,7 @@ namespace local_adler;
  * The only way to reliably recreate this object would be using the same code as the original class.
  * Therefore, this test is implemented as an integration test.
  */
-class backup_local_adler_plugin_test extends \advanced_testcase {
+class backup_local_adler_plugin_test extends advanced_testcase {
     public function setUp(): void {
         parent::setUp();
 
@@ -48,10 +53,10 @@ class backup_local_adler_plugin_test extends \advanced_testcase {
     }
 
     /** Get parsed xml from backup controller object.
-     * @param $bc \backup_controller
-     * @return \$1|false|\SimpleXMLElement
+     * @param $bc backup_controller
+     * @return false|SimpleXMLElement
      */
-    private function get_xml_from_backup($bc) {
+    private function get_xml_from_backup(backup_controller $bc) {
         // Get the backup file.
         $file = $bc->get_results();
         $file = reset($file);
@@ -72,9 +77,7 @@ class backup_local_adler_plugin_test extends \advanced_testcase {
 
         // Get the backup file contents and parse it.
         $contents = file_get_contents($module_xml_path);
-        $xml = simplexml_load_string($contents);
-
-        return $xml;
+        return simplexml_load_string($contents);
     }
 
     /** verify actual score items machtes expected score item
@@ -101,12 +104,12 @@ class backup_local_adler_plugin_test extends \advanced_testcase {
         $DB->insert_record('local_adler_scores_items', $this->score_items[0]);
 
         // Create a backup of the module.
-        $bc = new \backup_controller(
-            \backup::TYPE_1ACTIVITY,
+        $bc = new backup_controller(
+            backup::TYPE_1ACTIVITY,
             $this->module->cmid,
-            \backup::FORMAT_MOODLE,
-            \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
             2
         );
         $bc->execute_plan();
@@ -124,12 +127,12 @@ class backup_local_adler_plugin_test extends \advanced_testcase {
      */
     public function test_backup_no_score() {
         // Create a backup of the module.
-        $bc = new \backup_controller(
-            \backup::TYPE_1ACTIVITY,
+        $bc = new backup_controller(
+            backup::TYPE_1ACTIVITY,
             $this->module->cmid,
-            \backup::FORMAT_MOODLE,
-            \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
             2
         );
         $bc->execute_plan();
@@ -151,12 +154,12 @@ class backup_local_adler_plugin_test extends \advanced_testcase {
         $DB->insert_records('local_adler_scores_items', $this->score_items);
 
         // Create a backup of the module.
-        $bc = new \backup_controller(
-            \backup::TYPE_1ACTIVITY,
+        $bc = new backup_controller(
+            backup::TYPE_1ACTIVITY,
             $this->module->cmid,
-            \backup::FORMAT_MOODLE,
-            \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
             2
         );
         $bc->execute_plan();

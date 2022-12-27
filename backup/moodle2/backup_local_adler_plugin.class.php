@@ -3,16 +3,17 @@
 defined('MOODLE_INTERNAL') || die();
 
 class backup_local_adler_plugin extends backup_local_plugin {
-    /**
-     * Defines the structure of the backup file when backing up an instance of the local Adler plugin.
+    /** Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *
-     * @return
+     * @return backup_plugin_element
+     * @throws backup_step_exception
+     * @throws base_element_struct_exception
      */
-    protected function define_module_plugin_structure() {
-        $plugin = $this->get_plugin_element(null, null, null);
+    protected function define_module_plugin_structure(): backup_plugin_element {
+        $plugin = $this->get_plugin_element();
 
         // To know if we are including userinfo
-        $userinfo = $this->get_setting_value('userinfo');
+//        $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
