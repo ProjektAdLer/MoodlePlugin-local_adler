@@ -62,6 +62,18 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
         $this->resetAfterTest(true);
     }
 
+    /**
+     * @param $name string Name of method to set as public
+     * @return ReflectionMethod
+     * @throws ReflectionException
+     */
+    protected static function getMethodAsPublic($name) {
+        $class = new \ReflectionClass(restore_local_adler_plugin::class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method;
+    }
+
     public function test_process_score_item_one_element() {
         // setup
         global $DB;
@@ -154,5 +166,29 @@ class restore_local_adler_plugin_test extends \advanced_testcase {
 
         // verify that the database contains no records
         $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
+    }
+
+    /** Test define_module_plugin_structure() */
+    public function test_define_module_plugin_structure() {
+        // setup
+        // create mock for restore_path_element
+        $mock_path_element = $this->getMockBuilder(\restore_path_element::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_path'])
+            ->getMockForAbstractClass();
+        $mock_path_element->method('get_path')->willReturn('module');
+
+        // create plugin object
+        $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
+        $property = new \ReflectionProperty(restore_local_adler_plugin::class, 'connectionpoint');
+        $property->setValue($plugin, $mock_path_element);
+        $method = self::getMethodAsPublic('define_module_plugin_structure');
+
+        // test
+        $paths = $method->invoke($plugin);
+
+        // verify
+        $this->assertEquals(1, count($paths));
+        $this->assertEquals('score_item', $paths[0]->get_name());
     }
 }
