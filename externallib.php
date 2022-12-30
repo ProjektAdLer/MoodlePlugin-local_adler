@@ -1,70 +1,76 @@
 <?php
-require_once("$CFG->libdir/externallib.php");
-require_once($CFG->libdir . '/gradelib.php');
 
+use local_adler\dsl_score;
+use local_adler\helpers;
 
+defined('MOODLE_INTERNAL') || die();
 
-class local_adler_external extends external_api
-{
-    public static function score_primitive_learning_element_parameters()
-    {
+class local_adler_external extends external_api {
+    public static function score_primitive_learning_element_parameters() {
         return new external_function_parameters(
             array(
                 'module_id' => new external_value(PARAM_INT, 'moodle module id', VALUE_REQUIRED),
-                'value' => new external_value(PARAM_BOOL, '1: completed, 0: not completed', VALUE_REQUIRED),
-//                'data' => new external_single_structure(
-//                    array(
-//                        'module_id' => new external_value(PARAM_INT, 'moodle module id', VALUE_REQUIRED),
-//                        'value' => new external_value(PARAM_TEXT, '1: completed, 0: not completed', VALUE_REQUIRED),
-//                    )
-//                )
+                'is_completed' => new external_value(PARAM_BOOL, '1: completed, 0: not completed', VALUE_REQUIRED),
             )
         );
     }
 
-    public static function score_primitive_learning_element_returns()
-    {
-        return new external_multiple_structure(
-            new external_single_structure(
-                array(
-                    'id' => new external_value(PARAM_INT, 'id of score entry with actual grade'),
-                    'scores_items_id' => new external_value(PARAM_INT, 'id of score metadata object (min/max/...)'),
-                    'score' => new external_value(PARAM_TEXT, 'achieved score'),
-                )
+    public static function score_primitive_learning_element_returns() {
+        return new  external_single_structure(
+            array(
+                'score' => new external_value(PARAM_FLOAT, 'achieved (dsl-file) score'),
             )
         );
     }
 
-    public static function score_primitive_learning_element($module_id, $value)
-    {
-        global $CFG, $DB;
-        $params = self::validate_parameters(self::score_primitive_learning_element_parameters(), array('module_id'=>$module_id, 'value'=>$value));
+    /**
+     * @throws restricted_context_exception
+     * @throws dml_transaction_exception
+     * @throws moodle_exception
+     * @throws invalid_parameter_exception
+     */
+    public static function score_primitive_learning_element($module_id, $is_completed) {
+        global $CFG, $USER;
+        require_once("$CFG->libdir/completionlib.php");
 
-        $course_module = external_api::call_external_function('core_course_get_course_module', array('cmid'=>$params['module_id']));
-        if ($course_module['error']) {
-            throw new invalid_parameter_exception('module does not exist or user does not have access to it');
-        }
-        $course_id = $course_module['data']['cm']['course'];
+        // Parameter validation
+        $params = self::validate_parameters(self::score_primitive_learning_element_parameters(), array(
+            'module_id' => $module_id,
+            'is_completed' => $is_completed
+        ));
+
+        // create moodle course object $course
+        $course_module = get_coursemodule_from_id(null, $params['module_id'], 0, false, MUST_EXIST);
+        $course_id = $course_module->course;
+        $course = helpers::get_course_from_course_id($course_id);
 
         // security stuff https://docs.moodle.org/dev/Access_API#Context_fetching
-        $context = context_course::instance($course_module['data']['cm']['course']);
+        $context = context_course::instance($course_id);
         self::validate_context($context);
 
-        if(!is_enrolled($context)) {
+        if (!is_enrolled($context)) {
             throw new moodle_exception("User is not enrolled in course " . $course_id);
         }
 
+        // TODO: check if course_module is a primitive learning element. If it's supporting gradelib it might cause unexpected behaviour if manually setting completion state
 
-        $transaction = $DB->start_delegated_transaction(); //If an exception is thrown in the below code, all DB queries in this code will be rollback.
-        // TODO: insert/update
-        $transaction->allow_commit();
-        // TODO: generate response object
-        // TODO: return response
+        // update completion status
+        $new_completion_state = COMPLETION_INCOMPLETE;
+        if ($params['is_completed']) {
+            $new_completion_state = COMPLETION_COMPLETE;
+        }
+        $completion = new completion_info($course);
+        $completion->update_state($course_module, $new_completion_state);
+
+        // return dsl score
+        $dsl_score = new dsl_score($course_module, $USER->id);
+        return [
+            'score'=> $dsl_score->get_score()
+        ];
     }
 
 
-    public static function score_h5p_learning_element_parameters()
-    {
+    public static function score_h5p_learning_element_parameters() {
         return new external_function_parameters(
             array(
                 'data' => new external_single_structure(
@@ -77,23 +83,20 @@ class local_adler_external extends external_api
         );
     }
 
-    public static function score_h5p_learning_element_returns()
-    {
+    public static function score_h5p_learning_element_returns() {
         return self::score_primitive_learning_element_returns();
     }
 
-    public static function score_h5p_learning_element($data)
-    {
+    public static function score_h5p_learning_element($data) {
         global $CFG, $DB;
         // TODO
 
         // external_api::call_external_function
-            // https://docs.moodle.org/dev/Communication_Between_Components
+        // https://docs.moodle.org/dev/Communication_Between_Components
     }
 
 
-    public static function score_get_element_scores_parameters()
-    {
+    public static function score_get_element_scores_parameters() {
         return new external_function_parameters(
             array(
                 'module_ids' => array(
@@ -103,20 +106,17 @@ class local_adler_external extends external_api
         );
     }
 
-    public static function score_get_element_scores_returns()
-    {
+    public static function score_get_element_scores_returns() {
         return self::score_primitive_learning_element_returns();
     }
 
-    public static function score_get_element_scores($data)
-    {
+    public static function score_get_element_scores($data) {
         global $CFG, $DB;
         // TODO
     }
 
 
-    public static function score_get_course_scores_parameters()
-    {
+    public static function score_get_course_scores_parameters() {
         return new external_function_parameters(
             array(
                 'course_id' => new external_value(PARAM_INT, 'moodle module id', VALUE_REQUIRED),
@@ -124,13 +124,11 @@ class local_adler_external extends external_api
         );
     }
 
-    public static function score_get_course_scores_returns()
-    {
+    public static function score_get_course_scores_returns() {
         return self::score_primitive_learning_element_returns();
     }
 
-    public static function score_get_course_scores($data)
-    {
+    public static function score_get_course_scores($data) {
         global $CFG, $DB;
         // TODO
     }
