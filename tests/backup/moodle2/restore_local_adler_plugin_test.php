@@ -1,21 +1,9 @@
 <?php
 
-namespace local_adler\backup\moodle2;
-
-use advanced_testcase;
-use ArrayIterator;
-use dml_write_exception;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionMethod;
-use ReflectionProperty;
-use restore_activity_task;
-use restore_local_adler_plugin;
-use restore_module_structure_step;
-use restore_path_element;
+// When using namespaces, the namespace of the test class should match the namespace of the code under test
+// -> no namespace for this test as backup/restore is not namespaced
 
 defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * PHPunit test for class restore_local_adler_plugin

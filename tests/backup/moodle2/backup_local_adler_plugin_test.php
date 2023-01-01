@@ -1,11 +1,9 @@
 <?php
 
-namespace local_adler\backup\moodle2;
+// When using namespaces, the namespace of the test class should match the namespace of the code under test
+// -> no namespace for this test as backup/restore is not namespaced
 
-use advanced_testcase;
-use backup;
-use backup_controller;
-use SimpleXMLElement;
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * PHPunit test for class backup_local_adler_plugin
