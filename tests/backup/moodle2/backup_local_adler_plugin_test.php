@@ -31,23 +31,6 @@ class backup_local_adler_plugin_test extends advanced_testcase {
 
         // Create a module.
         $this->module = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
-
-        // Create two score items.
-        $this->score_items = [(object)[
-            'course_modules_id' => $this->module->cmid,
-            'type' => 'score',
-            'score_min' => 0.0,
-            'score_max' => 100.0,
-            'timecreated' => 0,
-            'timemodified' => 0
-        ], (object)[
-            'course_modules_id' => $this->module->cmid,
-            'type' => 'gold',
-            'score_min' => 0.0,
-            'score_max' => 42.0,
-            'timecreated' => 1999,
-            'timemodified' => 2000
-        ]];
     }
 
     /** Get parsed xml from backup controller object.
@@ -98,8 +81,8 @@ class backup_local_adler_plugin_test extends advanced_testcase {
     public function test_backup_score() {
         global $DB;
 
-        // Create a score item.
-        $DB->insert_record('local_adler_scores_items', $this->score_items[0]);
+        // Create score item with generator
+        $score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->module->cmid);
 
         // Create a backup of the module.
         $bc = new backup_controller(
@@ -116,7 +99,7 @@ class backup_local_adler_plugin_test extends advanced_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->verify_score_item($this->score_items[0], $xml->plugin_local_adler_module->score_items->score_item);
+        $this->verify_score_item($score_item, $xml->plugin_local_adler_module->score_items->score_item);
     }
 
     /**
@@ -149,7 +132,18 @@ class backup_local_adler_plugin_test extends advanced_testcase {
     public function test_backup_multiple_scores() {
         global $DB;
 
-        $DB->insert_records('local_adler_scores_items', $this->score_items);
+        $score_items = array(
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->module->cmid),
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(
+                $this->module->cmid,
+                array(
+                    'type' => 'gold',
+                    'score_max' => 42.0,
+                    'timecreated' => 1999,
+                    'timemodified' => 2000
+                )
+            )
+        );
 
         // Create a backup of the module.
         $bc = new backup_controller(
@@ -167,7 +161,7 @@ class backup_local_adler_plugin_test extends advanced_testcase {
 
         // validate xml values
         for ($i = 0; $i < 2; $i++) {
-            $this->verify_score_item($this->score_items[$i], $xml->plugin_local_adler_module->score_items->score_item[$i]);
+            $this->verify_score_item($score_items[$i], $xml->plugin_local_adler_module->score_items->score_item[$i]);
         }
     }
 }

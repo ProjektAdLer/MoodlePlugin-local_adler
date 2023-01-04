@@ -2,6 +2,8 @@
 
 namespace local_adler;
 
+defined('MOODLE_INTERNAL') || die();
+
 use advanced_testcase;
 use completion_info;
 
@@ -29,27 +31,10 @@ class dsl_score_test extends advanced_testcase {
 
 //        $this->h5p_module_without_dsl_data = $this->getDataGenerator()->create_module('h5pactivity', ['course' => $this->course_without_dsl_data->id]);
 
-        // get_coursemodule_from_id
 
         // Create score (dsl) items.
-        $this->score_item_primitive = (object)[
-            'course_modules_id' => $this->module->id,
-            'type' => 'score',
-            'score_min' => 0.0,
-            'score_max' => 100.0,
-            'timecreated' => 0,
-            'timemodified' => 0
-        ];
-//        $this->score_item_h5p = (object)[
-//            'course_modules_id' => $this->h5p_module->cmid,
-//            'type' => 'score',
-//            'score_min' => 0.0,
-//            'score_max' => 42.0,
-//            'timecreated' => 1999,
-//            'timemodified' => 2000
-//        ];
-        $DB->insert_record('local_adler_scores_items', $this->score_item_primitive);
-//        $DB->insert_record('local_adler_scores_items', $this->score_item_h5p);
+        $this->score_item_primitive = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->module->id);
+//        $this->score_item_h5p = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->h5p_module->cmid);
 
         // Create user.
         $this->user = $this->getDataGenerator()->create_user();

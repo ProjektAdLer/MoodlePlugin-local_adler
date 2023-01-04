@@ -16,30 +16,22 @@ class restore_local_adler_plugin_test extends advanced_testcase {
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
         require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_plugin.class.php');
 
-        // generate array of 3 entries with test data not as loop
+
+        // generate array of 3 test entries
         $this->data = [
-            (object)[
-                "type" => "score",
-                "score_min" => "0.0",
-                "score_max" => "100.0",
-                "timecreated" => "0",
-                "timemodified" => "0"
-            ],
-            (object)[
-                "type" => "whatever",
-                "score_min" => "5.0",
-                "score_max" => "10.0",
-                "timecreated" => "123465789",
-                "timemodified" => "123456789"
-            ],
-            (object)[
-                "type" => "another_rating",
-                "score_min" => "0.0",
-                "score_max" => "1.0",
-                "timecreated" => "1",
-                "timemodified" => "2"
-            ]
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(1, array(), false),
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(2, array(
+                'type' => 'whatever',
+                'score_min' => 5.0,
+                'score_max' => 10.0,
+                'timecreated' => 123456789,
+                'timemodified' => 123456789
+            ), false),
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(3, array(
+                'type' => 'another_rating',
+            ), false)
         ];
+
 
         // stub the get_task() method to return a mock task object
         $stub_task = $this->getMockBuilder(restore_activity_task::class)
