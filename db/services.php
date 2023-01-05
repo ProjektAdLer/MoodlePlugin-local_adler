@@ -20,10 +20,7 @@ $services = array(
 
 $functions = array(
     'local_adler_score_primitive_learning_element' => array(         //web service function name
-        'classname'   => 'local_adler_external',  //class containing the external function OR namespaced class in classes/external/XXXX.php
-        'methodname'  => 'score_primitive_learning_element',          //external function name
-        'classpath'   => 'local/adler/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
-        // defaults to the service's externalib.php
+        'classname'   => 'local_adler\external\score_primitive_learning_element',  //class containing the external function OR namespaced class in classes/external/XXXX.php
         'description' => 'Submit result for primitive learning elements (completed/not completed)',    //human readable description of the web service function
         'type'        => 'write',                  //database rights of the web service function (read, write)
         'ajax' => false,        // is the service available to 'internal' ajax calls.
@@ -31,42 +28,42 @@ $functions = array(
         'capabilities' => '', // comma separated list of capabilities used by the function.
         'loginrequired' => true
     ),
-    'local_adler_score_h5p_learning_element' => array(
-        'classname'   => 'local_adler_external',  //class containing the external function OR namespaced class in classes/external/XXXX.php
-        'methodname'  => 'score_h5p_learning_element',          //external function name
-        'classpath'   => 'local/adler/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
-        // defaults to the service's externalib.php
-        'description' => 'Submit result for h5p. This is just a proxy function and forwards its payload to {"wsfunction", "core_xapi_statement_post"}, {"component", "mod_h5pactivity"}, {"requestjson", "[" + statement + "]"}',    //human readable description of the web service function
-        'type'        => 'write',                  //database rights of the web service function (read, write)
-        'ajax' => false,        // is the service available to 'internal' ajax calls.
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
-        'capabilities' => '', // comma separated list of capabilities used by the function.
-        'loginrequired' => true
-    ),
-    'local_adler_score_get_element_scores' => array(
-        'classname'   => 'local_adler_external',  //class containing the external function OR namespaced class in classes/external/XXXX.php
-        'methodname'  => 'score_get_element_scores',          //external function name
-        'classpath'   => 'local/adler/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
-        // defaults to the service's externalib.php
-        'description' => 'Get scores (DSL) for elements with given ids',    //human readable description of the web service function
-        'type'        => 'read',                  //database rights of the web service function (read, write)
-        'ajax' => false,        // is the service available to 'internal' ajax calls.
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
-        'capabilities' => '', // comma separated list of capabilities used by the function.
-        'loginrequired' => true
-    ),
-    'local_adler_score_get_course_scores' => array(
-        'classname'   => 'local_adler_external',  //class containing the external function OR namespaced class in classes/external/XXXX.php
-        'methodname'  => 'score_get_course_scores',          //external function name
-        'classpath'   => 'local/adler/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
-        // defaults to the service's externalib.php
-        'description' => 'Get scores (DSL) for all elements inside course with given course id',    //human readable description of the web service function
-        'type'        => 'read',                  //database rights of the web service function (read, write)
-        'ajax' => false,        // is the service available to 'internal' ajax calls.
-        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
-        'capabilities' => '', // comma separated list of capabilities used by the function.
-        'loginrequired' => true
-    )
+//    'local_adler_score_h5p_learning_element' => array(
+//        'classname'   => 'local_adler_external',  //class containing the external function OR namespaced class in classes/external/XXXX.php
+//        'methodname'  => 'score_h5p_learning_element',          //external function name
+//        'classpath'   => 'local/adler/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
+//        // defaults to the service's externalib.php
+//        'description' => 'Submit result for h5p. This is just a proxy function and forwards its payload to {"wsfunction", "core_xapi_statement_post"}, {"component", "mod_h5pactivity"}, {"requestjson", "[" + statement + "]"}',    //human readable description of the web service function
+//        'type'        => 'write',                  //database rights of the web service function (read, write)
+//        'ajax' => false,        // is the service available to 'internal' ajax calls.
+//        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
+//        'capabilities' => '', // comma separated list of capabilities used by the function.
+//        'loginrequired' => true
+//    ),
+//    'local_adler_score_get_element_scores' => array(
+//        'classname'   => 'local_adler_external',  //class containing the external function OR namespaced class in classes/external/XXXX.php
+//        'methodname'  => 'score_get_element_scores',          //external function name
+//        'classpath'   => 'local/adler/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
+//        // defaults to the service's externalib.php
+//        'description' => 'Get scores (DSL) for elements with given ids',    //human readable description of the web service function
+//        'type'        => 'read',                  //database rights of the web service function (read, write)
+//        'ajax' => false,        // is the service available to 'internal' ajax calls.
+//        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
+//        'capabilities' => '', // comma separated list of capabilities used by the function.
+//        'loginrequired' => true
+//    ),
+//    'local_adler_score_get_course_scores' => array(
+//        'classname'   => 'local_adler_external',  //class containing the external function OR namespaced class in classes/external/XXXX.php
+//        'methodname'  => 'score_get_course_scores',          //external function name
+//        'classpath'   => 'local/adler/externallib.php',  //file containing the class/external function - not required if using namespaced auto-loading classes.
+//        // defaults to the service's externalib.php
+//        'description' => 'Get scores (DSL) for all elements inside course with given course id',    //human readable description of the web service function
+//        'type'        => 'read',                  //database rights of the web service function (read, write)
+//        'ajax' => false,        // is the service available to 'internal' ajax calls.
+//        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
+//        'capabilities' => '', // comma separated list of capabilities used by the function.
+//        'loginrequired' => true
+//    )
 );
 
 

@@ -132,6 +132,7 @@ class restore_local_adler_plugin_test extends advanced_testcase {
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
         $plugin->process_score_item($invalid_data);
 
+        // TODO never called after exception
         // verify that the database contains no records
         $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
     }
@@ -151,6 +152,7 @@ class restore_local_adler_plugin_test extends advanced_testcase {
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
         $plugin->process_score_item($invalid_data);
 
+        // TODO never called after exception
         // verify that the database contains no records
         $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
     }

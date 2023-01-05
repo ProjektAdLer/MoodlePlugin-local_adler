@@ -28,7 +28,7 @@ class local_adler_generator extends component_generator_base {
         $create_dsl_score_item = (object)$params;
 
         if ($insert) {
-            $create_dsl_score_item->id = $DB->insert_record('local_adler_score_items', $create_dsl_score_item);
+            $create_dsl_score_item->id = $DB->insert_record('local_adler_scores_items', $create_dsl_score_item);
         }
         return $create_dsl_score_item;
     }

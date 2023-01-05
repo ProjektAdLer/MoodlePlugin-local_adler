@@ -11,9 +11,6 @@ class dsl_score_test extends advanced_testcase {
     public function setUp(): void {
         parent::setUp();
 
-        global $DB;
-
-
         // cleanup after every test
         $this->resetAfterTest(true);
 
