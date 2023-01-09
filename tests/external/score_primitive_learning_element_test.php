@@ -1,5 +1,4 @@
 <?php
-
 namespace local_adler\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -197,5 +196,3 @@ class score_primitive_learning_element_test extends externallib_advanced_testcas
         $this->assertInstanceOf(dsl_score::class, $result);
     }
 }
-
-

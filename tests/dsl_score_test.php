@@ -1,8 +1,5 @@
 <?php
-
 namespace local_adler;
-
-defined('MOODLE_INTERNAL') || die();
 
 use advanced_testcase;
 use completion_info;

@@ -1,7 +1,4 @@
 <?php
-
-defined('MOODLE_INTERNAL') || die();
-
 class backup_local_adler_plugin extends backup_local_plugin {
     /** Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *

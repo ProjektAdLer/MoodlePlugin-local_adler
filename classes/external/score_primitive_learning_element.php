@@ -1,11 +1,5 @@
 <?php
-
 namespace local_adler\external;
-
-defined('MOODLE_INTERNAL') || die();
-
-//global $CFG;
-//require_once("$CFG->libdir/externallib.php");
 
 use completion_info;
 use context_course;
@@ -99,4 +93,3 @@ class score_primitive_learning_element extends external_api {
         }
     }
 }
-

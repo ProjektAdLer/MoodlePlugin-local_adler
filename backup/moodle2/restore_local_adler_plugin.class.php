@@ -1,6 +1,4 @@
 <?php
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Restoring logic for the local Adler plugin.
  */

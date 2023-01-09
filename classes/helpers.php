@@ -1,10 +1,7 @@
 <?php
-
 namespace local_adler;
 
 use moodle_exception;
-
-defined('MOODLE_INTERNAL') || die();
 
 class helpers {
     public static function get_course_from_course_id($course_id) {
@@ -13,7 +10,7 @@ class helpers {
         return $course;
     }
 
-    private const primitive_learning_elements = array(
+    private const PRIMITIVE_LEARNING_ELEMENTS  = array(
         'book',
         'resource',
         'imscp',
@@ -37,6 +34,6 @@ class helpers {
         if (!isset($course_module->modname)) {
             throw new moodle_exception('course_module_format_not_valid', 'local_adler');
         }
-        return in_array($course_module->modname, self::primitive_learning_elements);
+        return in_array($course_module->modname, self::PRIMITIVE_LEARNING_ELEMENTS );
     }
 }

@@ -1,10 +1,7 @@
 <?php
-
-defined('MOODLE_INTERNAL') || die();
-
 class local_adler_generator extends component_generator_base {
     // TODO: Implement this class.
-    # https://github.com/call-learning/moodle-local_resourcelibrary/blob/master/tests/generator/lib.php
+    // https://github.com/call-learning/moodle-local_resourcelibrary/blob/master/tests/generator/lib.php
 
     /**
      * Create a course module

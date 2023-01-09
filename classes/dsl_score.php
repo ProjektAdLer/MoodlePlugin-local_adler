@@ -1,11 +1,8 @@
 <?php
-
 namespace local_adler;
 
 use completion_info;
 use moodle_exception;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Managing out score system for one course module
