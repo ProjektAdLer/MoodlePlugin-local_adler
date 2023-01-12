@@ -48,6 +48,7 @@ class score_primitive_learning_element extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function execute($module_id, $is_completed) {
+        // TODO: check if completion is enabled. If not nothing will happen but no error is thrown. See completionlib.php is_enabled(...)
         global $CFG;
         require_once("$CFG->libdir/completionlib.php");
 
@@ -82,6 +83,7 @@ class score_primitive_learning_element extends external_api {
             $completion = new completion_info($course);
             $completion->update_state($course_module, $new_completion_state);
 
+            // TODO: add module_id field to be consistent with h5p
             // return dsl score
             $dsl_score = static::create_dsl_score_instance($course_module);
             return [
