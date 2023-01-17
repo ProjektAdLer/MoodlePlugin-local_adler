@@ -39,8 +39,6 @@ class score_primitive_learning_element_test extends externallib_advanced_testcas
         parent::setUp();
 
         $this->resetAfterTest(true);
-        // don't be strict about output
-        $this->expectOutputRegex('/.*/');
 
         // init test data
         $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));

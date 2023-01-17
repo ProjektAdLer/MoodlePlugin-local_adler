@@ -340,6 +340,7 @@ class dsl_score_test extends advanced_testcase {
         $this->assertEquals(count($expected), count($result));
         foreach ($result as $cmid => $dsl_score) {
             $this->assertEquals($expected[$cmid], $dsl_score->get_score());
+            $this->assertEquals($cmid, $dsl_score->get_cmid());
         }
     }
 

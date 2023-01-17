@@ -100,7 +100,6 @@ class dsl_score {
      * @return array of achieved scores [0=>0.5, 1=>0.7, ...], entry contains false if score could not be calculated
      */
     public static function get_achieved_scores(array $module_ids, int $user_id = null): array {
-        // TODO: error from get_score(): dont fail request, send error for this module (eg false)
         $dsl_scores = static::get_dsl_score_objects($module_ids, $user_id);
         $achieved_scores = array();
         foreach ($dsl_scores as $cmid=>$dsl_score) {

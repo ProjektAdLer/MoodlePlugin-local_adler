@@ -45,7 +45,8 @@ class score_h5p_learning_element extends external_api {
         $module_ids = array();
         foreach ($xapi as $statement) {
             $url = explode('/', $statement->object->id);
-            $context_id = end($url);
+            $url = explode('?', end($url));  // some object->id's have a query string
+            $context_id = $url[0];
             $module_id = context::instance_by_id($context_id)->instanceid;
             // add module id to array if not already in it
             if (!in_array($module_id, $module_ids)) {
@@ -68,7 +69,7 @@ class score_h5p_learning_element extends external_api {
         ));
         $xapi = $params['xapi'];
 
-        external_api::call_external_function('core_xapi_statement_post', array(
+        static::call_external_function('core_xapi_statement_post', array(
             'component' => 'h5pactivity',
             'requestjson' => $xapi
         ), true);
