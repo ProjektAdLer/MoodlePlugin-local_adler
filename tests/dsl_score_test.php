@@ -5,6 +5,7 @@ namespace local_adler;
 use advanced_testcase;
 use completion_info;
 use mod_h5pactivity\local\grader;
+use ReflectionClass;
 
 class dsl_score_test extends advanced_testcase {
     public function setUp(): void {
@@ -22,14 +23,14 @@ class dsl_score_test extends advanced_testcase {
         // Set current user. Required for h5p generator and completion->update_state (as default value).
         $this->setUser($this->user);
 
-        // Create a modules.
+        // Create primitive modules.
         $this->module_db_format = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id, 'completion' => 1]);
         $this->module = get_fast_modinfo($this->course->id, 0, false)->get_cm($this->module_db_format->cmid);
 
-        $this->module_without_dsl_data = $this->getDataGenerator()->create_module('url', ['course' => $this->course_without_dsl_data->id]);
-        $this->module_without_dsl_data = get_fast_modinfo($this->course_without_dsl_data->id, 0, false)->get_cm($this->module_without_dsl_data->cmid);
+        $this->module_without_dsl_data_db_format = $this->getDataGenerator()->create_module('url', ['course' => $this->course_without_dsl_data->id]);
+        $this->module_without_dsl_data = get_fast_modinfo($this->course_without_dsl_data->id, 0, false)->get_cm($this->module_without_dsl_data_db_format->cmid);
 
-        // Create score (dsl) items.
+        // Create score (dsl) item for primitive module.
         $this->score_item_primitive = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->module->id);
     }
 
@@ -142,7 +143,7 @@ class dsl_score_test extends advanced_testcase {
         $cm_other_format = get_fast_modinfo($this->course->id, 0, false)->get_cm($cm->cmid);
 
         // Create score (dsl) item.
-        $this->score_item_h5p = $this->getDataGenerator()
+        $score_item_h5p = $this->getDataGenerator()
             ->get_plugin_generator('local_adler')
             ->create_dsl_score_item($cm_other_format->id);
 
@@ -154,7 +155,7 @@ class dsl_score_test extends advanced_testcase {
 
 
         // test no attempt
-        $this->assertEquals($this->score_item_h5p->score_min, $dsl_score->get_score());
+        $this->assertEquals($score_item_h5p->score_min, $dsl_score->get_score());
 
 
         // array with test data for attempts with different maxscores and rawscores
@@ -173,7 +174,7 @@ class dsl_score_test extends advanced_testcase {
         for ($i = 0; $i < 25; $i++) {
             $maxscore = rand(1, 1000);
             $rawscore = rand(0, $maxscore);
-            $expected_score = $rawscore / $maxscore * $this->score_item_primitive->score_max;
+            $expected_score = $rawscore / $maxscore * $score_item_h5p->score_max;
             $test_data[] = ['maxscore' => $maxscore, 'rawscore' => $rawscore, 'expected_score' => $expected_score];
         }
 
@@ -193,9 +194,228 @@ class dsl_score_test extends advanced_testcase {
             $grader->update_grades();
 
             // check result
-            $this->assertEquals(round($data['expected_score'],3), round($dsl_score->get_score(), 3));
+            $this->assertEquals(round($data['expected_score'], 3), round($dsl_score->get_score(), 3));
+        }
+
+        // test invalid rawscore
+        $params = [[
+            'h5pactivityid' => $cm->id,
+            'userid' => $this->user->id,
+            'rawscore' => -1,
+            'minscore' => 0,
+            'maxscore' => 100
+        ], [
+            'h5pactivityid' => $cm->id,
+            'userid' => $this->user->id,
+            'rawscore' => 101,
+            'minscore' => 0,
+            'maxscore' => 100
+        ]];
+        // use indexed loop
+        for ($i = 0; $i < count($params); $i++) {
+            $generator->create_attempt($params[$i]);
+            $this->fix_scaled_attribute_of_h5pactivity_attempts();
+
+            // Create grade entry (grade_grades)
+            $grader->update_grades();
+
+            // check result
+            $this->assertEquals($i == 0 ? $params[$i]['minscore'] : $params[$i]['maxscore'], $dsl_score->get_score());
+
         }
     }
 
+    public function test_calculate_percentage_achieved() {
+        // test setup
+        // make calculate_percentage_achieved public
+        $reflection = new ReflectionClass(dsl_score::class);
+        $method = $reflection->getMethod('calculate_percentage_achieved');
+        $method->setAccessible(true);
 
+        // enroll user
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+
+        // test data
+        $test_data = [
+            ['min' => 0, 'max' => 100, 'value' => 0, 'expected' => 0],
+            ['min' => 0, 'max' => 100, 'value' => 50, 'expected' => .5],
+            ['min' => 0, 'max' => 100, 'value' => 100, 'expected' => 1],
+            ['min' => 10, 'max' => 20, 'value' => 10, 'expected' => 0],
+            ['min' => 10, 'max' => 20, 'value' => 15, 'expected' => .5],
+            ['min' => 10, 'max' => 20, 'value' => 20, 'expected' => 1],
+            ['min' => 0, 'max' => 100, 'value' => -1, 'expected' => 0],
+            ['min' => 0, 'max' => 100, 'value' => 101, 'expected' => 1],
+        ];
+
+        // test
+        foreach ($test_data as $data) {
+            $result = $method->invokeArgs(new dsl_score($this->module), [$data['value'], $data['max'], $data['min']]);
+            $this->assertEquals($data['expected'], $result);
+        }
+    }
+
+    private function generate_test_data_list_access_default() {
+        ////  create h5p test activities with attempts and dsl score entries
+        // Create 3 h5p activities
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_h5pactivity');
+        $cms = [
+            $generator->create_instance(['course' => $this->course->id]),
+            $generator->create_instance(['course' => $this->course->id]),
+            $generator->create_instance(['course' => $this->course->id])
+        ];
+
+        // create attempts for each h5p activity
+        $attempts = [
+            $generator->create_attempt([
+                'h5pactivityid' => $cms[0]->id,
+                'userid' => $this->user->id,
+                'rawscore' => 100,
+                'maxscore' => 100
+            ]),
+            $generator->create_attempt([
+                'h5pactivityid' => $cms[1]->id,
+                'userid' => $this->user->id,
+                'rawscore' => 50,
+                'maxscore' => 100
+            ]),
+            $generator->create_attempt([
+                'h5pactivityid' => $cms[2]->id,
+                'userid' => $this->user->id,
+                'rawscore' => 0,
+                'maxscore' => 100
+            ]),
+        ];
+        $this->fix_scaled_attribute_of_h5pactivity_attempts();
+        // Create grade entry (grade_grades)
+        foreach ($cms as $cm) {
+            $grader = new grader($cm);
+            $grader->update_grades();
+        }
+
+        // create dsl score entries
+        $dsl_score_entries = [
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($cms[0]->cmid, ['score_max' => 10]),
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($cms[1]->cmid, ['score_max' => 10]),
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($cms[2]->cmid, ['score_max' => 10])
+        ];
+
+
+        //// add primitive activity to test data
+        $cms[] = $this->module_db_format;
+        // add dsl_score_entry
+        $dsl_score_entries[] = $this->score_item_primitive;
+        // set $this->module to success
+        $completion = new completion_info($this->course);
+        $completion->update_state($this->module, COMPLETION_COMPLETE);
+
+
+        //// expected result
+        $expected = [
+            $cms[0]->cmid => 10.,
+            $cms[1]->cmid => 5.,
+            $cms[2]->cmid => 0.
+        ];
+        $expected[$this->module_db_format->cmid] = 100;
+
+
+        //// prepare CUT call: list with cmids
+        $cmids = array_map(function ($cm) {
+            return $cm->cmid;
+        }, $cms);
+
+        return [$cmids, $expected];
+    }
+
+    public function test_get_dsl_score_objects() {
+        // enroll user
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+
+        // test setup
+        list($cmids, $expected) = $this->generate_test_data_list_access_default();
+
+        // test
+        $result = dsl_score::get_dsl_score_objects($cmids);
+
+        // check result
+        $this->assertEquals(count($expected), count($result));
+        foreach ($result as $cmid => $dsl_score) {
+            $this->assertEquals($expected[$cmid], $dsl_score->get_score());
+        }
+    }
+
+    public function test_get_achieved_scores() {
+        // enroll user
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+
+
+        //// test data
+        list($cmids, $expected) = $this->generate_test_data_list_access_default();
+
+
+        //// call CUT
+        $result = dsl_score::get_achieved_scores($cmids);
+
+
+        //// check result
+        $this->assertEquals(count($cmids), count($result));
+        for ($i = 0; $i < count($cmids); $i++) {
+            $this->assertEquals($expected[$cmids[$i]], $result[$cmids[$i]]);
+        }
+    }
+
+    private function generate_test_data_list_access_false_return() {
+        // testcases with invalid cmids
+        $cmids[] = 1896123789;
+        $cmids[] = -1;
+        $cmids[] = null;
+        $expected[1896123789] = false;
+        $expected[-1] = false;
+        $expected[null] = false;
+
+        // testcase user not enrolled (and without dsl)
+        $cmids[] = $this->module_without_dsl_data_db_format->cmid;
+        $expected[$this->module_without_dsl_data_db_format->cmid] = false;
+
+        return [$cmids, $expected];
+    }
+
+    public function test_get_dsl_score_objects_false_return() {
+        // enroll user
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+
+        // test setup
+        list($cmids, $expected) = $this->generate_test_data_list_access_false_return();
+
+        // test
+        $result = dsl_score::get_dsl_score_objects($cmids);
+
+        // check result
+        $this->assertEquals(count($expected), count($result));
+        foreach ($result as $cmid => $dsl_score) {
+            $this->assertEquals($expected[$cmid], $dsl_score);
+        }
+    }
+
+    public function test_get_achieved_scores_with_false_return() {
+        // enroll user
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+
+
+        // prepare test data
+        list($cmids, $expected) = $this->generate_test_data_list_access_false_return();
+        // testcase without dsl
+        $module_no_dsl = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id]);
+        $cmids[] = $module_no_dsl->cmid;
+        $expected[$module_no_dsl->cmid] = false;
+
+
+        // call CUT
+        $result = dsl_score::get_achieved_scores($cmids);
+
+        // check result
+        $this->assertEquals(count($cmids), count($result));
+        for ($i = 0; $i < count($cmids); $i++) {
+            $this->assertEquals($expected[$cmids[$i]], $result[$cmids[$i]]);
+        }
+    }
 }

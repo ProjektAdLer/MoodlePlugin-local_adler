@@ -2,10 +2,10 @@
 
 namespace local_adler;
 
-use coding_exception;
 use completion_info;
 use context_course;
 use moodle_exception;
+use Throwable;
 
 /**
  * Managing dsl score system for one course module
@@ -55,39 +55,65 @@ class dsl_score {
         return ($max_score - $min_score) * $percentage_achieved + $min_score;
     }
 
+    /** Calculate percentage achieved between $min and $max
+     * @param float $min
+     * @param float $max
+     * @param float $value
+     * @return float as float value between 0 and 1
+     */
     private static function calculate_percentage_achieved(float $value, float $max, float $min = 0): float {
-        if ($value > $max || $value < $min) {
-            throw new coding_exception('Value is not in range');
+        // This approach is also used by gradebook.
+        if ($value > $max ) {
+            $value = $max;
+        }
+        if ($value < $min) {
+            $value = $min;
         }
         return ($value - $min) / ($max - $min);
     }
 
     /** Get DSL-scores for given array of course_module ids.
+     * Similar to get_achieved_scores, but returns dsl_score objects.
      * @param $module_ids array course_module ids
      * @param int|null $user_id If null, the current user will be used
-     * @return array of DSL-Scores
-     * @throws moodle_exception
+     * @return array of DSL-Scores (format: [$module_id => dsl_score]), entry contains false if dsl_score entry could not be created
      */
     public static function get_dsl_score_objects(array $module_ids, int $user_id = null): array {
         $dsl_scores = array();
         foreach ($module_ids as $module_id) {
-            $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
-            $dsl_scores[] = new dsl_score($course_module, $user_id);
+            try {
+                $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
+                $dsl_scores[$module_id] = new dsl_score($course_module, $user_id);
+            } catch (throwable $e) {
+                debugging('Could not create dsl_score object for course_module with id ' . $module_id, E_WARNING);
+                $dsl_scores[$module_id] = false;
+            }
+
         }
         return $dsl_scores;
     }
 
-    /** Get list with achieved scores for every given module_id
+    /** Get list with achieved scores for every given module_id.
+     * Similar to get_dsl_score_objects, but only returns the achieved score.
      * @param array $module_ids
      * @param int|null $user_id If null, the current user will be used
-     * @return array of achieved scores [0=>0.5, 1=>0.7, ...]
-     * @throws moodle_exception
+     * @return array of achieved scores [0=>0.5, 1=>0.7, ...], entry contains false if score could not be calculated
      */
     public static function get_achieved_scores(array $module_ids, int $user_id = null): array {
+        // TODO: error from get_score(): dont fail request, send error for this module (eg false)
         $dsl_scores = static::get_dsl_score_objects($module_ids, $user_id);
         $achieved_scores = array();
-        foreach ($dsl_scores as $dsl_score) {
-            $achieved_scores[$dsl_score->get_cmid()] = $dsl_score->get_score();
+        foreach ($dsl_scores as $cmid=>$dsl_score) {
+            if($dsl_score === false) {
+                $achieved_scores[$cmid] = false;
+            } else {
+                try {
+                    $achieved_scores[$cmid] = $dsl_score->get_score();
+                } catch (throwable $e) {
+                    debugging('Could not get score for course_module with id ' . $cmid, E_WARNING);
+                    $achieved_scores[$cmid] = false;
+                }
+            }
         }
         return $achieved_scores;
     }
@@ -121,9 +147,6 @@ class dsl_score {
         // if course_module is a h5p activity, get achieved grade
         if ($this->course_module->modname == 'h5pactivity') {
             $grading_info = grade_get_grades($this->course_module->course, 'mod', 'h5pactivity', $this->course_module->instance, $this->user_id);
-            if (count($grading_info->items) != 1) {
-                throw new coding_exception('Wrong number of grade items found for module id ' . $this->course_module->id);
-            }
             $grading_info = $grading_info->items[0];
 
             if ($grading_info->grades[$this->user_id]->grade === null) {
