@@ -14,6 +14,9 @@ use moodle_exception;
 
 
 class score_h5p_learning_element extends external_api {
+    protected static $dsl_score = dsl_score::class;
+
+
     public static function execute_parameters() {
         return new external_function_parameters(
             array(
@@ -77,7 +80,7 @@ class score_h5p_learning_element extends external_api {
         // get dsl score
         $module_ids = static::get_module_ids_from_xapi($xapi);
         try {
-            $scores = dsl_score::get_achieved_scores($module_ids);
+            $scores = self::$dsl_score::get_achieved_scores($module_ids);
         } catch (moodle_exception $e) {
             debugging('Failed to get DSL scores, but xapi statements are already processed', E_ERROR);
             throw new moodle_exception('error:failed_to_get_dsl_score', 'local_adler', '', $e->getMessage());
