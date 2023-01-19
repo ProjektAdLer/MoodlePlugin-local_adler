@@ -49,6 +49,10 @@
       <file>rsslib.php</file>
       <directory suffix=".php">backup/moodle2</directory>
     </include>
+    <exclude>
+      <directory suffix=".php">tests</directory>
+    </exclude>
   </coverage>
+
 
 </phpunit>
