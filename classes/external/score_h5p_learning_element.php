@@ -83,7 +83,7 @@ class score_h5p_learning_element extends external_api {
             $scores = self::$dsl_score::get_achieved_scores($module_ids);
         } catch (moodle_exception $e) {
             debugging('Failed to get DSL scores, but xapi statements are already processed', E_ERROR);
-            throw new moodle_exception('error:failed_to_get_dsl_score', 'local_adler', '', $e->getMessage());
+            throw new moodle_exception('failed_to_get_dsl_score', 'local_adler', '', $e->getMessage());
         }
 
         // convert $scores to return format
