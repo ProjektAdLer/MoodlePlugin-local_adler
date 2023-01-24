@@ -2,12 +2,15 @@
 
 namespace local_adler;
 
-use advanced_testcase;
+
 use completion_info;
 use mod_h5pactivity\local\grader;
 use ReflectionClass;
 
-class dsl_score_test extends advanced_testcase {
+global $CFG;
+require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+
+class dsl_score_test extends local_adler_testcase {
     public function setUp(): void {
         parent::setUp();
 

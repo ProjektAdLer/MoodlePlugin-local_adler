@@ -2,7 +2,9 @@
 
 namespace local_adler;
 
-//class local_adler_testcase extends advanced_testcase {
+global $CFG;
+require_once($CFG->dirroot . '/webservice/tests/helpers.php');
+
 use advanced_testcase;
 use externallib_advanced_testcase;
 

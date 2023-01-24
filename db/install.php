@@ -4,7 +4,7 @@ function xmldb_local_adler_install()
 {
     global $DB;
 
-    $course_id = 3;
+    $course_id = 29;
 
     $module_support = array(
         'supported_simple' => array('url', 'page', 'resource'),

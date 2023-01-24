@@ -5,14 +5,15 @@ defined('MOODLE_INTERNAL') || die();
 
 use completion_info;
 use external_api;
-use externallib_advanced_testcase;
 use invalid_parameter_exception;
 use local_adler\dsl_score;
+use local_adler\local_adler_externallib_testcase;
 
 
 global $CFG;
 require_once("$CFG->libdir/externallib.php");
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib.php');
 
 class mock_score_primitive_learning_element extends score_primitive_learning_element {
     private static $index = 0;
@@ -34,11 +35,9 @@ class mock_score_primitive_learning_element extends score_primitive_learning_ele
 }
 
 
-class score_primitive_learning_element_test extends externallib_advanced_testcase {
+class score_primitive_learning_element_test extends local_adler_externallib_testcase {
     public function setUp(): void {
         parent::setUp();
-
-        $this->resetAfterTest(true);
 
         // init test data
         $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
@@ -54,18 +53,6 @@ class score_primitive_learning_element_test extends externallib_advanced_testcas
             ->getMock();
         $this->mock_dsl_score->method('get_score')
             ->willReturn(42.0);
-    }
-
-    /** runs after every test */
-    public function tearDown(): void {
-        parent::tearDown();
-        // Moodle thinks debugging messages should be tested (check for debugging messages in unit tests).
-        // Imho this is very bad practice, because devs should be encouraged to provide additional Information
-        // for debugging. Checking for log messages in tests provides huge additional effort (eg tests will fail because
-        // a message was changed / an additional one was added / ...). Because logging should NEVER affect the
-        // functionality of the code, this is completely unnecessary. If something went wrong either the code should
-        // handle the problem or it should throw an exception.
-        $this->resetDebugging();
     }
 
 

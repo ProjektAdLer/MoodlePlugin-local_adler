@@ -1,6 +1,10 @@
 <?php
 // When using namespaces, the namespace of the test class should match the namespace of the code under test
 // -> no namespace for this test as backup/restore is not namespaced
+use local_adler\local_adler_testcase;
+
+global $CFG;
+require_once($CFG->dirroot . '/local/adler/tests/lib.php');
 
 /**
  * PHPunit test for class backup_local_adler_plugin
@@ -10,18 +14,12 @@
  * The only way to reliably recreate this object would be using the same code as the original class.
  * Therefore, this test is implemented as an integration test.
  */
-class backup_local_adler_plugin_test extends advanced_testcase {
+class backup_local_adler_plugin_test extends local_adler_testcase {
     public function setUp(): void {
         parent::setUp();
 
         global $CFG;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
-
-        // cleanup after every test
-        $this->resetAfterTest(true);
-
-        // Don't be strict about output for this test.
-        $this->expectOutputRegex('/.*/');
 
         // Create a course.
         $course = $this->getDataGenerator()->create_course();

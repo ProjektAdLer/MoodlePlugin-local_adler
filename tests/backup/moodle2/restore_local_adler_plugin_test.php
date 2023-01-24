@@ -2,10 +2,15 @@
 // When using namespaces, the namespace of the test class should match the namespace of the code under test
 // -> no namespace for this test as backup/restore is not namespaced
 
+use local_adler\local_adler_testcase;
+
+global $CFG;
+require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+
 /**
  * PHPunit test for class restore_local_adler_plugin
  */
-class restore_local_adler_plugin_test extends advanced_testcase {
+class restore_local_adler_plugin_test extends local_adler_testcase {
     public function setUp(): void {
         parent::setUp();
 
@@ -41,9 +46,6 @@ class restore_local_adler_plugin_test extends advanced_testcase {
         $this->stub = $this->createMock(restore_module_structure_step::class);
         $this->stub->method('get_task')
             ->willReturn($stub_task);
-
-        // cleanup after every test
-        $this->resetAfterTest(true);
     }
 
     /**
