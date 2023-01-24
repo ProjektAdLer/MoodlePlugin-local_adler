@@ -4,6 +4,7 @@ namespace local_adler\external;
 
 
 use context_module;
+use external_api;
 use local_adler\local_adler_externallib_testcase;
 use moodle_exception;
 
@@ -30,8 +31,7 @@ class dsl_score_mock {
 
         $result = array();
         foreach ($module_ids as $module_id) {
-            // TODO $result[$module_id] = count(static::$calls);
-            $result[$module_id] = 42.0;
+            $result[$module_id] = count(static::$calls);
         }
         return $result;
     }
@@ -111,7 +111,7 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
 
             // validate result
             $this->assertCount(1, $result);
-            $this->assertEquals(['module_id' => $course_module->cmid, 'score' => 42], $result[0]);
+            $this->assertEquals(['module_id' => $course_module->cmid, 'score' => count(dsl_score_mock::$calls)], $result[0]);
         }
 
         // test failed_to_get_dsl_score
@@ -134,6 +134,44 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
 
             // validate result
             $this->assertEquals('failed_to_get_dsl_score', $e->errorcode);
+        }
+        $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
+    }
+
+    public function test_execute_returns() {
+        external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
+            'module_id' => 1,
+            'score' => 42.0,
+        ]);
+
+        $expected_exception_thrown = false;
+        try {
+            external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
+                'module_id' => 1,
+            ]);
+        } catch (invalid_parameter_exception $e) {
+            $expected_exception_thrown = true;
+        }
+        $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
+
+        $expected_exception_thrown = false;
+        try {
+            external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
+                'score' => 42.0,
+            ]);
+        } catch (invalid_parameter_exception $e) {
+            $expected_exception_thrown = true;
+        }
+        $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
+
+        $expected_exception_thrown = false;
+        try {
+            external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
+                'module_id' => 1,
+                'score' => 'F',
+            ]);
+        } catch (invalid_parameter_exception $e) {
+            $expected_exception_thrown = true;
         }
         $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
     }
