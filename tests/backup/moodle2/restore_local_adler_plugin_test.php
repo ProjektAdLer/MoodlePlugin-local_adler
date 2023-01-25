@@ -23,14 +23,12 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $this->data = [
             $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(1, array(), false),
             $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(2, array(
-                'type' => 'whatever',
-                'score_min' => 5.0,
                 'score_max' => 10.0,
                 'timecreated' => 123456789,
                 'timemodified' => 123456789
             ), false),
             $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(3, array(
-                'type' => 'another_rating',
+                'score_max' => 30.0,
             ), false)
         ];
 
@@ -60,13 +58,13 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         return $method;
     }
 
-    public function test_process_score_item_one_element() {
+    public function test_process_points_one_element() {
         // setup
         global $DB;
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
-        $plugin->process_score_item($this->data[0]);
+        $plugin->process_points($this->data[0]);
 
 
         // verify that the database contains a record
@@ -76,50 +74,25 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $db_record = $DB->get_records('local_adler_scores_items');
         $db_record = (new ArrayIterator($db_record))->current();
         // verify that the record has the correct values
-        $this->assertEquals($this->data[0]->type, $db_record->type);
-        $this->assertEquals((float)$this->data[0]->score_min, $db_record->score_min);
         $this->assertEquals((float)$this->data[0]->score_max, $db_record->score_max);
         $this->assertEquals($this->data[0]->timecreated, $db_record->timecreated);
         $this->assertEquals($this->data[0]->timemodified, $db_record->timemodified);
     }
 
-    public function test_process_score_item_multiple_elements() {
-        // setup
-        global $DB;
-
+    public function test_process_points_multiple_elements() {
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
-        foreach ($this->data as $data) {
-            $plugin->process_score_item($data);
-        }
-
-        // verify that the database contains a record
-        $this->assertEquals(count($this->data), $DB->count_records('local_adler_scores_items'));
-
-        // get the record from the database
-        $db_records = $DB->get_records('local_adler_scores_items');
-        // check every entry in $db_records
-        for ($i = 0; $i < count($this->data); $i++) {
-            $db_record = (new ArrayIterator($db_records))->current();
-            // verify that the record has the correct values
-            $this->assertEquals($this->data[$i]->type, $db_record->type);
-            $this->assertEquals((float)$this->data[$i]->score_min, $db_record->score_min);
-            $this->assertEquals((float)$this->data[$i]->score_max, $db_record->score_max);
-            $this->assertEquals($this->data[$i]->timecreated, $db_record->timecreated);
-            $this->assertEquals($this->data[$i]->timemodified, $db_record->timemodified);
-            // remove the current record from the array
-            array_shift($db_records);
-        }
+        $plugin->process_points($this->data[0]);
+        $this->expectException(dml_write_exception::class);
+        $plugin->process_points($this->data[1]);
     }
 
-    public function test_process_score_item_invalid_datatype() {
+    public function test_process_points_invalid_datatype() {
         // setup
         global $DB;
 
         // create invalid data
         $invalid_data = (object)[
-            "type" => "score",
-            "score_min" => "null",
             "score_max" => "hundert",
             "timecreated" => "0",
             "timemodified" => "0"
@@ -129,7 +102,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
         try {
-            $plugin->process_score_item($invalid_data);
+            $plugin->process_points($invalid_data);
         } catch (dml_write_exception $e) {
             $exception_thrown = true;
         }
@@ -139,20 +112,20 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
     }
 
-    public function test_process_score_item_missing_fields() {
+    public function test_process_points_missing_fields() {
         // setup
         global $DB;
 
         // create invalid data
         $invalid_data = (object)[
-            "type" => "score",
+
         ];
 
         $exception_thrown = false;
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
         try {
-            $plugin->process_score_item($invalid_data);
+            $plugin->process_points($invalid_data);
         } catch (dml_write_exception $e) {
             $exception_thrown = true;
         }
@@ -183,6 +156,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
 
         // verify
         $this->assertCount(1, $paths);
-        $this->assertEquals('score_item', $paths[0]->get_name());
+        $this->assertEquals('points', $paths[0]->get_name());
+        $this->assertStringContainsString('points', $paths[0]->get_path());
     }
 }

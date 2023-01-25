@@ -13,9 +13,7 @@ class local_adler_generator extends component_generator_base {
     public function create_dsl_score_item(int $module_id, $params = array(), bool $insert = true) {
         global $DB;
         $default_params = [
-            'course_modules_id' => $module_id,
-            'type' => 'score',
-            'score_min' => 0.0,
+            'cmid' => $module_id,
             'score_max' => 100.0,
             'timecreated' => 0,
             'timemodified' => 0

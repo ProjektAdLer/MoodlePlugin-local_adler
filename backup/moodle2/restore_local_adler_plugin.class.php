@@ -9,17 +9,17 @@ class restore_local_adler_plugin extends restore_local_plugin {
      */
     protected function define_module_plugin_structure(): array {
         return [
-            new restore_path_element('score_item', $this->get_pathfor('/score_items/score_item'))
+            new restore_path_element('points', $this->get_pathfor('/points'))
         ];
     }
 
     /** Processes a score item record during the restore process.
      *
-     * @param object $data The data for the score item.
+     * @param object|array $data The data for the score item. Should be of type object, but is sometimes array (moodle logic).
      * @return void
      * @throws dml_exception
      */
-    public function process_score_item(object $data) {
+    public function process_points($data) {
         global $DB;
 
         // Cast $data to object if it is an array
@@ -27,7 +27,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
         $data = (object)$data;
 
         $cmid = $this->task->get_moduleid();
-        $data->course_modules_id = $cmid;
+        $data->cmid = $cmid;
 
         // Insert the record into the database
         $DB->insert_record('local_adler_scores_items', $data);

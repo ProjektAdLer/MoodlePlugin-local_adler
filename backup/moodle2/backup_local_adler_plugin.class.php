@@ -15,10 +15,7 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Define each element separated
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
 
-        $score_items = new backup_nested_element("score_items");
-        $score_item = new backup_nested_element("score_item", null, array(
-            'type',
-            'score_min',
+        $score_item = new backup_nested_element("points", null, array(
             'score_max',
             'timecreated',
             'timemodified',
@@ -27,11 +24,10 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Build the tree
         $plugin->add_child($pluginwrapper);
 
-        $pluginwrapper->add_child($score_items);
-        $score_items->add_child($score_item);
+        $pluginwrapper->add_child($score_item);
 
         // Define sources
-        $score_item->set_source_table('local_adler_scores_items', array('course_modules_id' => backup::VAR_MODID));
+        $score_item->set_source_table('local_adler_scores_items', array('cmid' => backup::VAR_MODID));
 
         // Define id annotations
 

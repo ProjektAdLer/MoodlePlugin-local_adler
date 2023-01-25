@@ -74,11 +74,11 @@ class dsl_score_test extends local_adler_testcase {
         $completion = new completion_info($this->course);
 
         // test empty submission
-        $this->assertEquals($this->score_item_primitive->score_min, $dsl_score->get_score());
+        $this->assertEquals(0, $dsl_score->get_score());
 
         // test completion entry exists with entry: false
         $completion->update_state($this->module, COMPLETION_INCOMPLETE);
-        $this->assertEquals($this->score_item_primitive->score_min, $dsl_score->get_score());
+        $this->assertEquals(0, $dsl_score->get_score());
 
         // test completion entry exists with entry: true
         $completion->update_state($this->module, COMPLETION_COMPLETE);
@@ -98,7 +98,7 @@ class dsl_score_test extends local_adler_testcase {
         $dsl_score = new dsl_score($this->module);
 
         // test empty submission
-        $this->assertEquals($this->score_item_primitive->score_min, $dsl_score->get_score());
+        $this->assertEquals(0, $dsl_score->get_score());
     }
 
     public function test_get_score_for_primitive_learning_element_no_dsl_metadata() {
@@ -158,7 +158,7 @@ class dsl_score_test extends local_adler_testcase {
 
 
         // test no attempt
-        $this->assertEquals($score_item_h5p->score_min, $dsl_score->get_score());
+        $this->assertEquals(0, $dsl_score->get_score());
 
 
         // array with test data for attempts with different maxscores and rawscores

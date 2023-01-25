@@ -51,7 +51,7 @@ class dsl_score {
      * @param float $max_score The maximum score that can be achieved.
      * @param float $percentage_achieved As float value between 0 and 1
      */
-    private static function calculate_score(float $min_score, float $max_score, float $percentage_achieved): float {
+    private static function calculate_score(float $max_score, float $percentage_achieved, float $min_score = 0): float {
         return ($max_score - $min_score) * $percentage_achieved + $min_score;
     }
 
@@ -134,9 +134,8 @@ class dsl_score {
         require_once($CFG->libdir . '/gradelib.php');
 
         // get dsl score metadata object
-        // TODO: will only use the first one. As support for multiple score items per course module might be dropped again it's not yet implemented
         // TODO: create methods to abstract the DB access
-        $score_item = $DB->get_record('local_adler_scores_items', array('course_modules_id' => $this->course_module->id));
+        $score_item = $DB->get_record('local_adler_scores_items', array('cmid' => $this->course_module->id));
         if (!$score_item) {
             debugging("No score item found for course module {$this->course_module->id},'.
             ' probably this course does not support dsl-file grading", E_ERROR);
@@ -158,7 +157,7 @@ class dsl_score {
                     $grading_info->grademin
                 );
             }
-            return self::calculate_score($score_item->score_min, $score_item->score_max, $relative_grade);
+            return self::calculate_score($score_item->score_max, $relative_grade);
         }
 
         // if course_module is not a h5p activity, get completion status
@@ -168,6 +167,6 @@ class dsl_score {
         $completion = new completion_info(helpers::get_course_from_course_id($this->course_module->course));
         $completion_status = (float)$completion->get_data($this->course_module, false, $this->user_id)->completionstate;
 
-        return self::calculate_score($score_item->score_min, $score_item->score_max, $completion_status);
+        return self::calculate_score($score_item->score_max, $completion_status);
     }
 }

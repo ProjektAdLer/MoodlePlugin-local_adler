@@ -19,7 +19,7 @@ function xmldb_local_adler_install()
             try {
                 $scores_item_id = $DB->insert_record('local_adler_scores_items',
                     array('type' => 'score',
-                        'course_modules_id' => $module->id,
+                        'cmid' => $module->id,
                         'score_min' => 0,
                         'score_max' => random_int(0, 20)),
                     $returnid = true, $bulk = false);

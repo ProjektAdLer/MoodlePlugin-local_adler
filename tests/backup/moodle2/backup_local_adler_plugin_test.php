@@ -61,9 +61,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
      * @param $actual
      * @return void
      */
-    private function verify_score_item($expected, $actual) {
-        $this->assertEquals($expected->type, $actual->type);
-        $this->assertEquals((float)$expected->score_min, (float)$actual->score_min);
+    private function verify_points($expected, $actual) {
         $this->assertEquals((float)$expected->score_max, (float)$actual->score_max);
         $this->assertEquals((int)$expected->timecreated, (int)$actual->timecreated);
         $this->assertEquals((int)$expected->timemodified, (int)$actual->timemodified);
@@ -94,7 +92,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->verify_score_item($score_item, $xml->plugin_local_adler_module->score_items->score_item);
+        $this->verify_points($score_item, $xml->plugin_local_adler_module->points);
     }
 
     /**
@@ -117,46 +115,6 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->assertEmpty($xml->plugin_local_adler_module->score_items->children());
-    }
-
-    /**
-     * Test the backup of module with multiple score data.
-     * @medium
-     */
-    public function test_backup_multiple_scores() {
-        global $DB;
-
-        $score_items = array(
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->module->cmid),
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(
-                $this->module->cmid,
-                array(
-                    'type' => 'gold',
-                    'score_max' => 42.0,
-                    'timecreated' => 1999,
-                    'timemodified' => 2000
-                )
-            )
-        );
-
-        // Create a backup of the module.
-        $bc = new backup_controller(
-            backup::TYPE_1ACTIVITY,
-            $this->module->cmid,
-            backup::FORMAT_MOODLE,
-            backup::INTERACTIVE_NO,
-            backup::MODE_GENERAL,
-            2
-        );
-        $bc->execute_plan();
-
-        // Get xml from backup.
-        $xml = $this->get_xml_from_backup($bc);
-
-        // validate xml values
-        for ($i = 0; $i < 2; $i++) {
-            $this->verify_score_item($score_items[$i], $xml->plugin_local_adler_module->score_items->score_item[$i]);
-        }
+        $this->assertEmpty($xml->plugin_local_adler_module->points->children());
     }
 }
