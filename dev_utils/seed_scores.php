@@ -1,10 +1,17 @@
 <?php
+/**
+ * This script seeds the local_adler_scores_items table with random scores for all modules of a given course.
+ */
 
-function xmldb_local_adler_install()
-{
+define('CLI_SCRIPT', true);
+
+
+require(__DIR__ . '/../../../config.php');
+require_once("{$CFG->libdir}/clilib.php");
+
+
+function seed_scores(int $course_id) {
     global $DB;
-
-    $course_id = 29;
 
     $module_support = array(
         'supported_simple' => array('url', 'page', 'resource'),
@@ -13,7 +20,6 @@ function xmldb_local_adler_install()
     );
 
     $modules = get_course_mods($course_id);
-    $i = 0;
     foreach ($modules as $module) {
         if (in_array($module->modname, $module_support['supported_simple']) || in_array($module->modname, $module_support['supported_complex'])) {
             try {
@@ -30,7 +36,6 @@ function xmldb_local_adler_install()
             continue;
         }
     }
-
-    // seed rooms
-
 }
+
+seed_scores(49);
