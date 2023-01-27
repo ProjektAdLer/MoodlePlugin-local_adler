@@ -38,4 +38,4 @@ function seed_scores(int $course_id) {
     }
 }
 
-seed_scores(49);
+seed_scores(46);

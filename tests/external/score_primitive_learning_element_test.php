@@ -1,4 +1,5 @@
 <?php
+
 namespace local_adler\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -67,11 +68,19 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         $this->assertEquals(42.0, $result['score']);
         $completion = new completion_info($this->course);
         $this->assertFalse((bool)$completion->get_data($this->course_module)->completionstate);
+        external_api::validate_parameters(  // if this fails an exception will be thrown and the test fails
+            mock_score_primitive_learning_element::execute_returns(),
+            $result
+        );
 
         // Test again with completed = true
         mock_score_primitive_learning_element::execute($this->course_module->id, true);
         $completion = new completion_info($this->course);
         $this->assertTrue((bool)$completion->get_data($this->course_module)->completionstate);
+        external_api::validate_parameters(  // if this fails an exception will be thrown and the test fails
+            mock_score_primitive_learning_element::execute_returns(),
+            $result
+        );
     }
 
     public function test_score_primitive_learning_element_wrong_datatypes() {
@@ -143,6 +152,7 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
     public function test_execute_returns() {
         external_api::validate_parameters(score_primitive_learning_element::execute_returns(), array(
             'score' => 1.0,
+            'module_id' => 1,
         ));
 
         $expected_exception = false;

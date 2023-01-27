@@ -7,7 +7,6 @@ use context;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
-use external_single_structure;
 use external_value;
 use local_adler\dsl_score;
 use moodle_exception;
@@ -28,12 +27,7 @@ class score_h5p_learning_element extends external_api {
 
     public static function execute_returns() {
         return new  external_multiple_structure(
-            new external_single_structure(
-                array(
-                    'module_id' => new external_value(PARAM_INT, 'moodle module id'),
-                    'score' => new external_value(PARAM_FLOAT, 'achieved (dsl-file) score'),
-                )
-            )
+            lib::get_adler_score_response_single_structure()
         );
     }
 
@@ -76,7 +70,9 @@ class score_h5p_learning_element extends external_api {
             'component' => 'h5pactivity',
             'requestjson' => $xapi
         ), true);
+        // TODO: check response
 
+        // TODO: before processing xapi statements, check if the module supports adler scoring
         // get dsl score
         $module_ids = static::get_module_ids_from_xapi($xapi);
         try {
@@ -87,13 +83,6 @@ class score_h5p_learning_element extends external_api {
         }
 
         // convert $scores to return format
-        $return = array();
-        foreach ($scores as $module_id => $score) {
-            $return[] = array(
-                'module_id' => $module_id,
-                'score' => $score,
-            );
-        }
-        return $return;
+        return lib::convert_adler_score_array_format_to_response_structure($scores);
     }
 }

@@ -7,7 +7,6 @@ use dml_exception;
 use dml_transaction_exception;
 use external_api;
 use external_function_parameters;
-use external_single_structure;
 use external_value;
 use invalid_parameter_exception;
 use local_adler\dsl_score;
@@ -26,11 +25,7 @@ class score_primitive_learning_element extends external_api {
     }
 
     public static function execute_returns() {
-        return new  external_single_structure(
-            array(
-                'score' => new external_value(PARAM_FLOAT, 'achieved (dsl-file) score'),
-            )
-        );
+        return lib::get_adler_score_response_single_structure();
     }
 
     /** creates dsl_score objects, simplifies testing
@@ -83,12 +78,10 @@ class score_primitive_learning_element extends external_api {
             $completion = new completion_info($course);
             $completion->update_state($course_module, $new_completion_state);
 
-            // TODO: add module_id field to be consistent with h5p
             // return dsl score
             $dsl_score = static::create_dsl_score_instance($course_module);
-            return [
-                'score' => $dsl_score->get_score()
-            ];
+            return lib::convert_adler_score_array_format_to_response_structure(
+                array($course_module->id => $dsl_score->get_score()))[0];
         } else {
             debugging("Course module is not a known primitive learning element.", E_WARNING);
             throw new moodle_exception("course_module_is_not_a_primitive_learning_element", 'local_adler');

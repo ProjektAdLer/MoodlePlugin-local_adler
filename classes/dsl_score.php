@@ -2,6 +2,9 @@
 
 namespace local_adler;
 
+# old moodle code without proper class declaration: https://github.com/Wunderbyte-GmbH/moodle-mod_booking/issues/174#issuecomment-855760228
+require_once($CFG->libdir . '/completionlib.php');
+
 use completion_info;
 use context_course;
 use moodle_exception;
@@ -108,7 +111,7 @@ class dsl_score {
             } else {
                 try {
                     $achieved_scores[$cmid] = $dsl_score->get_score();
-                } catch (throwable $e) {
+                } catch (moodle_exception $e) {
                     debugging('Could not get score for course_module with id ' . $cmid, E_WARNING);
                     $achieved_scores[$cmid] = false;
                 }
@@ -164,7 +167,8 @@ class dsl_score {
         debugging('course_module is either a primitive or an unsupported complex activity', DEBUG_ALL);
 
         // TODO: check if completion is enabled. If not nothing will happen but no error is thrown. See completionlib.php is_enabled(...)
-        $completion = new completion_info(helpers::get_course_from_course_id($this->course_module->course));
+        $course = helpers::get_course_from_course_id($this->course_module->course);
+        $completion = new completion_info($course);
         $completion_status = (float)$completion->get_data($this->course_module, false, $this->user_id)->completionstate;
 
         return self::calculate_score($score_item->score_max, $completion_status);
