@@ -3,6 +3,8 @@
  * This script seeds the local_adler_scores_items table with random scores for all modules of a given course.
  */
 
+use local_adler\helpers;
+
 define('CLI_SCRIPT', true);
 
 
@@ -14,15 +16,20 @@ function seed_scores(int $course_id) {
     global $DB;
 
     $module_support = array(
-        'supported_simple' => array('url', 'page', 'resource'),
+        'supported_simple' => array('url', 'page', 'resource', 'label'),
         'supported_complex' => array('h5pactivity'),
         'not_completable' => array('label'),
     );
 
     $modules = get_course_mods($course_id);
+    $completion = new completion_info(helpers::get_course_from_course_id($course_id));
     foreach ($modules as $module) {
+        if (!$completion->is_enabled($module)) {
+            continue;
+        }
         if (in_array($module->modname, $module_support['supported_simple']) || in_array($module->modname, $module_support['supported_complex'])) {
             try {
+                // TODO check if completion is enabled (for this cm)
                 $scores_item_id = $DB->insert_record('local_adler_scores_items',
                     array('type' => 'score',
                         'cmid' => $module->id,
@@ -39,3 +46,4 @@ function seed_scores(int $course_id) {
 }
 
 seed_scores(46);
+seed_scores(49);

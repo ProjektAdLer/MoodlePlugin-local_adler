@@ -7,6 +7,7 @@ require_once($CFG->libdir . '/completionlib.php');
 
 use completion_info;
 use context_course;
+use dml_exception;
 use moodle_exception;
 use Throwable;
 
@@ -21,6 +22,7 @@ class dsl_score {
     /**
      * @param object $course_module
      * @param int|null $user_id If null, the current user will be used
+     * @throws moodle_exception course_module_format_not_valid, user_not_enrolled
      */
     public function __construct(object $course_module, int $user_id = null) {
         $this->course_module = $course_module;
@@ -66,7 +68,7 @@ class dsl_score {
      */
     private static function calculate_percentage_achieved(float $value, float $max, float $min = 0): float {
         // This approach is also used by gradebook.
-        if ($value > $max ) {
+        if ($value > $max) {
             $value = $max;
         }
         if ($value < $min) {
@@ -80,18 +82,13 @@ class dsl_score {
      * @param $module_ids array course_module ids
      * @param int|null $user_id If null, the current user will be used
      * @return array of DSL-Scores (format: [$module_id => dsl_score]), entry contains false if dsl_score entry could not be created
+     * @throws moodle_exception
      */
     public static function get_dsl_score_objects(array $module_ids, int $user_id = null): array {
         $dsl_scores = array();
         foreach ($module_ids as $module_id) {
-            try {
-                $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
-                $dsl_scores[$module_id] = new dsl_score($course_module, $user_id);
-            } catch (throwable $e) {
-                debugging('Could not create dsl_score object for course_module with id ' . $module_id, E_WARNING);
-                $dsl_scores[$module_id] = false;
-            }
-
+            $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
+            $dsl_scores[$module_id] = new dsl_score($course_module, $user_id);
         }
         return $dsl_scores;
     }
@@ -101,19 +98,24 @@ class dsl_score {
      * @param array $module_ids
      * @param int|null $user_id If null, the current user will be used
      * @return array of achieved scores [0=>0.5, 1=>0.7, ...], entry contains false if score could not be calculated
+     * @throws moodle_exception
      */
     public static function get_achieved_scores(array $module_ids, int $user_id = null): array {
         $dsl_scores = static::get_dsl_score_objects($module_ids, $user_id);
         $achieved_scores = array();
-        foreach ($dsl_scores as $cmid=>$dsl_score) {
-            if($dsl_score === false) {
-                $achieved_scores[$cmid] = false;
-            } else {
-                try {
-                    $achieved_scores[$cmid] = $dsl_score->get_score();
-                } catch (moodle_exception $e) {
-                    debugging('Could not get score for course_module with id ' . $cmid, E_WARNING);
+        foreach ($dsl_scores as $cmid => $dsl_score) {
+            try {
+                $achieved_scores[$cmid] = $dsl_score->get_score();
+            } catch (moodle_exception $e) {
+                if ($e->errorcode === 'completion_not_enabled') {
+                    debugging('Completion is not enabled for course_module with id ' . $cmid, E_NOTICE);
                     $achieved_scores[$cmid] = false;
+                } else if ($e->errorcode === 'scores_items_not_found') {
+                    debugging('Adler scoring not enabled for course_module with id ' . $cmid, E_NOTICE);
+                    $achieved_scores[$cmid] = false;
+                } else {
+                    debugging('Could not get score for course_module with id ' . $cmid, E_WARNING);
+                    throw $e;
                 }
             }
         }
@@ -130,7 +132,7 @@ class dsl_score {
     /** Get the score for the course module.
      * Gets the completion status and for h5p activities the achieved grade and calculates the dsl score with the values from
      * local_adler_scores_items.
-     * @throws moodle_exception
+     * @throws dml_exception|moodle_exception
      */
     public function get_score(): float {
         global $DB, $CFG;
@@ -166,9 +168,16 @@ class dsl_score {
         // if course_module is not a h5p activity, get completion status
         debugging('course_module is either a primitive or an unsupported complex activity', DEBUG_ALL);
 
-        // TODO: check if completion is enabled. If not nothing will happen but no error is thrown. See completionlib.php is_enabled(...)
+        // get completion object
         $course = helpers::get_course_from_course_id($this->course_module->course);
         $completion = new completion_info($course);
+
+        // check if completion is enabled for this course_module
+        if (!$completion->is_enabled($this->course_module)) {
+            throw new moodle_exception('completion_not_enabled', 'local_adler');
+        }
+
+        // get completion status
         $completion_status = (float)$completion->get_data($this->course_module, false, $this->user_id)->completionstate;
 
         return self::calculate_score($score_item->score_max, $completion_status);

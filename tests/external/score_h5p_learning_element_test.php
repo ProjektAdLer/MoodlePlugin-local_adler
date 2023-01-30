@@ -93,6 +93,7 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
 
         // TODO replace 2nd test xapi with the one from philipp once received, also adjust str_replace or context id in that xapi sample
         // generate test data
+        // TODO: how is the user identified. is it through $USER or "name": "3"?
         $xapis = [
             '[{"actor":{"name":"user","objectType":"Agent","account":{"name":"3","homePage":"http://localhost"}},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"http://localhost/xapi/activity/41","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":5},"name":{"en-US":"Metriken Teil 1"},"interactionType":"compound","type":"http://adlnet.gov/expapi/activities/cmi.interaction","description":{"en-US":""}}},"context":{"contextActivities":{"category":[{"id":"http://h5p.org/libraries/H5P.InteractiveVideo-1.22","objectType":"Activity"}]}},"result":{"score":{"min":0,"max":13,"raw":7,"scaled":0.5385},"completion":true,"success":false,"duration":"PT86.76S"}},{"actor":{"name":"user","objectType":"Agent","account":{"name":"3","homePage":"http://localhost"}},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"http://localhost/xapi/activity/41?subContentId=d72ecc5d-9f18-4017-aa4e-29f1932de84b","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":5,"http://h5p.org/x-api/h5p-subContentId":"d72ecc5d-9f18-4017-aa4e-29f1932de84b"},"name":{"en-US":"Wörter einordnen"},"interactionType":"fill-in","type":"http://adlnet.gov/expapi/activities/cmi.interaction","description":{"en-US":"<p>Ziehe die Wörter in die richtigen Felder!</p>\n<br/>Eine __________ ist im Software Engineering eine __________ Aussage über ein __________, einen __________, oder __________."},"correctResponsesPattern":["Metrik[,]quantifizierte[,]Artefakt[,]Prozess[,]Projekte"]}},"context":{"contextActivities":{"parent":[{"id":"http://localhost/xapi/activity/41","objectType":"Activity"}],"category":[{"id":"http://h5p.org/libraries/H5P.DragText-1.8","objectType":"Activity"}]}},"result":{"response":"Artefakt[,]quantifizierte[,]Metrik[,]Projekte[,]Prozess","score":{"min":0,"raw":1,"max":5,"scaled":0.2},"duration":"PT108.3S","completion":true}},{"actor":{"name":"user","objectType":"Agent","account":{"name":"3","homePage":"http://localhost"}},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"http://localhost/xapi/activity/41?subContentId=446cb9b3-f616-49ba-9f39-7470e88924b8","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":5,"http://h5p.org/x-api/h5p-subContentId":"446cb9b3-f616-49ba-9f39-7470e88924b8"},"name":{"en-US":"Zuordnungsaufgabe"},"description":{"en-US":"Zuordnungsaufgabe"},"type":"http://adlnet.gov/expapi/activities/cmi.interaction","interactionType":"matching","source":[{"id":"0","description":{"en-US":"Feedback\n"}},{"id":"1","description":{"en-US":"Vergleich\n"}},{"id":"2","description":{"en-US":"Kontrolle\n"}},{"id":"3","description":{"en-US":"Beurteilung\n"}},{"id":"4","description":{"en-US":"Abschätzung\n"}},{"id":"5","description":{"en-US":"Transparenz\n"}},{"id":"6","description":{"en-US":"Beziehung\n"}},{"id":"7","description":{"en-US":"Gesund werden\n"}}],"correctResponsesPattern":["0[.]0[,]0[.]1[,]0[.]2[,]0[.]3[,]0[.]4[,]0[.]5[,]1[.]6[,]1[.]7"],"target":[{"id":"0","description":{"en-US":"Plus\n"}},{"id":"1","description":{"en-US":"minus\n"}}]}},"context":{"contextActivities":{"parent":[{"id":"http://localhost/xapi/activity/41","objectType":"Activity"}],"category":[{"id":"http://h5p.org/libraries/H5P.DragQuestion-1.13","objectType":"Activity"}]}},"result":{"score":{"min":0,"max":8,"raw":6,"scaled":0.75},"completion":true,"success":false,"duration":"PT21.54S","response":"0[.]0[,]0[.]1[,]0[.]2[,]1[.]3[,]1[.]4[,]0[.]5[,]1[.]6[,]1[.]7"}}]',
             '[{"actor":{"name":"user","objectType":"Agent","account":{"name":"3","homePage":"http://localhost"}},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"http://localhost/xapi/activity/41","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":5},"name":{"en-US":"Metriken Teil 1"},"interactionType":"compound","type":"http://adlnet.gov/expapi/activities/cmi.interaction","description":{"en-US":""}}},"context":{"contextActivities":{"category":[{"id":"http://h5p.org/libraries/H5P.InteractiveVideo-1.22","objectType":"Activity"}]}},"result":{"score":{"min":0,"max":13,"raw":7,"scaled":0.5385},"completion":true,"success":false,"duration":"PT86.76S"}},{"actor":{"name":"user","objectType":"Agent","account":{"name":"3","homePage":"http://localhost"}},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"http://localhost/xapi/activity/41?subContentId=d72ecc5d-9f18-4017-aa4e-29f1932de84b","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":5,"http://h5p.org/x-api/h5p-subContentId":"d72ecc5d-9f18-4017-aa4e-29f1932de84b"},"name":{"en-US":"Wörter einordnen"},"interactionType":"fill-in","type":"http://adlnet.gov/expapi/activities/cmi.interaction","description":{"en-US":"<p>Ziehe die Wörter in die richtigen Felder!</p>\n<br/>Eine __________ ist im Software Engineering eine __________ Aussage über ein __________, einen __________, oder __________."},"correctResponsesPattern":["Metrik[,]quantifizierte[,]Artefakt[,]Prozess[,]Projekte"]}},"context":{"contextActivities":{"parent":[{"id":"http://localhost/xapi/activity/41","objectType":"Activity"}],"category":[{"id":"http://h5p.org/libraries/H5P.DragText-1.8","objectType":"Activity"}]}},"result":{"response":"Artefakt[,]quantifizierte[,]Metrik[,]Projekte[,]Prozess","score":{"min":0,"raw":1,"max":5,"scaled":0.2},"duration":"PT108.3S","completion":true}},{"actor":{"name":"user","objectType":"Agent","account":{"name":"3","homePage":"http://localhost"}},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"http://localhost/xapi/activity/41?subContentId=446cb9b3-f616-49ba-9f39-7470e88924b8","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":5,"http://h5p.org/x-api/h5p-subContentId":"446cb9b3-f616-49ba-9f39-7470e88924b8"},"name":{"en-US":"Zuordnungsaufgabe"},"description":{"en-US":"Zuordnungsaufgabe"},"type":"http://adlnet.gov/expapi/activities/cmi.interaction","interactionType":"matching","source":[{"id":"0","description":{"en-US":"Feedback\n"}},{"id":"1","description":{"en-US":"Vergleich\n"}},{"id":"2","description":{"en-US":"Kontrolle\n"}},{"id":"3","description":{"en-US":"Beurteilung\n"}},{"id":"4","description":{"en-US":"Abschätzung\n"}},{"id":"5","description":{"en-US":"Transparenz\n"}},{"id":"6","description":{"en-US":"Beziehung\n"}},{"id":"7","description":{"en-US":"Gesund werden\n"}}],"correctResponsesPattern":["0[.]0[,]0[.]1[,]0[.]2[,]0[.]3[,]0[.]4[,]0[.]5[,]1[.]6[,]1[.]7"],"target":[{"id":"0","description":{"en-US":"Plus\n"}},{"id":"1","description":{"en-US":"minus\n"}}]}},"context":{"contextActivities":{"parent":[{"id":"http://localhost/xapi/activity/41","objectType":"Activity"}],"category":[{"id":"http://h5p.org/libraries/H5P.DragQuestion-1.13","objectType":"Activity"}]}},"result":{"score":{"min":0,"max":8,"raw":6,"scaled":0.75},"completion":true,"success":false,"duration":"PT21.54S","response":"0[.]0[,]0[.]1[,]0[.]2[,]1[.]3[,]1[.]4[,]0[.]5[,]1[.]6[,]1[.]7"}}]',
@@ -140,13 +141,26 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
     }
 
     public function test_execute_returns() {
-        external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
+        // default case
+        $data = [
             [
                 'module_id' => 1,
                 'score' => 42.0,
             ]
-        ]);
+        ];
+        $result = external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), $data);
+        $this->assertEquals($data, $result);
 
+        // missing score (still success)
+        $data = [
+            [
+                'module_id' => 1,
+            ]
+        ];
+        $result = external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), $data);
+        $this->assertEquals($data, $result);
+
+        // wrong array dimension
         $expected_exception_thrown = false;
         try {
             external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
@@ -158,18 +172,7 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
         }
         $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
 
-        $expected_exception_thrown = false;
-        try {
-            external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
-                [
-                    'module_id' => 1,
-                ]
-            ]);
-        } catch (invalid_parameter_exception $e) {
-            $expected_exception_thrown = true;
-        }
-        $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
-
+        // missing module_id
         $expected_exception_thrown = false;
         try {
             external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
@@ -182,6 +185,7 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
         }
         $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
 
+        // invalid type (score)
         $expected_exception_thrown = false;
         try {
             external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [

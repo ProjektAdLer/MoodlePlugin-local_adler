@@ -43,7 +43,7 @@ class score_primitive_learning_element extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function execute($module_id, $is_completed) {
-        // TODO: check if completion is enabled. If not nothing will happen but no error is thrown. See completionlib.php is_enabled(...)
+        // TODO: evaluate if this could be combined with score_h5p_learning_element
         global $CFG;
         require_once("$CFG->libdir/completionlib.php");
 
@@ -70,12 +70,18 @@ class score_primitive_learning_element extends external_api {
 
         // check if course_module is a primitive learning element. If it's supporting gradelib it might cause unexpected behaviour if manually setting completion state
         if (helpers::is_primitive_learning_element($course_module)) {
+            $completion = new completion_info($course);
+
+            // check if completion is enabled for this course_module
+            if (!$completion->is_enabled($course_module)) {
+                throw new moodle_exception('completion_not_enabled', 'local_adler');
+            }
+
             // update completion status
             $new_completion_state = COMPLETION_INCOMPLETE;
             if ($params['is_completed']) {
                 $new_completion_state = COMPLETION_COMPLETE;
             }
-            $completion = new completion_info($course);
             $completion->update_state($course_module, $new_completion_state);
 
             // return dsl score

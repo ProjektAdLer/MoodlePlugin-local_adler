@@ -29,6 +29,8 @@ class restore_local_adler_plugin extends restore_local_plugin {
         $cmid = $this->task->get_moduleid();
         $data->cmid = $cmid;
 
+        // TODO check if completion is enabled (for this cm)
+
         // Insert the record into the database
         $DB->insert_record('local_adler_scores_items', $data);
     }

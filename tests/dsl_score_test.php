@@ -85,6 +85,29 @@ class dsl_score_test extends local_adler_testcase {
         $this->assertEquals($this->score_item_primitive->score_max, $dsl_score->get_score());
     }
 
+    public function test_get_score_for_primitive_learning_element_fail() {
+        // enroll user in course
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+
+        // create module with completion disabled
+        $module = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id, 'completion' =>0]);
+        $module = get_fast_modinfo($this->course->id, 0, false)->get_cm($module->cmid);
+
+        // Create score (dsl) item.
+        $score_module = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($module->id);
+
+
+        // prepare dsl_score object
+        $dsl_score = new dsl_score($module, $this->user->id);
+
+        // expect exception
+        $this->expectException('moodle_exception');
+        $this->expectExceptionMessage('local_adler/completion_not_enabled');
+
+        // call CUD
+        $dsl_score->get_score();
+    }
+
     public function test_get_score_for_primitive_learning_element_with_global_USER_obejct() {
         // enroll user in course
         $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
@@ -224,7 +247,6 @@ class dsl_score_test extends local_adler_testcase {
 
             // check result
             $this->assertEquals($i == 0 ? $params[$i]['minscore'] : $params[$i]['maxscore'], $dsl_score->get_score());
-
         }
     }
 
@@ -367,15 +389,7 @@ class dsl_score_test extends local_adler_testcase {
         }
     }
 
-    private function generate_test_data_list_access_false_return() {
-        // testcases with invalid cmids
-        $cmids[] = 1896123789;
-        $cmids[] = -1;
-        $cmids[] = null;
-        $expected[1896123789] = false;
-        $expected[-1] = false;
-        $expected[null] = false;
-
+    private function generate_test_data_list_access_not_enrolled() {
         // testcase user not enrolled (and without dsl)
         $cmids[] = $this->module_without_dsl_data_db_format->cmid;
         $expected[$this->module_without_dsl_data_db_format->cmid] = false;
@@ -383,34 +397,39 @@ class dsl_score_test extends local_adler_testcase {
         return [$cmids, $expected];
     }
 
-    public function test_get_dsl_score_objects_false_return() {
+    public function test_get_dsl_score_objects_exception() {
         // enroll user
         $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
 
         // test setup
-        list($cmids, $expected) = $this->generate_test_data_list_access_false_return();
+        list($cmids, $expected) = $this->generate_test_data_list_access_not_enrolled();
+
+        // exception expected
+        $this->expectException('moodle_exception');
 
         // test
-        $result = dsl_score::get_dsl_score_objects($cmids);
-
-        // check result
-        $this->assertEquals(count($expected), count($result));
-        foreach ($result as $cmid => $dsl_score) {
-            $this->assertEquals($expected[$cmid], $dsl_score);
-        }
+        dsl_score::get_dsl_score_objects([$cmids[0]]);  // only testcase user not enrolled
     }
 
+
     public function test_get_achieved_scores_with_false_return() {
-        // enroll user
+        // enroll user in course
         $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
 
+        // case: completion not enabled
+        // create module with completion disabled
+        $module = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id, 'completion' =>0]);
+        $module = get_fast_modinfo($this->course->id, 0, false)->get_cm($module->cmid);
 
-        // prepare test data
-        list($cmids, $expected) = $this->generate_test_data_list_access_false_return();
-        // testcase without dsl
+        // Create score (dsl) item.
+        $score_module = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($module->id);
+
+        $cmids[] = $module->id;
+
+
+        // case: testcase without dsl
         $module_no_dsl = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id]);
         $cmids[] = $module_no_dsl->cmid;
-        $expected[$module_no_dsl->cmid] = false;
 
 
         // call CUT
@@ -419,7 +438,43 @@ class dsl_score_test extends local_adler_testcase {
         // check result
         $this->assertEquals(count($cmids), count($result));
         for ($i = 0; $i < count($cmids); $i++) {
-            $this->assertEquals($expected[$cmids[$i]], $result[$cmids[$i]]);
+            $this->assertFalse($result[$cmids[$i]]);
         }
     }
+
+    public function test_get_achieved_scores_exception_not_enrolled() {
+        // prepare test data
+        list($cmids, $expected) = $this->generate_test_data_list_access_not_enrolled();
+
+        // exception expected
+        $this->expectException('moodle_exception');
+        $this->expectExceptionMessage('user_not_enrolled');
+
+        // call CUT
+        dsl_score::get_achieved_scores($cmids);
+    }
+
+    /**
+     * This test is currently not really testable, because this can only happen if $DB->get_record() inside get_score
+     * throws an exception. Most cases where this could happen are prevented by other checks. One possible case could
+     * be database is down. But this is not testable.
+     * TODO: should be easier once DB queries are abstracted into helpers.
+     */
+//    public function test_get_achieved_scores_exception() {
+//        // enroll user in course
+//        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+//
+//        // create module with completion disabled
+//        $module = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id, 'completion' =>0]);
+//        $module = get_fast_modinfo($this->course->id, 0, false)->get_cm($module->cmid);
+//
+//        // Create score (dsl) item.
+//        $score_module = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($module->id);
+//
+//        // exception expected
+//        $this->expectException('moodle_exception');
+//
+//        // test
+//        dsl_score::get_achieved_scores([$module->id]);  // only testcase user not enrolled
+//    }
 }
