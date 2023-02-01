@@ -30,3 +30,11 @@ class context_module_mock_new {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 }
+
+class context_course_mock_new {
+    use static_mock_utilities_trait;
+
+    public static function instance($module_id) {
+        return static::mock_this_function(__FUNCTION__, func_get_args());
+    }
+}

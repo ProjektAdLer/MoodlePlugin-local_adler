@@ -28,6 +28,10 @@ class score_get_element_scores_mock extends score_get_element_scores {
 
 class score_get_element_scores_test extends local_adler_externallib_testcase {
     public function test_execute() {
+        // define test data
+        $module_ids = [1, 2, 42];
+
+        // setup mocks
         score_get_element_scores_mock::reset_data();
 
         context_module_mock_new::reset_data();
@@ -36,10 +40,15 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         dsl_score_mock_new::reset_data();
         dsl_score_mock_new::set_returns('get_achieved_scores', [[1=>0, 2=>5.0, 42=>42.0]]);
 
-        $result = score_get_element_scores_mock::execute([1, 2, 42]);
+        $result = score_get_element_scores_mock::execute($module_ids);
 
+        // check return value
         $this->assertEqualsCanonicalizing([['moduleid'=>1, 'score'=>0.0], ['moduleid'=>2, 'score'=>5.0], ['moduleid'=>42, 'score'=>42.0]], $result['data']);
-        // TODO maybe check function call parameters
+        // check function calls
+        for ($i = 0; $i < 3; $i++) {
+            $this->assertEquals($module_ids[$i], context_module_mock_new::get_calls('instance')[$i][0]);
+        }
+        $this->assertEquals($module_ids, dsl_score_mock_new::get_calls('get_achieved_scores')[0][0]);
     }
 
     public function test_execute_exceptions() {

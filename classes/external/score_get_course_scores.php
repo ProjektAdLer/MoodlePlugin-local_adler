@@ -26,8 +26,8 @@ class score_get_course_scores extends external_api {
         $course_id = $params['course_id'];
 
         // Permission check
-        $context = context_course::instance($course_id);
-        self::validate_context($context);
+        $context = static::$context_course::instance($course_id);
+        static::validate_context($context);
 
         // get cmids of all modules in course
         $cms = get_fast_modinfo($course_id)->get_cms();
@@ -37,7 +37,7 @@ class score_get_course_scores extends external_api {
         }
 
         // get scores
-        $scores = dsl_score::get_achieved_scores($module_ids);
+        $scores = static::$dsl_score::get_achieved_scores($module_ids);
 
         // convert format return
         return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
