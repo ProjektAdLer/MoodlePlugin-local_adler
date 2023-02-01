@@ -14,7 +14,7 @@ use local_adler\local_adler_externallib_testcase;
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
-require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class mock_score_primitive_learning_element extends score_primitive_learning_element {
     private static $index = 0;

@@ -4,7 +4,7 @@ namespace local_adler\external;
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
-require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 use external_api;

@@ -8,7 +8,7 @@ use mod_h5pactivity\local\grader;
 use ReflectionClass;
 
 global $CFG;
-require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class dsl_score_test extends local_adler_testcase {
     public function setUp(): void {

@@ -8,7 +8,7 @@ use local_adler\local_adler_externallib_testcase;
 
 require_once($CFG->libdir . '/externallib.php');
 //require_once($CFG->dirroot . '/webservice/tests/helpers.php');
-require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class _score_get_course_scoresTest extends local_adler_externallib_testcase {
     public function setUp(): void {

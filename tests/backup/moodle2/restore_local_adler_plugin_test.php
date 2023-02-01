@@ -5,7 +5,7 @@
 use local_adler\local_adler_testcase;
 
 global $CFG;
-require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 /**
  * PHPunit test for class restore_local_adler_plugin

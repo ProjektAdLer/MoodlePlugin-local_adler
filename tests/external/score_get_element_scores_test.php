@@ -15,7 +15,7 @@ use Throwable;
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
 //require_once($CFG->dirroot . '/webservice/tests/helpers.php');
-require_once($CFG->dirroot . '/local/adler/tests/lib.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 require_once('generic_mocks.php');
 
 class score_get_element_scores_mock extends score_get_element_scores {
