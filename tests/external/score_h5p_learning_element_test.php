@@ -113,7 +113,7 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
 
             // validate result
             $this->assertCount(1, $result);
-            $this->assertEquals(['module_id' => $course_module->cmid, 'score' => count(dsl_score_mock::$calls)], $result[0]);
+            $this->assertEquals(['module_id' => $course_module->cmid, 'score' => count(dsl_score_mock::$calls)], $result['data'][0]);
         }
 
         // test failed_to_get_dsl_score
@@ -141,62 +141,8 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
     }
 
     public function test_execute_returns() {
-        // default case
-        $data = [
-            [
-                'module_id' => 1,
-                'score' => 42.0,
-            ]
-        ];
-        $result = external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), $data);
-        $this->assertEquals($data, $result);
-
-        // missing score (still success)
-        $data = [
-            [
-                'module_id' => 1,
-            ]
-        ];
-        $result = external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), $data);
-        $this->assertEquals($data, $result);
-
-        // wrong array dimension
-        $expected_exception_thrown = false;
-        try {
-            external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
-                'module_id' => 1,
-                'score' => 42.0,
-            ]);
-        } catch (invalid_parameter_exception $e) {
-            $expected_exception_thrown = true;
-        }
-        $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
-
-        // missing module_id
-        $expected_exception_thrown = false;
-        try {
-            external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
-                [
-                    'score' => 42.0,
-                ]
-            ]);
-        } catch (invalid_parameter_exception $e) {
-            $expected_exception_thrown = true;
-        }
-        $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
-
-        // invalid type (score)
-        $expected_exception_thrown = false;
-        try {
-            external_api::validate_parameters(score_h5p_learning_element_mock::execute_returns(), [
-                [
-                    'module_id' => 1,
-                    'score' => 'F',
-                ]
-            ]);
-        } catch (invalid_parameter_exception $e) {
-            $expected_exception_thrown = true;
-        }
-        $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
+        // this function just returns what get_adler_score_response_multiple_structure returns
+        require_once(__DIR__ . '/lib_test.php');
+        (new _libTest())->test_get_adler_score_response_multiple_structure(score_h5p_learning_element::class);
     }
 }

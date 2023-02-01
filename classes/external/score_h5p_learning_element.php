@@ -6,7 +6,6 @@ use coding_exception;
 use context;
 use external_api;
 use external_function_parameters;
-use external_multiple_structure;
 use external_value;
 use local_adler\dsl_score;
 use moodle_exception;
@@ -26,9 +25,7 @@ class score_h5p_learning_element extends external_api {
 
 
     public static function execute_returns() {
-        return new  external_multiple_structure(
-            lib::get_adler_score_response_single_structure()
-        );
+        return lib::get_adler_score_response_multiple_structure();
     }
 
 
@@ -83,6 +80,6 @@ class score_h5p_learning_element extends external_api {
         }
 
         // convert $scores to return format
-        return lib::convert_adler_score_array_format_to_response_structure($scores);
+        return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
     }
 }

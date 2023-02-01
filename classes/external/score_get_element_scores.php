@@ -3,7 +3,6 @@
 namespace local_adler\external;
 
 use context_module;
-use core\session\exception;
 use dml_missing_record_exception;
 use external_api;
 use external_function_parameters;
@@ -14,6 +13,9 @@ use moodle_exception;
 use require_login_exception;
 
 class score_get_element_scores extends external_api {
+    protected static $dsl_score = dsl_score::class;
+    protected static $context_module = context_module::class;
+
     public static function execute_parameters() {
         return new external_function_parameters(
             array(
@@ -25,7 +27,7 @@ class score_get_element_scores extends external_api {
     }
 
     public static function execute_returns() {
-        return new external_multiple_structure(lib::get_adler_score_response_single_structure());
+        return lib::get_adler_score_response_multiple_structure();
     }
 
     public static function execute(array $module_ids) {
@@ -37,14 +39,14 @@ class score_get_element_scores extends external_api {
         $failed_items = array();
         foreach ($module_ids as $module_id) {
             try {
-                $context = context_module::instance($module_id);
+                $context = static::$context_module::instance($module_id);
             } catch (dml_missing_record_exception $e) {
                 // module does not exist
                 $failed_items[] = $module_id;
                 continue;
             }
             try {
-                self::validate_context($context);
+                static::validate_context($context);
             } catch (require_login_exception $e) {
                 // user not enrolled
                 $failed_items[] = $module_id;
@@ -61,9 +63,9 @@ class score_get_element_scores extends external_api {
         }
 
         // get scores
-        $scores = dsl_score::get_achieved_scores($module_ids);
+        $scores = static::$dsl_score::get_achieved_scores($module_ids);
 
         // convert format return
-        return lib::convert_adler_score_array_format_to_response_structure($scores);
+        return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
     }
 }

@@ -4,7 +4,6 @@ namespace local_adler\external;
 use context_course;
 use external_api;
 use external_function_parameters;
-use external_multiple_structure;
 use external_value;
 use local_adler\dsl_score;
 
@@ -18,7 +17,7 @@ class score_get_course_scores extends external_api {
     }
 
     public static function execute_returns() {
-        return new external_multiple_structure(lib::get_adler_score_response_single_structure());
+        return lib::get_adler_score_response_multiple_structure();
     }
 
     public static function execute($course_id) {
@@ -41,6 +40,6 @@ class score_get_course_scores extends external_api {
         $scores = dsl_score::get_achieved_scores($module_ids);
 
         // convert format return
-        return lib::convert_adler_score_array_format_to_response_structure($scores);
+        return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
     }
 }

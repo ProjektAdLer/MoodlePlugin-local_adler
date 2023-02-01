@@ -12,7 +12,7 @@ use local_adler\local_adler_externallib_testcase;
 
 
 global $CFG;
-require_once("$CFG->libdir/externallib.php");
+require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib.php');
 
@@ -65,7 +65,7 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         $result = mock_score_primitive_learning_element::execute($this->course_module->id, false);
 
         // Check result
-        $this->assertEquals(42.0, $result['score']);
+        $this->assertEquals(42.0, $result['data'][0]['score']);
         $completion = new completion_info($this->course);
         $this->assertFalse((bool)$completion->get_data($this->course_module)->completionstate);
         external_api::validate_parameters(  // if this fails an exception will be thrown and the test fails
@@ -108,10 +108,6 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         $this->course_module = $this->getDataGenerator()->create_module('h5pactivity', array('course' => $this->course->id, 'completion' => 1));
         $this->course_module = get_coursemodule_from_id(null, $this->course_module->cmid, 0, false, MUST_EXIST);
 
-
-        $this->mock_dsl_score->method('get_score')
-            ->willReturn(42.0);
-
         // set data for mocked create_dsl_score_instance method
         mock_score_primitive_learning_element::set_data(array($this->mock_dsl_score));
 
@@ -122,6 +118,20 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         mock_score_primitive_learning_element::execute($this->course_module->id, false);
     }
 
+    public function test_score_primitive_learning_element_completion_disabled() {
+        // create module with disabled completion
+        $course_module = $this->getDataGenerator()->create_module(
+            'url',
+            array('course' => $this->course->id, 'completion' => 0));
+
+        // expect exception
+        $this->expectException('moodle_exception');
+        $this->expectExceptionMessage("completion_not_enabled");
+
+        // call CUT
+        mock_score_primitive_learning_element::execute($course_module->cmid, true);
+    }
+
     public function test_score_primitive_learning_element_user_not_enrolled() {
         // set data for mocked create_dsl_score_instance method
         mock_score_primitive_learning_element::set_data(array($this->mock_dsl_score));
@@ -129,7 +139,6 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         // create and enroll user
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
-        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
 
         $this->expectException('require_login_exception');
         $this->expectExceptionMessageMatches("/Not enrolled/");
@@ -150,39 +159,9 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
     }
 
     public function test_execute_returns() {
-        external_api::validate_parameters(score_primitive_learning_element::execute_returns(), array(
-            'score' => 1.0,
-            'module_id' => 1,
-        ));
-
-        $expected_exception = false;
-        try {
-            external_api::validate_parameters(score_primitive_learning_element::execute_returns(), array(
-                'score' => "test",
-            ));
-        } catch (invalid_parameter_exception $e) {
-            $expected_exception = true;
-        }
-        $this->assertTrue($expected_exception, "Invalid parameter exception not thrown");
-
-        $expected_exception = false;
-        try {
-            external_api::validate_parameters(score_primitive_learning_element::execute_returns(), array(
-                'score' => 1.0,
-                'test' => 1.0,
-            ));
-        } catch (invalid_parameter_exception $e) {
-            $expected_exception = true;
-        }
-        $this->assertTrue($expected_exception, "Invalid parameter exception not thrown");
-
-        $expected_exception = false;
-        try {
-            external_api::validate_parameters(score_primitive_learning_element::execute_returns(), array());
-        } catch (invalid_parameter_exception $e) {
-            $expected_exception = true;
-        }
-        $this->assertTrue($expected_exception, "Invalid parameter exception not thrown");
+        // this function just returns what get_adler_score_response_multiple_structure returns
+        require_once(__DIR__ . '/lib_test.php');
+        (new _libTest())->test_get_adler_score_response_multiple_structure(score_primitive_learning_element::class);
     }
 
     public function test_create_dsl_score_instance() {
