@@ -6,7 +6,7 @@ require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
 
 
-$course_to_backup = 29; // Set this to one existing choice cmid in your dev site
+$course_to_backup = 46; // Set this to one existing choice cmid in your dev site
 $user_doing_the_backup   = 2; // Set this to the id of your admin account
 
 $bc = new backup_controller(backup::TYPE_1COURSE, $course_to_backup, backup::FORMAT_MOODLE,
@@ -19,6 +19,6 @@ $file = reset($file);
 $filepath = $file->get_contenthash();
 $filepath = $CFG->dataroot . '/filedir/' . substr($filepath, 0, 2) . '/' . substr($filepath, 2, 2) . '/' . $filepath;
 echo "Backup file path:\n";
-echo $filepath;
+echo $filepath . "\n";
 
 

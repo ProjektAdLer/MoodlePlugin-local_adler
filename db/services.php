@@ -1,26 +1,24 @@
 <?php
 defined('MOODLE_INTERNAL') || die();
-// TODO: 'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),  only for debugging/testing purposes
-// TODO: remove not required options
 
-$services = array(
-    'adler_services' => array(                                                // the name of the web service
-        'functions' => array(
-            'local_adler_score_primitive_learning_element',
-            'local_adler_score_h5p_learning_element',
-            'local_adler_score_get_element_scores',
-            'local_adler_score_get_course_scores'), // web service functions of this service
-        'requiredcapability' => '',                // if set, the web service user need this capability to access
-        // any function of this service. For example: 'some/capability:specified'
-        'restrictedusers' => 1,                                             // if enabled, the Moodle administrator must link some user to this service
-        // into the administration
-        'enabled' => 1,                                                       // if enabled, the service can be reachable on a default installation
-        'shortname' => 'adler_services',       // optional – but needed if restrictedusers is set so as to allow logins.
-        'downloadfiles' => 0,    // allow file downloads.
-        'uploadfiles' => 0,      // allow file uploads.
-        'loginrequired' => true
-    )
-);
+//$services = array(
+//    'adler_services' => array(                                                // the name of the web service
+//        'functions' => array(
+//            'local_adler_score_primitive_learning_element',
+//            'local_adler_score_h5p_learning_element',
+//            'local_adler_score_get_element_scores',
+//            'local_adler_score_get_course_scores'), // web service functions of this service
+//        'requiredcapability' => '',                // if set, the web service user need this capability to access
+//        // any function of this service. For example: 'some/capability:specified'
+//        'restrictedusers' => 1,                                             // if enabled, the Moodle administrator must link some user to this service
+//        // into the administration
+//        'enabled' => 1,                                                       // if enabled, the service can be reachable on a default installation
+//        'shortname' => 'adler_services',       // optional – but needed if restrictedusers is set so as to allow logins.
+//        'downloadfiles' => 0,    // allow file downloads.
+//        'uploadfiles' => 0,      // allow file uploads.
+//        'loginrequired' => true
+//    )
+//);
 
 $functions = array(
     'local_adler_score_primitive_learning_element' => array(         //web service function name
