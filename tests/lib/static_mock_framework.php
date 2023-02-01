@@ -1,6 +1,6 @@
 <?php
 
-namespace local_adler;
+namespace local_adler\lib;
 
 /**
  * calls, returns and exceptions are arrays, the used index corresponds to the call index. 1st func call uses index 0, 2nd func call uses index 1, ...

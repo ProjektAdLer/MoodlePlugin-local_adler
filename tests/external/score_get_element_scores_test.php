@@ -7,7 +7,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use dml_missing_record_exception;
 use invalid_parameter_exception;
-use local_adler\local_adler_externallib_testcase;
+use local_adler\lib\local_adler_externallib_testcase;
 use moodle_exception;
 use require_login_exception;
 use Throwable;
@@ -163,6 +163,6 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
         require_once(__DIR__ . '/lib_test.php');
-        (new _libTest())->test_get_adler_score_response_multiple_structure(score_get_element_scores::class);
+        (new lib_test())->test_get_adler_score_response_multiple_structure(score_get_element_scores::class);
     }
 }

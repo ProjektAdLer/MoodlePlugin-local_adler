@@ -6,7 +6,7 @@ namespace local_adler\external;
 use context_module;
 use external_api;
 use invalid_parameter_exception;
-use local_adler\local_adler_externallib_testcase;
+use local_adler\lib\local_adler_externallib_testcase;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -143,6 +143,6 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
         require_once(__DIR__ . '/lib_test.php');
-        (new _libTest())->test_get_adler_score_response_multiple_structure(score_h5p_learning_element::class);
+        (new lib_test())->test_get_adler_score_response_multiple_structure(score_h5p_learning_element::class);
     }
 }

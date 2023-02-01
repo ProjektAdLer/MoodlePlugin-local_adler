@@ -4,6 +4,7 @@ namespace local_adler;
 
 
 use completion_info;
+use local_adler\lib\local_adler_testcase;
 use mod_h5pactivity\local\grader;
 use ReflectionClass;
 

@@ -2,7 +2,7 @@
 // When using namespaces, the namespace of the test class should match the namespace of the code under test
 // -> no namespace for this test as backup/restore is not namespaced
 
-use local_adler\local_adler_testcase;
+use local_adler\lib\local_adler_testcase;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');

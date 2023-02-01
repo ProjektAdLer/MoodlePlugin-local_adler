@@ -5,7 +5,7 @@ namespace local_adler\external;
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/static_mock_framework.php');
 
-use local_adler\static_mock_utilities_trait;
+use local_adler\lib\static_mock_utilities_trait;
 
 class dsl_score_mock_new {
     use static_mock_utilities_trait;

@@ -8,7 +8,7 @@ use completion_info;
 use external_api;
 use invalid_parameter_exception;
 use local_adler\dsl_score;
-use local_adler\local_adler_externallib_testcase;
+use local_adler\lib\local_adler_externallib_testcase;
 
 
 global $CFG;
@@ -161,7 +161,7 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
         require_once(__DIR__ . '/lib_test.php');
-        (new _libTest())->test_get_adler_score_response_multiple_structure(score_primitive_learning_element::class);
+        (new lib_test())->test_get_adler_score_response_multiple_structure(score_primitive_learning_element::class);
     }
 
     public function test_create_dsl_score_instance() {
