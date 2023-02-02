@@ -92,7 +92,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->verify_points($score_item, $xml->plugin_local_adler_module->points);
+        $this->verify_points($score_item, $xml->plugin_local_adler_module->adler_score);
     }
 
     /**
@@ -115,6 +115,6 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->assertEmpty($xml->plugin_local_adler_module->points->children());
+        $this->assertEmpty($xml->plugin_local_adler_module->adler_score->children());
     }
 }

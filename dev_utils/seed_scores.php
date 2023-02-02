@@ -28,14 +28,6 @@ function seed_scores(int $course_id) {
             continue;
         }
         if (in_array($module->modname, $module_support['supported_simple']) || in_array($module->modname, $module_support['supported_complex'])) {
-            // get completion object
-            $course = helpers::get_course_from_course_id($course_id);
-            $completion = new completion_info($course);
-            // check if completion is enabled for this course_module
-            if (!$completion->is_enabled($module)) {
-                continue;
-            }
-
             try {
                 $scores_item_id = $DB->insert_record('local_adler_scores_items',
                     array('type' => 'score',
@@ -53,4 +45,4 @@ function seed_scores(int $course_id) {
 }
 
 seed_scores(46);
-seed_scores(49);
+//seed_scores(49);

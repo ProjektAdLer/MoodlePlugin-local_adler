@@ -9,7 +9,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
      */
     protected function define_module_plugin_structure(): array {
         return [
-            new restore_path_element('points', $this->get_pathfor('/points'))
+            new restore_path_element('adler_score', $this->get_pathfor('/adler_score'))
         ];
     }
 
@@ -19,7 +19,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @return void
      * @throws dml_exception
      */
-    public function process_points($data) {
+    public function process_adler_score($data) {
         global $DB;
 
         // Cast $data to object if it is an array
@@ -29,9 +29,18 @@ class restore_local_adler_plugin extends restore_local_plugin {
         $cmid = $this->task->get_moduleid();
         $data->cmid = $cmid;
 
-        // TODO check if completion is enabled (for this cm)
+        // default values for timecreated and timemodified, if they are not set
+        if (!isset($data->timecreated)) {
+            $data->timecreated = time();
+        }
+        if (!isset($data->timemodified)) {
+            $data->timemodified = time();
+        }
+
+        // The information whether availability is enabled or not is not (easily) available here -> not checking for it
 
         // Insert the record into the database
         $DB->insert_record('local_adler_scores_items', $data);
     }
 }
+
