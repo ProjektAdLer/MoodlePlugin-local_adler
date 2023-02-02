@@ -77,8 +77,27 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $this->assertEquals((float)$this->data[0]->score_max, $db_record->score_max);
         $this->assertEquals($this->data[0]->timecreated, $db_record->timecreated);
         $this->assertEquals($this->data[0]->timemodified, $db_record->timemodified);
+    }
 
-        // TODO: test element without timemodified and timecreated
+    public function test_process_adler_score_one_element_default_values() {
+        // test without optional fields (timecreated, timemodified)
+        global $DB;
+        // test data
+        unset($this->data[1]->timecreated);
+        unset($this->data[1]->timemodified);
+
+        // call the method to test
+        $plugin = new restore_local_adler_plugin('local', 'adler', $this->stub);
+        $plugin->process_adler_score($this->data[1]);
+
+        // verify that the database contains a record
+        $this->assertEquals(1, $DB->count_records('local_adler_scores_items'));
+
+        // verify timecreated and timemodified
+        $db_record = $DB->get_records('local_adler_scores_items');
+        $db_record = (new ArrayIterator($db_record))->current();
+        $this->assertTrue($db_record->timecreated > 0 && $db_record->timecreated <= time());
+        $this->assertTrue($db_record->timemodified > 0 && $db_record->timemodified <= time());
     }
 
     public function test_process_adler_score_multiple_elements() {
