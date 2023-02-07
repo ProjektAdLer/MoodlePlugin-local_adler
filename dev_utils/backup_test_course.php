@@ -21,4 +21,4 @@ $filepath = $CFG->dataroot . '/filedir/' . substr($filepath, 0, 2) . '/' . subst
 echo "Backup file path:\n";
 echo $filepath . "\n";
 
-
+return $filepath;

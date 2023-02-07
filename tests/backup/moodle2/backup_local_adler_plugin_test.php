@@ -22,17 +22,18 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
         // Create a course.
-        $course = $this->getDataGenerator()->create_course();
+        $this->course = $this->getDataGenerator()->create_course();
 
         // Create a module.
-        $this->module = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
+        $this->module = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id]);
     }
 
     /** Get parsed xml from backup controller object.
      * @param $bc backup_controller
+     * @param $type string type of backup, one of 'module', 'course'
      * @return false|SimpleXMLElement
      */
-    private function get_xml_from_backup(backup_controller $bc) {
+    private function get_xml_from_backup(backup_controller $bc, string $type='module') {
         // Get the backup file.
         $file = $bc->get_results();
         $file = reset($file);
@@ -41,15 +42,15 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $tempdir = make_request_directory();
         $extracted_files = $file->extract_to_pathname(get_file_packer('application/vnd.moodle.backup'), $tempdir);
 
-        // Search for entry of module.xml file and get the full path.
-        $module_xml = null;
+        // Search for entry of <type>.xml file and get the full path.
+        $type_xml = null;
         foreach ($extracted_files as $key => $_) {
-            if (strpos($key, 'module.xml') !== false) {
-                $module_xml = $key;
+            if (strpos($key, $type . '.xml') !== false) {
+                $type_xml = $key;
                 break;
             }
         }
-        $module_xml_path = $tempdir . DIRECTORY_SEPARATOR . $module_xml;
+        $module_xml_path = $tempdir . DIRECTORY_SEPARATOR . $type_xml;
 
         // Get the backup file contents and parse it.
         $contents = file_get_contents($module_xml_path);
@@ -72,8 +73,6 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
      * @medium
      */
     public function test_backup_score() {
-        global $DB;
-
         // Create score item with generator
         $score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->module->cmid);
 
@@ -116,5 +115,61 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
 
         // validate xml values
         $this->assertEmpty($xml->plugin_local_adler_module->adler_score->children());
+    }
+
+    /** Test course backup */
+
+    /** verify actual adler course machtes expected course data
+     * @param $expected
+     * @param $actual
+     * @return void
+     */
+    private function verify_course($expected, $actual) {
+        $this->assertEquals((int)$expected->timecreated, (int)$actual->timecreated);
+        $this->assertEquals((int)$expected->timemodified, (int)$actual->timemodified);
+    }
+
+    public function test_backup_course() {
+        // Create score item with generator
+        $adler_course_object = $this
+            ->getDataGenerator()
+            ->get_plugin_generator('local_adler')
+            ->create_adler_course_object($this->course->id);
+
+        // Create a backup of the course.
+        $bc = new backup_controller(
+            backup::TYPE_1COURSE,
+            $this->module->course,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
+            2
+        );
+        $bc->execute_plan();
+
+        // Get xml from backup.
+        $xml = $this->get_xml_from_backup($bc, 'course');
+
+        // validate xml values
+        $this->verify_course($adler_course_object, $xml->plugin_local_adler_course->adler_score);
+    }
+
+    public function test_backup_course_not_adler_course() {
+        // Create a backup of the course.
+        $bc = new backup_controller(
+            backup::TYPE_1COURSE,
+            $this->module->course,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
+            2
+        );
+        $bc->execute_plan();
+
+        // Get xml from backup.
+        $xml = $this->get_xml_from_backup($bc, 'course');
+
+        // validate xml values
+        $this->assertEmpty($xml->plugin_local_adler_course->adler_score->children());
     }
 }

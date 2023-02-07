@@ -23,7 +23,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
         global $DB;
 
         // Cast $data to object if it is an array
-        // This is done because the object can sometimes randomly be an array
+        // This is required because the object can sometimes randomly be an array
         $data = (object)$data;
 
         $cmid = $this->task->get_moduleid();
@@ -41,6 +41,36 @@ class restore_local_adler_plugin extends restore_local_plugin {
 
         // Insert the record into the database
         $DB->insert_record('local_adler_scores_items', $data);
+    }
+
+    protected function define_course_plugin_structure(): array {
+        return [
+            new restore_path_element('adler_course', $this->get_pathfor('/adler_course'))
+        ];
+    }
+
+    public function process_adler_course($data) {
+        // $data contains a dummy field "foo".
+        // It is required because otherwise moodle thinks there is nothing to restore and skips the restore.
+        // It is ignored by insert_record.
+        global $DB;
+
+        // Cast $data to object if it is an array
+        // This is required because the object can sometimes randomly be an array
+        $data = (object)$data;
+
+        // default values for timecreated and timemodified, if they are not set
+        if (!isset($data->timecreated)) {
+            $data->timecreated = time();
+        }
+        if (!isset($data->timemodified)) {
+            $data->timemodified = time();
+        }
+
+        $data->course_id = $this->task->get_courseid();
+
+        // Insert the record into the database
+        $DB->insert_record('local_adler_course', $data);
     }
 }
 
