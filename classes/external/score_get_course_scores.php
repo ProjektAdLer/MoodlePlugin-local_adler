@@ -8,6 +8,9 @@ use external_value;
 use local_adler\dsl_score;
 
 class score_get_course_scores extends external_api {
+    protected static $dsl_score = dsl_score::class;
+    protected static $context_course = context_course::class;
+
     public static function execute_parameters() {
         return new external_function_parameters(
             array(
