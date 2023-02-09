@@ -31,6 +31,7 @@ class mock_score_primitive_learning_element extends score_primitive_learning_ele
     }
 
     public static function call_create_dsl_score_instance($course_module): dsl_score {
+        // call protected function
         return parent::create_dsl_score_instance($course_module);
     }
 }
