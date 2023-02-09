@@ -43,8 +43,10 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
 
         // init test data
         $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
+
         $this->course_module = $this->getDataGenerator()->create_module('url', array('course' => $this->course->id, 'completion' => 1));
         $this->course_module = get_coursemodule_from_id(null, $this->course_module->cmid, 0, false, MUST_EXIST);
+
         $this->user = $this->getDataGenerator()->create_user();
         $this->setUser($this->user);
         $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
@@ -167,7 +169,8 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
 
     public function test_create_dsl_score_instance() {
         $mock = new mock_score_primitive_learning_element();
-        $result = $mock->call_create_dsl_score_instance($this->course_module);
-        $this->assertInstanceOf(dsl_score::class, $result);
+        $this->expectException('moodle_exception');
+        $this->expectExceptionMessage("local_adler/not_an_adler_course");
+        $mock->call_create_dsl_score_instance($this->course_module);
     }
 }

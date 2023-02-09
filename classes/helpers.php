@@ -10,6 +10,21 @@ class helpers {
         return $course;
     }
 
+    /** Check if course is adler course
+     * @param int $course_id moodle course id
+     * @return bool true if course is adler course
+     */
+    public static function course_is_adler_course($course_id) {
+        global $DB;
+        try {
+            $course = $DB->get_record('local_adler_course', array('course_id' => $course_id), '*', MUST_EXIST);
+        } catch (moodle_exception $e) {
+            return false;
+        }
+
+        return $course !== false;
+    }
+
     private const PRIMITIVE_LEARNING_ELEMENTS  = array(
         'book',
         'resource',

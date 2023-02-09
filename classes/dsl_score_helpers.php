@@ -37,13 +37,14 @@ class dsl_score_helpers {
         if ($dsl_scores === null) {
             $dsl_scores = static::get_dsl_score_objects($module_ids, $user_id);
         }
+
         $achieved_scores = array();
         foreach ($dsl_scores as $cmid => $dsl_score) {
             try {
                 $achieved_scores[$cmid] = $dsl_score->get_score();
             } catch (moodle_exception $e) {
-                if ($e->errorcode === 'completion_not_enabled') {
-                    debugging('Completion is not enabled for course_module with id ' . $cmid, E_NOTICE);
+                if ($e->errorcode === 'not_an_adler_cm') {
+                    debugging('Adler scoring not enabled for cm with id ' . $cmid, E_NOTICE);
                     $achieved_scores[$cmid] = false;
                 } else {
                     debugging('Could not get score for course_module with id ' . $cmid, E_WARNING);

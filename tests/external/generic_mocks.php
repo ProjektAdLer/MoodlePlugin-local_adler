@@ -38,3 +38,5 @@ class context_course_mock_new {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 }
+
+

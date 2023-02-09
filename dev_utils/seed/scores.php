@@ -10,6 +10,7 @@ define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
 require_once("{$CFG->libdir}/clilib.php");
+require_once($CFG->libdir . '/completionlib.php');
 
 
 function seed_scores(int $course_id) {
@@ -40,3 +41,4 @@ function seed_scores(int $course_id) {
 
 seed_scores(46);
 seed_scores(49);
+seed_scores(29);
