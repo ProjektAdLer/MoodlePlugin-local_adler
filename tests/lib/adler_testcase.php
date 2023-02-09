@@ -4,6 +4,7 @@ namespace local_adler\lib;
 
 global $CFG;
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/static_mock_framework.php');
 
 use advanced_testcase;
 use externallib_advanced_testcase;
