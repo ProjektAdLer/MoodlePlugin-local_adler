@@ -43,7 +43,6 @@ class score_primitive_learning_element extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function execute($module_id, $is_completed) {
-        // TODO: evaluate if this could be combined with score_h5p_learning_element
         global $CFG;
         require_once("$CFG->libdir/completionlib.php");
 
