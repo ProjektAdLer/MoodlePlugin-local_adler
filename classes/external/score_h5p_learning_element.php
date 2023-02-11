@@ -72,10 +72,13 @@ class score_h5p_learning_element extends external_api {
 
         // proxy xapi payload to core xapi library
         $result = static::call_external_function('core_xapi_statement_post', array(
-            'component' => 'h5pactivity',
+            'component' => 'mod_h5pactivity',
             'requestjson' => $xapi
         ), true);
-        // TODO: check response
+
+        if ($result['error']) {
+            throw new moodle_exception('failed_to_process_xapi', 'local_adler', null, null, $result['exception']->message);
+        }
 
         // get dsl score
         try {
