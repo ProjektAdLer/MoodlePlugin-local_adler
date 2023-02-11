@@ -20,7 +20,16 @@ class dsl_score_helpers {
         $dsl_scores = array();
         foreach ($module_ids as $module_id) {
             $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
-            $dsl_scores[$module_id] = new static::$dsl_score_class($course_module, $user_id);
+            try {
+                $dsl_scores[$module_id] = new static::$dsl_score_class($course_module, $user_id);
+            } catch (moodle_exception $e) {
+                if ($e->errorcode === 'not_an_adler_cm') {
+                    debugging('Is adler course, but adler scoring is not enabled for cm with id ' . $module_id, E_NOTICE);
+                    $dsl_scores[$module_id] = false;
+                } else {
+                    throw $e;
+                }
+            }
         }
         return $dsl_scores;
     }
@@ -40,16 +49,10 @@ class dsl_score_helpers {
 
         $achieved_scores = array();
         foreach ($dsl_scores as $cmid => $dsl_score) {
-            try {
+            if ($dsl_score === false) {
+                $achieved_scores[$cmid] = false;
+            } else {
                 $achieved_scores[$cmid] = $dsl_score->get_score();
-            } catch (moodle_exception $e) {
-                if ($e->errorcode === 'not_an_adler_cm') {
-                    debugging('Adler scoring not enabled for cm with id ' . $cmid, E_NOTICE);
-                    $achieved_scores[$cmid] = false;
-                } else {
-                    debugging('Could not get score for course_module with id ' . $cmid, E_WARNING);
-                    throw $e;
-                }
             }
         }
         return $achieved_scores;

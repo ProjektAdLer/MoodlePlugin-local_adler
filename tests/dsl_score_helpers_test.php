@@ -5,6 +5,7 @@ namespace local_adler;
 global $CFG;
 
 use local_adler\lib\local_adler_testcase;
+use local_adler\lib\static_mock_utilities_trait;
 use moodle_exception;
 use ReflectionClass;
 use Throwable;
@@ -13,7 +14,9 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 
 class dsl_score_helpers_dsl_score_mock extends dsl_score {
+    use static_mock_utilities_trait;
     public function __construct(object $course_module, int $user_id = null) {
+        return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 }
 
@@ -35,6 +38,9 @@ class dsl_score_helpers_test extends local_adler_testcase {
             $cmids[] = $this->getDataGenerator()->create_module('url', ['course' => $course->id])->cmid;
         }
 
+        dsl_score_helpers_dsl_score_mock::reset_data();
+        dsl_score_helpers_dsl_score_mock::set_exceptions('__construct', [null, null, new moodle_exception('not_an_adler_cm', 'local_adler')]);
+
         // call function
         $result = dsl_score::get_dsl_score_objects($cmids);
 
@@ -42,6 +48,17 @@ class dsl_score_helpers_test extends local_adler_testcase {
         $this->assertEquals(3, count($result));
         // check types of result
         $this->assertTrue($result[$cmids[0]] instanceof dsl_score_helpers_dsl_score_mock);
+        $this->assertTrue($result[$cmids[1]] instanceof dsl_score_helpers_dsl_score_mock);
+        $this->assertTrue($result[$cmids[2]] === false);
+
+        // other exception
+        dsl_score_helpers_dsl_score_mock::reset_data();
+        dsl_score_helpers_dsl_score_mock::set_exceptions('__construct', [new moodle_exception('blub')]);
+
+        $this->expectException(moodle_exception::class);
+
+        dsl_score::get_dsl_score_objects([$cmids[0]]);
+
     }
 
     public function provide_test_get_achieved_scores_data(): array {
@@ -50,14 +67,14 @@ class dsl_score_helpers_test extends local_adler_testcase {
                 'exception' => null,
                 'exception_msg' => null,
                 'exception_at_index' => null,
-                'expected_result' => [0, 2, 4],
+                'expected_result' => [0, 2, 4, false],
                 'expected_exception' => false,
             ]],
             'completion not enabled' => [[
                 'exception' => moodle_exception::class,
                 'exception_msg' => 'completion_not_enabled',
                 'exception_at_index' => 1,
-                'expected_result' => [0, false, 4],
+                'expected_result' => [0, false, 4, false],
                 'expected_exception' => moodle_exception::class,
             ]],
             'other moodle exception' => [[
@@ -66,13 +83,6 @@ class dsl_score_helpers_test extends local_adler_testcase {
                 'exception_at_index' => 1,
                 'expected_result' => null,
                 'expected_exception' => moodle_exception::class,
-            ]],
-            'not_an_adler_cm exception' => [[
-                'exception' => moodle_exception::class,
-                'exception_msg' => 'not_an_adler_cm',
-                'exception_at_index' => 1,
-                'expected_result' => [0, false, 4],
-                'expected_exception' => false,
             ]]
         ];
     }
@@ -88,6 +98,7 @@ class dsl_score_helpers_test extends local_adler_testcase {
                 ->getMock();
             $dsl_score_objects[$i]->method('get_score')->willReturn((float)$i * 2);
         }
+        $dsl_score_objects[] = false;
 
         // setup exception
         if ($data['exception'] !== null) {
