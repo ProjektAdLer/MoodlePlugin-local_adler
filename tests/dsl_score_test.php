@@ -10,11 +10,11 @@ use local_adler\lib\static_mock_utilities_trait;
 use mod_h5pactivity\local\grader;
 use moodle_exception;
 use ReflectionClass;
-use stdClass;
 use Throwable;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
+require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 
 class completion_info_mock extends completion_info {
     use static_mock_utilities_trait;
@@ -45,9 +45,7 @@ class dsl_score_mock extends dsl_score {
 
     protected static $helpers = helpers_mock::class;
 
-    public static function get_adler_score_record(int $module_id): stdClass {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
+    protected static $dsl_score_helpers = dsl_score_helpers_mock::class;
 
     public function test_get_score_item() {
         return $this->score_item;
@@ -135,6 +133,8 @@ class dsl_score_test extends local_adler_testcase {
         // reset
         helpers_mock::reset_data();
         dsl_score_mock::reset_data();
+        dsl_score_helpers_mock::reset_data();
+        dsl_score_helpers_mock::set_enable_mock('get_adler_score_record', true);
 
         $module_format_correct = get_fast_modinfo($this->course->id, 0, false)->get_cm($this->module->cmid);
 
@@ -145,10 +145,10 @@ class dsl_score_test extends local_adler_testcase {
         helpers_mock::set_returns('course_is_adler_course', [$test['is_adler_course']]);
 
         if ($test['is_adler_cm']) {
-            dsl_score_mock::set_returns('get_adler_score_record', [(object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]]);
+            dsl_score_helpers_mock::set_returns('get_adler_score_record', [(object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]]);
         } else {
-            dsl_score_mock::set_returns('get_adler_score_record', [null]);
-            dsl_score_mock::set_exceptions('get_adler_score_record', [new moodle_exception('not_an_adler_cm', 'test')]);
+            dsl_score_helpers_mock::set_returns('get_adler_score_record', [null]);
+            dsl_score_helpers_mock::set_exceptions('get_adler_score_record', [new moodle_exception('not_an_adler_cm', 'test')]);
         }
 
         if ($test['set_user_object']) {

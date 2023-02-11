@@ -25,6 +25,8 @@ class dsl_score {
 
     protected static $completion_info = completion_info::class;
 
+    protected static $dsl_score_helpers = dsl_score_helpers::class;
+
 
     /**
      * @param object $course_module
@@ -64,7 +66,7 @@ class dsl_score {
 
         // get dsl score metadata object
         // throws not_an_adler_cm exception if not adler course module
-        $this->score_item = static::get_adler_score_record($this->course_module->id);
+        $this->score_item = static::$dsl_score_helpers::get_adler_score_record($this->course_module->id);
     }
 
     /** Calculates the score based on the percentage the user has achieved
@@ -98,11 +100,6 @@ class dsl_score {
      */
     public function get_cmid(): int {
         return $this->course_module->id;
-    }
-
-    // TODO
-    public static function get_adler_score_record(int $cmid): stdClass {
-        return dsl_score_helpers::get_adler_score_record($cmid);
     }
 
     // TODO

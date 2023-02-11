@@ -1,6 +1,7 @@
 <?php
 
 namespace local_adler;
+use stdClass;
 
 
 global $CFG;
@@ -18,6 +19,10 @@ class dsl_score_helpers_mock extends dsl_score_helpers {
     }
 
     public static function get_achieved_scores(?array $module_ids, int $user_id = null, array $dsl_scores = null): array {
+        return static::mock_this_function(__FUNCTION__, func_get_args());
+    }
+
+    public static function get_adler_score_record(int $cmid): stdClass {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 }
