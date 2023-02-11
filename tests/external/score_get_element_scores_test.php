@@ -7,6 +7,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use dml_missing_record_exception;
 use invalid_parameter_exception;
+use local_adler\dsl_score_helpers_mock;
 use local_adler\lib\local_adler_externallib_testcase;
 use moodle_exception;
 use require_login_exception;
@@ -16,12 +17,14 @@ global $CFG;
 require_once($CFG->libdir . '/externallib.php');
 //require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
+require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 require_once('generic_mocks.php');
 
 class score_get_element_scores_mock extends score_get_element_scores {
     use external_api_validate_context_trait_new;
 
     protected static $dsl_score = dsl_score_mock_new::class;
+    protected static $dsl_score_helpers = dsl_score_helpers_mock::class;
     protected static $context_module = context_module_mock_new::class;
 }
 
@@ -37,8 +40,9 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         context_module_mock_new::reset_data();
         context_module_mock_new::set_returns('instance', range(1,3));
 
-        dsl_score_mock_new::reset_data();
-        dsl_score_mock_new::set_returns('get_achieved_scores', [[1=>0, 2=>5.0, 42=>42.0]]);
+        dsl_score_helpers_mock::reset_data();
+        dsl_score_helpers_mock::set_enable_mock('get_achieved_scores', true);
+        dsl_score_helpers_mock::set_returns('get_achieved_scores', [[1=>0, 2=>5.0, 42=>42.0]]);
 
         $result = score_get_element_scores_mock::execute($module_ids);
 
@@ -48,7 +52,7 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         for ($i = 0; $i < 3; $i++) {
             $this->assertEquals($module_ids[$i], context_module_mock_new::get_calls('instance')[$i][0]);
         }
-        $this->assertEquals($module_ids, dsl_score_mock_new::get_calls('get_achieved_scores')[0][0]);
+        $this->assertEquals($module_ids, dsl_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
     }
 
     public function test_execute_exceptions() {
@@ -150,11 +154,12 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
             ]);
 
             // setup dsl_score::get_achieved_scores
-            dsl_score_mock_new::reset_data();
-            dsl_score_mock_new::set_exceptions('get_achieved_scores', [
+            dsl_score_helpers_mock::reset_data();
+            dsl_score_helpers_mock::set_enable_mock('get_achieved_scores', true);
+            dsl_score_helpers_mock::set_exceptions('get_achieved_scores', [
                 $test_configuration['dsl_score::get_achieved_scores']['exceptions'][$i],
             ]);
-            dsl_score_mock_new::set_returns('get_achieved_scores', [
+            dsl_score_helpers_mock::set_returns('get_achieved_scores', [
                 $test_configuration['dsl_score::get_achieved_scores']['returns'][$i],
             ]);
 

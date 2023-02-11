@@ -4,12 +4,14 @@ namespace local_adler\external;
 
 global $CFG;
 
+use local_adler\dsl_score_helpers_mock;
 use local_adler\lib\local_adler_externallib_testcase;
 use require_login_exception;
 
 require_once($CFG->libdir . '/externallib.php');
 //require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
+require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 require_once('generic_mocks.php');
 
 
@@ -17,6 +19,7 @@ class score_get_course_scores_mock extends score_get_course_scores {
     use external_api_validate_context_trait_new;
 
     protected static $dsl_score = dsl_score_mock_new::class;
+    protected static $dsl_score_helpers = dsl_score_helpers_mock::class;
     protected static $context_course = context_course_mock_new::class;
 }
 
@@ -44,11 +47,14 @@ class score_get_course_scores_test extends local_adler_externallib_testcase {
         context_course_mock_new::reset_data();
         context_course_mock_new::set_returns('instance', [1, null]);
 
+        dsl_score_helpers_mock::reset_data();
+        dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
+
         dsl_score_mock_new::reset_data();
         foreach ($module_ids as $module_id) {
             $dsl_return_data[$module_id] = $module_id * 2;
         }
-        dsl_score_mock_new::set_returns('get_achieved_scores', [$dsl_return_data]);
+        dsl_score_helpers_mock::set_returns('get_achieved_scores', [$dsl_return_data]);
 
         // 1st call: success
         $result = score_get_course_scores_mock::execute($course->id);
@@ -61,7 +67,7 @@ class score_get_course_scores_test extends local_adler_externallib_testcase {
         ], $result['data']);
         // check function calls
         $this->assertEquals($course->id, context_course_mock_new::get_calls('instance')[0][0]);
-        $this->assertEquals($module_ids, dsl_score_mock_new::get_calls('get_achieved_scores')[0][0]);
+        $this->assertEquals($module_ids, dsl_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
 
         // 2nd call: fail
         $this->expectException(require_login_exception::class);

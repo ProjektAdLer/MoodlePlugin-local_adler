@@ -103,9 +103,9 @@ class dsl_score {
     }
 
     // TODO
-    public static function get_achieved_scores(array $module_ids, int $user_id = null, array $dsl_scores = null): array {
-        return dsl_score_helpers::get_achieved_scores($module_ids, $user_id, $dsl_scores);
-    }
+//    public static function get_achieved_scores(array $module_ids, int $user_id = null, array $dsl_scores = null): array {
+//        return dsl_score_helpers::get_achieved_scores($module_ids, $user_id, $dsl_scores);
+//    }
 
     // TODO
     public static function get_dsl_score_objects(array $module_ids, int $user_id = null): array {

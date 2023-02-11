@@ -6,9 +6,11 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use local_adler\dsl_score;
+use local_adler\dsl_score_helpers;
 
 class score_get_course_scores extends external_api {
     protected static $dsl_score = dsl_score::class;
+    protected static $dsl_score_helpers = dsl_score_helpers::class;
     protected static $context_course = context_course::class;
 
     public static function execute_parameters() {
@@ -40,7 +42,7 @@ class score_get_course_scores extends external_api {
         }
 
         // get scores
-        $scores = static::$dsl_score::get_achieved_scores($module_ids);
+        $scores = static::$dsl_score_helpers::get_achieved_scores($module_ids);
 
         // convert format return
         return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];

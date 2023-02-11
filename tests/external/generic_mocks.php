@@ -9,10 +9,6 @@ use local_adler\lib\static_mock_utilities_trait;
 
 class dsl_score_mock_new {
     use static_mock_utilities_trait;
-
-    public static function get_achieved_scores($module_ids) {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
 }
 
 trait external_api_validate_context_trait_new {
