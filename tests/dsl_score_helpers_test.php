@@ -42,7 +42,7 @@ class dsl_score_helpers_test extends local_adler_testcase {
         dsl_score_helpers_dsl_score_mock::set_exceptions('__construct', [null, null, new moodle_exception('not_an_adler_cm', 'local_adler')]);
 
         // call function
-        $result = dsl_score::get_dsl_score_objects($cmids);
+        $result = dsl_score_helpers::get_dsl_score_objects($cmids);
 
         // check result
         $this->assertEquals(3, count($result));
@@ -57,7 +57,7 @@ class dsl_score_helpers_test extends local_adler_testcase {
 
         $this->expectException(moodle_exception::class);
 
-        dsl_score::get_dsl_score_objects([$cmids[0]]);
+        dsl_score_helpers::get_dsl_score_objects([$cmids[0]]);
 
     }
 

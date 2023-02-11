@@ -102,15 +102,6 @@ class dsl_score {
         return $this->course_module->id;
     }
 
-    // TODO
-//    public static function get_achieved_scores(array $module_ids, int $user_id = null, array $dsl_scores = null): array {
-//        return dsl_score_helpers::get_achieved_scores($module_ids, $user_id, $dsl_scores);
-//    }
-
-    // TODO
-    public static function get_dsl_score_objects(array $module_ids, int $user_id = null): array {
-        return dsl_score_helpers::get_dsl_score_objects($module_ids, $user_id);
-    }
 
     /** Calculates the achieved score for the course module if it is of type h5p. There is no type checking, calling this method
      * for a course module that is not of type h5p will result in an error.
