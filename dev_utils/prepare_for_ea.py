@@ -1,18 +1,18 @@
-""""
+"""
 This script prepares the adler moodle plugin for Enterprise Architect diagram generation.
 EA does not support typedefs for function/method parameters. This script will remove them.
 Also not all files are relevant for the diagram generation.
 This script will only process the relevant files as defined in the relevant_paths variable.
 It can contain folder and file paths.
 Processed files will be copied to the target_path. source_path will not be modified.
-""""
+"""
 
 import re
 import os
 
 
 # config
-source_path = "/mnt/c/Users/heckmarm/Desktop/ea-moodle-plugin/adler_source"
+source_path = "local/adler"
 target_path = "/mnt/c/Users/heckmarm/Desktop/ea-moodle-plugin/adler_target_target"
 relevant_paths = [
     "backup",
@@ -32,11 +32,15 @@ def remove_typedef_and_copy(filepath_source, filepath_target):
 
     # remove typedefs
     regex_function_def = "function.*\(.*\)"
-    regex_typedef = "(?<=[\(,])[a-zA-Z ]*(?=\$)"
+    regex_typedef = "(?<=[\(,])[\?a-zA-Z ]*(?=\$)"
+    data_wo_typedefs = []
     for line in data:
         if re.search(regex_function_def, line):
+            print(line)
             # remove matches with regex_typedef
             line = re.sub(regex_typedef, '', line)
+        data_wo_typedefs.append(line)
+    data = data_wo_typedefs
 
     # ensure folder exists
     os.makedirs(os.path.dirname(filepath_target), exist_ok=True)
