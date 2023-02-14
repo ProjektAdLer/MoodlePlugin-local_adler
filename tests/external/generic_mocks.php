@@ -7,11 +7,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/static_mock_framework.php')
 
 use local_adler\lib\static_mock_utilities_trait;
 
-class dsl_score_mock_new {
-    use static_mock_utilities_trait;
-}
-
-trait external_api_validate_context_trait_new {
+trait external_api_validate_context_trait {
     use static_mock_utilities_trait;
 
     public static function validate_context($context) {
@@ -19,7 +15,7 @@ trait external_api_validate_context_trait_new {
     }
 }
 
-class context_module_mock_new {
+class context_module_mock {
     use static_mock_utilities_trait;
 
     public static function instance($module_id) {
@@ -27,7 +23,7 @@ class context_module_mock_new {
     }
 }
 
-class context_course_mock_new {
+class context_course_mock {
     use static_mock_utilities_trait;
 
     public static function instance($module_id) {

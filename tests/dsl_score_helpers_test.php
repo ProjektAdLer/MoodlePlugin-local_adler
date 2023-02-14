@@ -21,7 +21,6 @@ class dsl_score_helpers_dsl_score_mock extends dsl_score {
 }
 
 
-
 class dsl_score_helpers_test extends local_adler_testcase {
     public function test_get_dsl_score_objects() {
         // setup

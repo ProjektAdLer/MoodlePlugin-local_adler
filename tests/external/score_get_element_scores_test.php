@@ -15,17 +15,15 @@ use Throwable;
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
-//require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 require_once('generic_mocks.php');
 
 class score_get_element_scores_mock extends score_get_element_scores {
-    use external_api_validate_context_trait_new;
+    use external_api_validate_context_trait;
 
-    protected static $dsl_score = dsl_score_mock_new::class;
     protected static $dsl_score_helpers = dsl_score_helpers_mock::class;
-    protected static $context_module = context_module_mock_new::class;
+    protected static $context_module = context_module_mock::class;
 }
 
 
@@ -37,8 +35,8 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         // setup mocks
         score_get_element_scores_mock::reset_data();
 
-        context_module_mock_new::reset_data();
-        context_module_mock_new::set_returns('instance', range(1,3));
+        context_module_mock::reset_data();
+        context_module_mock::set_returns('instance', range(1,3));
 
         dsl_score_helpers_mock::reset_data();
         dsl_score_helpers_mock::set_enable_mock('get_achieved_scores', true);
@@ -50,7 +48,7 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         $this->assertEqualsCanonicalizing([['moduleid'=>1, 'score'=>0.0], ['moduleid'=>2, 'score'=>5.0], ['moduleid'=>42, 'score'=>42.0]], $result['data']);
         // check function calls
         for ($i = 0; $i < 3; $i++) {
-            $this->assertEquals($module_ids[$i], context_module_mock_new::get_calls('instance')[$i][0]);
+            $this->assertEquals($module_ids[$i], context_module_mock::get_calls('instance')[$i][0]);
         }
         $this->assertEquals($module_ids, dsl_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
     }
@@ -145,11 +143,11 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
             ]);
 
             // setup context_module::instance
-            context_module_mock_new::reset_data();
-            context_module_mock_new::set_exceptions('instance', [
+            context_module_mock::reset_data();
+            context_module_mock::set_exceptions('instance', [
                 $test_configuration['context_module::instance']['exceptions'][$i],
             ]);
-            context_module_mock_new::set_returns('instance', [
+            context_module_mock::set_returns('instance', [
                 $test_configuration['context_module::instance']['returns'][$i],
             ]);
 

@@ -9,18 +9,16 @@ use local_adler\lib\local_adler_externallib_testcase;
 use require_login_exception;
 
 require_once($CFG->libdir . '/externallib.php');
-//require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 require_once('generic_mocks.php');
 
 
 class score_get_course_scores_mock extends score_get_course_scores {
-    use external_api_validate_context_trait_new;
+    use external_api_validate_context_trait;
 
-    protected static $dsl_score = dsl_score_mock_new::class;
     protected static $dsl_score_helpers = dsl_score_helpers_mock::class;
-    protected static $context_course = context_course_mock_new::class;
+    protected static $context_course = context_course_mock::class;
 }
 
 class score_get_course_scores_test extends local_adler_externallib_testcase {
@@ -44,13 +42,12 @@ class score_get_course_scores_test extends local_adler_externallib_testcase {
         score_get_course_scores_mock::reset_data();
         score_get_course_scores_mock::set_exceptions('validate_context', [null, new require_login_exception('test')]);
 
-        context_course_mock_new::reset_data();
-        context_course_mock_new::set_returns('instance', [1, null]);
+        context_course_mock::reset_data();
+        context_course_mock::set_returns('instance', [1, null]);
 
         dsl_score_helpers_mock::reset_data();
         dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
 
-        dsl_score_mock_new::reset_data();
         foreach ($module_ids as $module_id) {
             $dsl_return_data[$module_id] = $module_id * 2;
         }
@@ -66,7 +63,7 @@ class score_get_course_scores_test extends local_adler_externallib_testcase {
             ['moduleid' => $module_ids[2], 'score' => $dsl_return_data[$module_ids[2]]],
         ], $result['data']);
         // check function calls
-        $this->assertEquals($course->id, context_course_mock_new::get_calls('instance')[0][0]);
+        $this->assertEquals($course->id, context_course_mock::get_calls('instance')[0][0]);
         $this->assertEquals($module_ids, dsl_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
 
         // 2nd call: fail
