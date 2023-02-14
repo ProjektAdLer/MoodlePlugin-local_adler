@@ -15,7 +15,7 @@ use moodle_exception;
 use restricted_context_exception;
 
 class score_primitive_learning_element extends external_api {
-    public static function execute_parameters() {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
                 'module_id' => new external_value(PARAM_INT, 'moodle module id', VALUE_REQUIRED),
@@ -24,13 +24,14 @@ class score_primitive_learning_element extends external_api {
         );
     }
 
-    public static function execute_returns() {
+    public static function execute_returns(): external_function_parameters {
         return lib::get_adler_score_response_multiple_structure();
     }
 
     /** creates dsl_score objects, simplifies testing
      * @param $course_module object course module object with field modname
-     * @return dsl_score for currently logged in user
+     * @return dsl_score for currently logged-in user
+     * @throws moodle_exception
      */
     protected static function create_dsl_score_instance($course_module): dsl_score {
         return new dsl_score($course_module);
@@ -42,7 +43,7 @@ class score_primitive_learning_element extends external_api {
      * @throws moodle_exception
      * @throws invalid_parameter_exception
      */
-    public static function execute($module_id, $is_completed) {
+    public static function execute($module_id, $is_completed): array {
         global $CFG;
         require_once("$CFG->libdir/completionlib.php");
 

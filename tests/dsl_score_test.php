@@ -31,7 +31,7 @@ class completion_info_mock extends completion_info {
 class helpers_mock extends helpers {
     use static_mock_utilities_trait;
 
-    public static function course_is_adler_course($module_ids) {
+    public static function course_is_adler_course($course_id): bool {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 
@@ -43,9 +43,9 @@ class helpers_mock extends helpers {
 class dsl_score_mock extends dsl_score {
     use static_mock_utilities_trait;
 
-    protected static $helpers = helpers_mock::class;
+    protected static string $helpers = helpers_mock::class;
 
-    protected static $dsl_score_helpers = dsl_score_helpers_mock::class;
+    protected static string $dsl_score_helpers = dsl_score_helpers_mock::class;
 
     public function test_get_score_item() {
         return $this->score_item;
@@ -134,9 +134,9 @@ class dsl_score_test extends local_adler_testcase {
         helpers_mock::reset_data();
         dsl_score_mock::reset_data();
         dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_adler_score_record', true);
+        dsl_score_helpers_mock::set_enable_mock('get_adler_score_record');
 
-        $module_format_correct = get_fast_modinfo($this->course->id, 0, false)->get_cm($this->module->cmid);
+        $module_format_correct = get_fast_modinfo($this->course->id)->get_cm($this->module->cmid);
 
         if ($test['enrolled']) {
             $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id);
@@ -221,7 +221,7 @@ class dsl_score_test extends local_adler_testcase {
         $cm = $generator->create_instance(array(
             'course' => $this->course->id,
         ));
-        $cm_other_format = get_fast_modinfo($this->course->id, 0, false)->get_cm($cm->cmid);
+        $cm_other_format = get_fast_modinfo($this->course->id)->get_cm($cm->cmid);
 
         // Create score (dsl) item.
         $score_item = $this->getDataGenerator()
@@ -304,7 +304,7 @@ class dsl_score_test extends local_adler_testcase {
         $cm = $generator->create_instance(array(
             'course' => $this->course->id,
         ));
-        $cm_other_format = get_fast_modinfo($this->course->id, 0, false)->get_cm($cm->cmid);
+        $cm_other_format = get_fast_modinfo($this->course->id)->get_cm($cm->cmid);
 
         // Create score (dsl) item.
         $score_item_h5p = $this->getDataGenerator()
@@ -331,7 +331,7 @@ class dsl_score_test extends local_adler_testcase {
         // test no attempt
         // call method
         $result = $dsl_score->get_score();
-        $this->assertEquals($result, 0);
+        $this->assertEquals(0, $result);
 
 
         // Test with attempts.

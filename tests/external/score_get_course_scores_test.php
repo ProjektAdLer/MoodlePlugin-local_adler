@@ -17,12 +17,12 @@ require_once('generic_mocks.php');
 class score_get_course_scores_mock extends score_get_course_scores {
     use external_api_validate_context_trait;
 
-    protected static $dsl_score_helpers = dsl_score_helpers_mock::class;
-    protected static $context_course = context_course_mock::class;
+    protected static string $dsl_score_helpers = dsl_score_helpers_mock::class;
+    protected static string $context_course = context_course_mock::class;
 }
 
 class score_get_course_scores_test extends local_adler_externallib_testcase {
-    private function create_course_with_modules(int $module_count) {
+    private function create_course_with_modules(int $module_count): array {
         $course = $this->getDataGenerator()->create_course();
         $modules = [];
         for ($i = 0; $i < $module_count; $i++) {

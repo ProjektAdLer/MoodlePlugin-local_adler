@@ -49,6 +49,9 @@ class restore_local_adler_plugin extends restore_local_plugin {
         ];
     }
 
+    /**
+     * @throws dml_exception
+     */
     public function process_adler_course($data) {
         // $data contains a dummy field "foo".
         // It is required because otherwise moodle thinks there is nothing to restore and skips the restore.

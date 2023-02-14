@@ -7,7 +7,7 @@ use moodle_exception;
 use stdClass;
 
 class dsl_score_helpers {
-    protected static $dsl_score_class = dsl_score::class;
+    protected static string $dsl_score_class = dsl_score::class;
 
     /** Get DSL-scores for given array of course_module ids.
      * Similar to get_achieved_scores, but returns dsl_score objects.

@@ -14,7 +14,7 @@ trait general_testcase_adjustments{
         parent::setUp();
 
         // set default value: reset DB after each test case
-        $this->resetAfterTest(true);
+        $this->resetAfterTest();
     }
 
     public function tearDown(): void {
@@ -22,7 +22,7 @@ trait general_testcase_adjustments{
 
         // Moodle thinks debugging messages should be tested (check for debugging messages in unit tests).
         // Imho this is very bad practice, because devs should be encouraged to provide additional Information
-        // for debugging. Checking for log messages in tests provides huge additional effort (eg tests will fail because
+        // for debugging. Checking for log messages in tests provides huge additional effort (e.g. tests will fail because
         // a message was changed / an additional one was added / ...). Because logging should NEVER affect the
         // functionality of the code, this is completely unnecessary. Where this leads can be perfectly seen in all
         // moodle code: Things work or do not work and there is no feedback on that. Often things return null if successfully

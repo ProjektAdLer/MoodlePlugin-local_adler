@@ -1,20 +1,23 @@
 <?php
 namespace local_adler;
 
+use dml_exception;
 use moodle_exception;
 
 class helpers {
+    /**
+     * @throws dml_exception
+     */
     public static function get_course_from_course_id($course_id) {
         global $DB;
-        $course = $DB->get_record('course', array('id' => $course_id), '*', MUST_EXIST);
-        return $course;
+        return $DB->get_record('course', array('id' => $course_id), '*', MUST_EXIST);
     }
 
     /** Check if course is adler course
      * @param int $course_id moodle course id
      * @return bool true if course is adler course
      */
-    public static function course_is_adler_course($course_id) {
+    public static function course_is_adler_course(int $course_id): bool {
         global $DB;
         try {
             $course = $DB->get_record('local_adler_course', array('course_id' => $course_id), '*', MUST_EXIST);
@@ -44,6 +47,9 @@ class helpers {
 //        'scorm'
 //    );
 
+    /**
+     * @throws moodle_exception
+     */
     public static function is_primitive_learning_element($course_module):bool {
         // validate course_module format
         if (!isset($course_module->modname)) {

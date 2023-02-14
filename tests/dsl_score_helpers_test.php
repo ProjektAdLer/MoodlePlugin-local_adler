@@ -138,7 +138,7 @@ class dsl_score_helpers_test extends local_adler_testcase {
 
         // mock get_dsl_score_objects
         dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_dsl_score_objects', true);
+        dsl_score_helpers_mock::set_enable_mock('get_dsl_score_objects');
         dsl_score_helpers_mock::set_returns('get_dsl_score_objects', [$dsl_score_objects]);
 
         // call function

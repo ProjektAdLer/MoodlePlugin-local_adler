@@ -55,7 +55,7 @@ trait static_mock_utilities_trait {
         }
     }
 
-    public static function get_mocked_methods() {
+    public static function get_mocked_methods(): array {
         return self::$mocked_methods;
     }
 
@@ -75,7 +75,7 @@ trait static_mock_utilities_trait {
      * @param array $args
      * @return mixed return value of the mocked function at the given index. If no return value is set, null is returned
      */
-    protected static function mock_this_function($func_name, $args) {
+    protected static function mock_this_function(string $func_name, array $args) {
         // If trait_version is 2 and mock is disabled, call the original function
         if (isset(static::$trait_version) && static::$trait_version == 2 && (!isset(self::$mock_enabled[$func_name]) || self::$mock_enabled[$func_name] === false)) {
             return parent::{$func_name}(...$args);

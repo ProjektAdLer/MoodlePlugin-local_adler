@@ -8,6 +8,7 @@ use local_adler\dsl_score_helpers_mock;
 use local_adler\lib\local_adler_externallib_testcase;
 use local_adler\lib\static_mock_utilities_trait;
 use moodle_exception;
+use ReflectionClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -23,7 +24,7 @@ require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 class score_h5p_learning_element_mock extends score_h5p_learning_element {
     use static_mock_utilities_trait;
 
-    public static function call_external_function($functionname, $params, $ajaxonly = false) {
+    public static function call_external_function($function, $args, $ajaxonly = false) {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 }
@@ -58,7 +59,7 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
         dsl_score_helpers_mock::set_enable_mock('get_dsl_score_objects');
         dsl_score_helpers_mock::set_returns('get_dsl_score_objects', [[1,2,3]]);
         // set $dsl_score_helpers
-        $reflected_class = new \ReflectionClass(score_h5p_learning_element::class);
+        $reflected_class = new ReflectionClass(score_h5p_learning_element::class);
         $reflected_property = $reflected_class->getProperty('dsl_score_helpers');
         $reflected_property->setAccessible(true);
         $reflected_property->setValue(score_h5p_learning_element::class, dsl_score_helpers_mock::class);

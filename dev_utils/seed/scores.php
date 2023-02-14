@@ -9,17 +9,20 @@ define('CLI_SCRIPT', true);
 
 
 require(__DIR__ . '/../../../../config.php');
-require_once("{$CFG->libdir}/clilib.php");
+require_once($CFG->libdir . "/clilib.php");
 require_once($CFG->libdir . '/completionlib.php');
 
 
+/**
+ * @throws dml_exception
+ * @throws Exception
+ */
 function seed_scores(int $course_id) {
     global $DB;
 
     $module_support = array(
         'supported_simple' => array('url', 'page', 'resource', 'label'),
         'supported_complex' => array('h5pactivity'),
-        'not_completable' => array('label'),
     );
 
     $modules = get_course_mods($course_id);

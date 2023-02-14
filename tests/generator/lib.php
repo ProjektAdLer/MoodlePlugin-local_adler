@@ -9,8 +9,9 @@ class local_adler_generator extends component_generator_base {
      * @param array $params
      * @param bool $insert Set to false to return the object without inserting it into the database
      * @return stdClass
+     * @throws dml_exception
      */
-    public function create_dsl_score_item(int $module_id, $params = array(), bool $insert = true) {
+    public function create_dsl_score_item(int $module_id, array $params = array(), bool $insert = true) {
         global $DB;
         $default_params = [
             'cmid' => $module_id,
@@ -34,8 +35,9 @@ class local_adler_generator extends component_generator_base {
      * @param array $params
      * @param bool $insert Set to false to return the object without inserting it into the database
      * @return stdClass
+     * @throws dml_exception
      */
-    public function create_adler_course_object(int $course_id, $params = array(), bool $insert = true) {
+    public function create_adler_course_object(int $course_id, array $params = array(), bool $insert = true) {
         global $DB;
         $default_params = [
             'course_id' => $course_id,

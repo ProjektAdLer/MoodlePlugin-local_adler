@@ -3,13 +3,11 @@
  * This script seeds the local_adler_course table for a given course.
  */
 
-use local_adler\helpers;
-
 define('CLI_SCRIPT', true);
 
 
 require(__DIR__ . '/../../../../config.php');
-require_once("{$CFG->libdir}/clilib.php");
+require_once($CFG->libdir . "/clilib.php");
 
 
 function seed(int $course_id) {

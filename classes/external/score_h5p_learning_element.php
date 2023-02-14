@@ -13,11 +13,11 @@ use moodle_exception;
 
 
 class score_h5p_learning_element extends external_api {
-    protected static $dsl_score = dsl_score::class;
-    protected static $dsl_score_helpers = dsl_score_helpers::class;
+    protected static string $dsl_score = dsl_score::class;
+    protected static string $dsl_score_helpers = dsl_score_helpers::class;
 
 
-    public static function execute_parameters() {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
                 'xapi' => new external_value(PARAM_RAW, 'xapi json payload for h5p module', VALUE_REQUIRED),
@@ -26,7 +26,7 @@ class score_h5p_learning_element extends external_api {
     }
 
 
-    public static function execute_returns() {
+    public static function execute_returns(): external_function_parameters {
         return lib::get_adler_score_response_multiple_structure();
     }
 

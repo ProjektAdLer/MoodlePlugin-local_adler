@@ -4,7 +4,6 @@ class backup_local_adler_plugin extends backup_local_plugin {
     /** Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *
      * @return backup_plugin_element
-     * @throws backup_step_exception
      * @throws base_element_struct_exception
      */
     protected function define_module_plugin_structure(): backup_plugin_element {
@@ -39,6 +38,9 @@ class backup_local_adler_plugin extends backup_local_plugin {
         return $plugin;
     }
 
+    /**
+     * @throws base_element_struct_exception
+     */
     protected function define_course_plugin_structure(): backup_plugin_element {
         $plugin = $this->get_plugin_element();
 

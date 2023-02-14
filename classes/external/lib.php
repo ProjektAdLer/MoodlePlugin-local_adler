@@ -9,7 +9,7 @@ use external_value;
 use invalid_parameter_exception;
 
 class lib {
-    public static function get_adler_score_response_multiple_structure() {
+    public static function get_adler_score_response_multiple_structure(): external_function_parameters {
         return new external_function_parameters([
             'data' => new external_multiple_structure(
                 new external_single_structure(
@@ -29,6 +29,9 @@ class lib {
         ]);
     }
 
+    /**
+     * @throws invalid_parameter_exception
+     */
     public static function convert_adler_score_array_format_to_response_structure(array $scores): array {
         $result = array();
         foreach ($scores as $module_id => $score) {

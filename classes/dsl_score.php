@@ -21,11 +21,11 @@ class dsl_score {
     private int $user_id;
     protected stdClass $score_item;
 
-    protected static $helpers = helpers::class;
+    protected static string $helpers = helpers::class;
 
-    protected static $completion_info = completion_info::class;
+    protected static string $completion_info = completion_info::class;
 
-    protected static $dsl_score_helpers = dsl_score_helpers::class;
+    protected static string $dsl_score_helpers = dsl_score_helpers::class;
 
 
     /**
@@ -70,7 +70,6 @@ class dsl_score {
     }
 
     /** Calculates the score based on the percentage the user has achieved
-     * @param float $min_score The minimum score that can be achieved.
      * @param float $max_score The maximum score that can be achieved.
      * @param float $percentage_achieved As float value between 0 and 1
      */

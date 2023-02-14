@@ -2,10 +2,9 @@
 
 namespace local_adler;
 
-global $CFG;
 
 use local_adler\lib\local_adler_testcase;
-use local_adler\lib\static_mock_utilities_trait;
+use local_adler\lib\static_mock_utilities_trait;  # import for other classes importing this class
 use moodle_exception;
 use Throwable;
 
@@ -21,7 +20,7 @@ use Throwable;
 
 
 class helpers_test extends local_adler_testcase {
-    public function provide_test_course_is_adler_course_data() {
+    public function provide_test_course_is_adler_course_data(): array {
         return [
             'is adler course' => [['course_exist' => true, 'is_adler_course' => true, 'expected' => true]],
             'is not adler course' => [['course_exist' => true, 'is_adler_course' => false, 'expected' => false]],
@@ -56,6 +55,7 @@ class helpers_test extends local_adler_testcase {
 
     /**
      * @dataProvider provide_test_is_primitive_learning_element_data
+     * @throws moodle_exception
      */
     public function test_is_primitive_learning_element($data) {
         // create course
@@ -71,7 +71,7 @@ class helpers_test extends local_adler_testcase {
             $course_module = $this->getDataGenerator()->create_module('h5pactivity', ['course' => $course->id]);
         }
         if ($data['type'] != 'wrong_format') {
-            $course_module = get_fast_modinfo($course->id,0,false)->get_cm($course_module->cmid);
+            $course_module = get_fast_modinfo($course->id)->get_cm($course_module->cmid);
         }
 
         // call function
