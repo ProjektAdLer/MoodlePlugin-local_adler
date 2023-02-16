@@ -73,4 +73,13 @@ class dsl_score_helpers {
         }
         return $record;
     }
+
+    /** Delete adler score record (local_adler_scores_items).
+     * @param int $cmid
+     * @throws dml_exception
+     */
+    public static function delete_adler_score_record(int $cmid): void {
+        global $DB;
+        $DB->delete_records('local_adler_scores_items', array('cmid' => $cmid));
+    }
 }

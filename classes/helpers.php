@@ -13,6 +13,14 @@ class helpers {
         return $DB->get_record('course', array('id' => $course_id), '*', MUST_EXIST);
     }
 
+    /** Delete adler course record (local_adler_course).
+     * @throws dml_exception
+     */
+    public static function delete_adler_course_record($course_id) {
+        global $DB;
+        $DB->delete_records('local_adler_course', array('course_id' => $course_id));
+    }
+
     /** Check if course is adler course
      * @param int $course_id moodle course id
      * @return bool true if course is adler course
