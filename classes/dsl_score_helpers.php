@@ -69,7 +69,7 @@ class dsl_score_helpers {
         $record = $DB->get_record('local_adler_scores_items', array('cmid' => $cmid));
         if (!$record) {
             debugging('Course module with id ' . $cmid . ' is not an adler course module', E_NOTICE);
-            throw new moodle_exception('not_an_adler_cm', 'local_adler');
+            throw new not_an_adler_cm_exception();
         }
         return $record;
     }
