@@ -35,13 +35,13 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
 
         // generate array of 3 test entries
         $data = [
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(1, array(), false),
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(2, array(
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item(1, array(), false),
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item(2, array(
                 'score_max' => 10.0,
                 'timecreated' => 123456789,
                 'timemodified' => 123456789
             ), false),
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item(3, array(
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item(3, array(
                 'score_max' => 30.0,
             ), false)
         ];

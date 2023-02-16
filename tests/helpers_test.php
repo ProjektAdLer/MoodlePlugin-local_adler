@@ -11,7 +11,7 @@ use Throwable;
 #require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 #require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 
-//class dsl_score_helpers_dsl_score_mock extends dsl_score {
+//class adler_score_helpers_adler_score_mock extends adler_score {
 //    use static_mock_utilities_trait;
 //    public function __construct(object $course_module, int $user_id = null) {
 //        return static::mock_this_function(__FUNCTION__, func_get_args());

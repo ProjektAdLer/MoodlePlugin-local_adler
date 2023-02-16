@@ -7,7 +7,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use dml_missing_record_exception;
 use invalid_parameter_exception;
-use local_adler\dsl_score_helpers_mock;
+use local_adler\adler_score_helpers_mock;
 use local_adler\lib\local_adler_externallib_testcase;
 use moodle_exception;
 use require_login_exception;
@@ -22,7 +22,7 @@ require_once('generic_mocks.php');
 class score_get_element_scores_mock extends score_get_element_scores {
     use external_api_validate_context_trait;
 
-    protected static string $dsl_score_helpers = dsl_score_helpers_mock::class;
+    protected static string $adler_score_helpers = adler_score_helpers_mock::class;
     protected static string $context_module = context_module_mock::class;
 }
 
@@ -38,9 +38,9 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         context_module_mock::reset_data();
         context_module_mock::set_returns('instance', range(1,3));
 
-        dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
-        dsl_score_helpers_mock::set_returns('get_achieved_scores', [[1=>0, 2=>5.0, 42=>42.0]]);
+        adler_score_helpers_mock::reset_data();
+        adler_score_helpers_mock::set_enable_mock('get_achieved_scores');
+        adler_score_helpers_mock::set_returns('get_achieved_scores', [[1=>0, 2=>5.0, 42=>42.0]]);
 
         $result = score_get_element_scores_mock::execute($module_ids);
 
@@ -50,7 +50,7 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         for ($i = 0; $i < 3; $i++) {
             $this->assertEquals($module_ids[$i], context_module_mock::get_calls('instance')[$i][0]);
         }
-        $this->assertEquals($module_ids, dsl_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
+        $this->assertEquals($module_ids, adler_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
     }
 
     public function test_execute_exceptions() {
@@ -58,7 +58,7 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
         // call parameter fails
         // module does not exist
         // user not enrolled
-        // dsl_score::get_achieved_scores fails
+        // adler_score::get_achieved_scores fails
         // return data validation fails
 
         $test_configuration = [
@@ -94,7 +94,7 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
                     null,
                 ],
             ],
-            'dsl_score::get_achieved_scores' => [
+            'adler_score::get_achieved_scores' => [
                 'exceptions' => [
                     null,
                     null,
@@ -151,14 +151,14 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
                 $test_configuration['context_module::instance']['returns'][$i],
             ]);
 
-            // setup dsl_score::get_achieved_scores
-            dsl_score_helpers_mock::reset_data();
-            dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
-            dsl_score_helpers_mock::set_exceptions('get_achieved_scores', [
-                $test_configuration['dsl_score::get_achieved_scores']['exceptions'][$i],
+            // setup adler_score::get_achieved_scores
+            adler_score_helpers_mock::reset_data();
+            adler_score_helpers_mock::set_enable_mock('get_achieved_scores');
+            adler_score_helpers_mock::set_exceptions('get_achieved_scores', [
+                $test_configuration['adler_score::get_achieved_scores']['exceptions'][$i],
             ]);
-            dsl_score_helpers_mock::set_returns('get_achieved_scores', [
-                $test_configuration['dsl_score::get_achieved_scores']['returns'][$i],
+            adler_score_helpers_mock::set_returns('get_achieved_scores', [
+                $test_configuration['adler_score::get_achieved_scores']['returns'][$i],
             ]);
 
             try {

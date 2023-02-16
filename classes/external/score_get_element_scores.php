@@ -9,15 +9,15 @@ use external_function_parameters;
 use external_multiple_structure;
 use external_value;
 use invalid_parameter_exception;
-use local_adler\dsl_score;
-use local_adler\dsl_score_helpers;
+use local_adler\adler_score;
+use local_adler\adler_score_helpers;
 use moodle_exception;
 use require_login_exception;
 use restricted_context_exception;
 
 class score_get_element_scores extends external_api {
-    protected static string $dsl_score = dsl_score::class;
-    protected static string $dsl_score_helpers = dsl_score_helpers::class;
+    protected static string $adler_score = adler_score::class;
+    protected static string $adler_score_helpers = adler_score_helpers::class;
     protected static string $context_module = context_module::class;
 
     public static function execute_parameters(): external_function_parameters {
@@ -72,7 +72,7 @@ class score_get_element_scores extends external_api {
         }
 
         // get scores
-        $scores = static::$dsl_score_helpers::get_achieved_scores($module_ids);
+        $scores = static::$adler_score_helpers::get_achieved_scores($module_ids);
 
         // convert format return
         return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];

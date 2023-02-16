@@ -31,7 +31,7 @@ class observer_test extends local_adler_testcase {
         for ($i = 0; $i < 10; $i++) {
             $module = $generator->create_module('url', ['course' => $course->id]);
             // create adler score record
-            $adler_generator->create_dsl_score_item($module->cmid);
+            $adler_generator->create_adler_score_item($module->cmid);
             $modules[] = $module;
         }
 
@@ -39,7 +39,7 @@ class observer_test extends local_adler_testcase {
         // create adler scores without cms
         $adler_score_tb_deleted = [];
         for ($i = 0; $i < 10; $i++) {
-            $adler_score_tb_deleted[] = $adler_generator->create_dsl_score_item($modules[count($modules) - 1]->cmid + 1 + $i);
+            $adler_score_tb_deleted[] = $adler_generator->create_adler_score_item($modules[count($modules) - 1]->cmid + 1 + $i);
         }
 
 
@@ -128,8 +128,8 @@ class observer_test extends local_adler_testcase {
 
         if ($data['case'] == 'default') {
             // create adler score record
-            $adler_generator->create_dsl_score_item($module1->cmid);
-            $adler_generator->create_dsl_score_item($module2->cmid);
+            $adler_generator->create_adler_score_item($module1->cmid);
+            $adler_generator->create_adler_score_item($module2->cmid);
         }
 
         // create mock course_module_deleted
@@ -174,14 +174,14 @@ class observer_test extends local_adler_testcase {
             }
             $module = $generator->create_module('url', ['course' => $course->id]);
             // create adler score record
-            $adler_generator->create_dsl_score_item($module->cmid);
+            $adler_generator->create_adler_score_item($module->cmid);
             $modules[] = $module;
         }
 
 
         // create 100 adler scores without cms
         for ($i = 0; $i < 100; $i++) {
-            $adler_generator->create_dsl_score_item($modules[count($modules) - 1]->cmid + 1 + $i);
+            $adler_generator->create_adler_score_item($modules[count($modules) - 1]->cmid + 1 + $i);
         }
 
         // call function
@@ -195,11 +195,4 @@ class observer_test extends local_adler_testcase {
         // output duration
         fwrite(STDERR, 'duration in s: ' . ($end - $start) . PHP_EOL);
     }
-
-
-    // Call delete_course() which will trigger the course_deleted event and the course_content_deleted
-    // event. This function prints out data to the screen, which we do not want during a PHPUnit test,
-    // so use ob_start and ob_end_clean to prevent this.
-//ob_start();
-//delete_course($course);
 }

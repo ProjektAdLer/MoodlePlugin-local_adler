@@ -7,14 +7,14 @@ use context;
 use external_api;
 use external_function_parameters;
 use external_value;
-use local_adler\dsl_score;
-use local_adler\dsl_score_helpers;
+use local_adler\adler_score;
+use local_adler\adler_score_helpers;
 use moodle_exception;
 
 
 class score_h5p_learning_element extends external_api {
-    protected static string $dsl_score = dsl_score::class;
-    protected static string $dsl_score_helpers = dsl_score_helpers::class;
+    protected static string $adler_score = adler_score::class;
+    protected static string $adler_score_helpers = adler_score_helpers::class;
 
 
     public static function execute_parameters(): external_function_parameters {
@@ -53,10 +53,10 @@ class score_h5p_learning_element extends external_api {
     }
 
 
-    /** process xapi payload and return array of dsl_score objects
+    /** process xapi payload and return array of adler_score objects
      * xapi payload is proxied to core xapi library
      * @param $xapi string xapi json payload
-     * @return array of dsl_score objects
+     * @return array of adler_score objects
      * @throws moodle_exception
      */
     public static function execute($xapi): array {
@@ -68,7 +68,7 @@ class score_h5p_learning_element extends external_api {
         // first check if the modules support adler scoring
         // if one cm is not part of an adler course or is not an adler cm an exception is thrown
         $module_ids = static::get_module_ids_from_xapi($xapi);
-        $dsl_scores = static::$dsl_score_helpers::get_dsl_score_objects($module_ids);
+        $adler_scores = static::$adler_score_helpers::get_adler_score_objects($module_ids);
 
         // proxy xapi payload to core xapi library
         $result = static::call_external_function('core_xapi_statement_post', array(
@@ -80,12 +80,12 @@ class score_h5p_learning_element extends external_api {
             throw new moodle_exception('failed_to_process_xapi', 'local_adler', null, null, $result['exception']->message);
         }
 
-        // get dsl score
+        // get adler score
         try {
-            $scores = static::$dsl_score_helpers::get_achieved_scores(null, null, $dsl_scores);
+            $scores = static::$adler_score_helpers::get_achieved_scores(null, null, $adler_scores);
         } catch (moodle_exception $e) {
-            debugging('Failed to get DSL scores, but xapi statements are already processed', E_ERROR);
-            throw new moodle_exception('failed_to_get_dsl_score', 'local_adler', '', $e->getMessage());
+            debugging('Failed to get adler scores, but xapi statements are already processed', E_ERROR);
+            throw new moodle_exception('failed_to_get_adler_score', 'local_adler', '', $e->getMessage());
         }
 
         // convert $scores to return format

@@ -19,7 +19,7 @@ class lib {
                             'moodle module id'),
                         'score' => new external_value(
                             PARAM_FLOAT,
-                            'achieved (dsl-file) score, if this field is missing completion api (or something simillar) is disabled for this element',
+                            'achieved (adler-file) score, if this field is missing completion api (or something simillar) is disabled for this element',
                             VALUE_OPTIONAL),
                     ),
                     'adler score for a module and the corresponding module id'

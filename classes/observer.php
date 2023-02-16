@@ -12,7 +12,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class observer {
     protected static string $helpers = helpers::class;
-    private static string $dsl_score_helpers = dsl_score_helpers::class;
+    private static string $adler_score_helpers = adler_score_helpers::class;
 
     /**
      * Observer for the event course_module_deleted.
@@ -29,13 +29,13 @@ class observer {
         }
         // check if is adler cm
         try {
-            static::$dsl_score_helpers::get_adler_score_record($cmid);
+            static::$adler_score_helpers::get_adler_score_record($cmid);
         } catch (not_an_adler_cm_exception $e) {
             return;
         }
 
         // delete adler cm
-        static::$dsl_score_helpers::delete_adler_score_record($cmid);
+        static::$adler_score_helpers::delete_adler_score_record($cmid);
         debugging('deleted adler cm for cmid ' . $cmid);
     }
 
@@ -73,7 +73,7 @@ class observer {
         // if adler score cmid is not in $cmids, delete adler score
         foreach ($adler_scores as $adler_score) {
             if (!in_array($adler_score->cmid, $cmids)) {
-                static::$dsl_score_helpers::delete_adler_score_record($adler_score->cmid);
+                static::$adler_score_helpers::delete_adler_score_record($adler_score->cmid);
                 $deleted_cms[] = $adler_score->cmid;
                 debugging('deleted adler cm for cmid ' . $adler_score->cmid);
             }

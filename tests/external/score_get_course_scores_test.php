@@ -4,7 +4,7 @@ namespace local_adler\external;
 
 global $CFG;
 
-use local_adler\dsl_score_helpers_mock;
+use local_adler\adler_score_helpers_mock;
 use local_adler\lib\local_adler_externallib_testcase;
 use require_login_exception;
 
@@ -17,7 +17,7 @@ require_once('generic_mocks.php');
 class score_get_course_scores_mock extends score_get_course_scores {
     use external_api_validate_context_trait;
 
-    protected static string $dsl_score_helpers = dsl_score_helpers_mock::class;
+    protected static string $adler_score_helpers = adler_score_helpers_mock::class;
     protected static string $context_course = context_course_mock::class;
 }
 
@@ -45,26 +45,26 @@ class score_get_course_scores_test extends local_adler_externallib_testcase {
         context_course_mock::reset_data();
         context_course_mock::set_returns('instance', [1, null]);
 
-        dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
+        adler_score_helpers_mock::reset_data();
+        adler_score_helpers_mock::set_enable_mock('get_achieved_scores');
 
         foreach ($module_ids as $module_id) {
-            $dsl_return_data[$module_id] = $module_id * 2;
+            $adler_return_data[$module_id] = $module_id * 2;
         }
-        dsl_score_helpers_mock::set_returns('get_achieved_scores', [$dsl_return_data]);
+        adler_score_helpers_mock::set_returns('get_achieved_scores', [$adler_return_data]);
 
         // 1st call: success
         $result = score_get_course_scores_mock::execute($course->id);
 
         // check return value
         $this->assertEqualsCanonicalizing([
-            ['moduleid' => $module_ids[0], 'score' => $dsl_return_data[$module_ids[0]]],
-            ['moduleid' => $module_ids[1], 'score' => $dsl_return_data[$module_ids[1]]],
-            ['moduleid' => $module_ids[2], 'score' => $dsl_return_data[$module_ids[2]]],
+            ['moduleid' => $module_ids[0], 'score' => $adler_return_data[$module_ids[0]]],
+            ['moduleid' => $module_ids[1], 'score' => $adler_return_data[$module_ids[1]]],
+            ['moduleid' => $module_ids[2], 'score' => $adler_return_data[$module_ids[2]]],
         ], $result['data']);
         // check function calls
         $this->assertEquals($course->id, context_course_mock::get_calls('instance')[0][0]);
-        $this->assertEquals($module_ids, dsl_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
+        $this->assertEquals($module_ids, adler_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
 
         // 2nd call: fail
         $this->expectException(require_login_exception::class);

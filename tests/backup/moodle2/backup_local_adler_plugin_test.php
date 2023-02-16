@@ -74,7 +74,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
      */
     public function test_backup_score() {
         // Create score item with generator
-        $score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($this->module->cmid);
+        $score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item($this->module->cmid);
 
         // Create a backup of the module.
         $bc = new backup_controller(

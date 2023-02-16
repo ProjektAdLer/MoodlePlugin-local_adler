@@ -9,7 +9,7 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use invalid_parameter_exception;
-use local_adler\dsl_score;
+use local_adler\adler_score;
 use local_adler\helpers;
 use moodle_exception;
 use restricted_context_exception;
@@ -28,13 +28,13 @@ class score_primitive_learning_element extends external_api {
         return lib::get_adler_score_response_multiple_structure();
     }
 
-    /** creates dsl_score objects, simplifies testing
+    /** creates adler_score objects, simplifies testing
      * @param $course_module object course module object with field modname
-     * @return dsl_score for currently logged-in user
+     * @return adler_score for currently logged-in user
      * @throws moodle_exception
      */
-    protected static function create_dsl_score_instance($course_module): dsl_score {
-        return new dsl_score($course_module);
+    protected static function create_adler_score_instance($course_module): adler_score {
+        return new adler_score($course_module);
     }
 
     /**
@@ -84,10 +84,10 @@ class score_primitive_learning_element extends external_api {
             }
             $completion->update_state($course_module, $new_completion_state);
 
-            // return dsl score
-            $dsl_score = static::create_dsl_score_instance($course_module);
+            // return adler score
+            $adler_score = static::create_adler_score_instance($course_module);
             return ['data' => lib::convert_adler_score_array_format_to_response_structure(
-                array($course_module->id => $dsl_score->get_score()))];
+                array($course_module->id => $adler_score->get_score()))];
         } else {
             debugging("Course module is not a known primitive learning element.", E_WARNING);
             throw new moodle_exception("course_module_is_not_a_primitive_learning_element", 'local_adler');

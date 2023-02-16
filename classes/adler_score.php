@@ -11,9 +11,9 @@ use moodle_exception;
 use stdClass;
 
 /**
- * Managing dsl score system for one course module
+ * Managing adler score system for one course module
  */
-class dsl_score {
+class adler_score {
     private object $course_module;
 
     private int $user_id;
@@ -23,7 +23,7 @@ class dsl_score {
 
     protected static string $completion_info = completion_info::class;
 
-    protected static string $dsl_score_helpers = dsl_score_helpers::class;
+    protected static string $adler_score_helpers = adler_score_helpers::class;
 
 
     /**
@@ -62,9 +62,9 @@ class dsl_score {
             throw new moodle_exception('not_an_adler_course', 'local_adler');
         }
 
-        // get dsl score metadata object
+        // get adler score metadata object
         // throws not_an_adler_cm exception if not adler course module
-        $this->score_item = static::$dsl_score_helpers::get_adler_score_record($this->course_module->id);
+        $this->score_item = static::$adler_score_helpers::get_adler_score_record($this->course_module->id);
     }
 
     /** Calculates the score based on the percentage the user has achieved
@@ -146,7 +146,7 @@ class dsl_score {
     }
 
     /** Get the score for the course module.
-     * Gets the completion status and for h5p activities the achieved grade and calculates the dsl score with the values from
+     * Gets the completion status and for h5p activities the achieved grade and calculates the adler score with the values from
      * local_adler_scores_items.
      * @throws dml_exception|moodle_exception
      */

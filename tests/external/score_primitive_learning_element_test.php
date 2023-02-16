@@ -7,7 +7,7 @@ defined('MOODLE_INTERNAL') || die();
 use completion_info;
 use external_api;
 use invalid_parameter_exception;
-use local_adler\dsl_score;
+use local_adler\adler_score;
 use local_adler\lib\local_adler_externallib_testcase;
 
 
@@ -25,14 +25,14 @@ class mock_score_primitive_learning_element extends score_primitive_learning_ele
         self::$index = 0;
     }
 
-    protected static function create_dsl_score_instance($course_module): dsl_score {
+    protected static function create_adler_score_instance($course_module): adler_score {
         self::$index += 1;
         return self::$data[self::$index - 1];
     }
 
-    public static function call_create_dsl_score_instance($course_module): dsl_score {
+    public static function call_create_adler_score_instance($course_module): adler_score {
         // call protected function
-        return parent::create_dsl_score_instance($course_module);
+        return parent::create_adler_score_instance($course_module);
     }
 }
 
@@ -51,18 +51,18 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         $this->setUser($this->user);
         $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
 
-        // mock dsl_score class
-        $this->mock_dsl_score = $this->getMockBuilder('local_adler\dsl_score')
+        // mock adler_score class
+        $this->mock_adler_score = $this->getMockBuilder('local_adler\adler_score')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->mock_dsl_score->method('get_score')
+        $this->mock_adler_score->method('get_score')
             ->willReturn(42.0);
     }
 
 
     public function test_score_primitive_learning_element() {
-        // set data for mocked create_dsl_score_instance method
-        mock_score_primitive_learning_element::set_data(array($this->mock_dsl_score, $this->mock_dsl_score));
+        // set data for mocked create_adler_score_instance method
+        mock_score_primitive_learning_element::set_data(array($this->mock_adler_score, $this->mock_adler_score));
 
         // Call CUT
         $result = mock_score_primitive_learning_element::execute($this->course_module->id, false);
@@ -111,8 +111,8 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         $this->course_module = $this->getDataGenerator()->create_module('h5pactivity', array('course' => $this->course->id, 'completion' => 1));
         $this->course_module = get_coursemodule_from_id(null, $this->course_module->cmid, 0, false, MUST_EXIST);
 
-        // set data for mocked create_dsl_score_instance method
-        mock_score_primitive_learning_element::set_data(array($this->mock_dsl_score));
+        // set data for mocked create_adler_score_instance method
+        mock_score_primitive_learning_element::set_data(array($this->mock_adler_score));
 
         $this->expectException('moodle_exception');
         $this->expectExceptionMessage("course_module_is_not_a_primitive_learning_element");
@@ -136,8 +136,8 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
     }
 
     public function test_score_primitive_learning_element_user_not_enrolled() {
-        // set data for mocked create_dsl_score_instance method
-        mock_score_primitive_learning_element::set_data(array($this->mock_dsl_score));
+        // set data for mocked create_adler_score_instance method
+        mock_score_primitive_learning_element::set_data(array($this->mock_adler_score));
 
         // create and enroll user
         $user = $this->getDataGenerator()->create_user();
@@ -151,8 +151,8 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
     }
 
     public function test_score_primitive_learning_element_course_module_not_exist() {
-        // set data for mocked create_dsl_score_instance method
-        mock_score_primitive_learning_element::set_data(array($this->mock_dsl_score));
+        // set data for mocked create_adler_score_instance method
+        mock_score_primitive_learning_element::set_data(array($this->mock_adler_score));
 
         $this->expectException('invalid_parameter_exception');
         $this->expectExceptionMessage("failed_to_get_course_module");
@@ -167,10 +167,10 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         (new lib_test())->test_get_adler_score_response_multiple_structure(score_primitive_learning_element::class);
     }
 
-    public function test_create_dsl_score_instance() {
+    public function test_create_adler_score_instance() {
         $mock = new mock_score_primitive_learning_element();
         $this->expectException('moodle_exception');
         $this->expectExceptionMessage("local_adler/not_an_adler_course");
-        $mock->call_create_dsl_score_instance($this->course_module);
+        $mock->call_create_adler_score_instance($this->course_module);
     }
 }

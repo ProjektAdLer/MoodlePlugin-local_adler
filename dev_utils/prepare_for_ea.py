@@ -22,7 +22,7 @@ relevant_paths = [
 
 
 def remove_typedef_and_copy(filepath_source, filepath_target):
-#     filepath = '/mnt/c/Users/heckmarm/Desktop/ea-moodle-plugin/adler_source/classes/dsl_score.php'
+#     filepath = '/mnt/c/Users/heckmarm/Desktop/ea-moodle-plugin/adler_source/classes/adler_score.php'
     # open file
     with open(filepath_source, 'r') as f:
         # read file

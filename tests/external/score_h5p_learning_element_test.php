@@ -4,7 +4,7 @@ namespace local_adler\external;
 
 
 use context_module;
-use local_adler\dsl_score_helpers_mock;
+use local_adler\adler_score_helpers_mock;
 use local_adler\lib\local_adler_externallib_testcase;
 use local_adler\lib\static_mock_utilities_trait;
 use moodle_exception;
@@ -44,7 +44,7 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
         // create course module
         $course_module = $this->getDataGenerator()->create_module('h5pactivity', array('course' => $course->id, 'completion' => 1));
         // set as adler course module
-        $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($course_module->cmid);
+        $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item($course_module->cmid);
 
         // enroll user
         $this->getDataGenerator()->enrol_user($user->id, $course->id);
@@ -52,17 +52,17 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
         // get contextid
         $context = context_module::instance($course_module->cmid);
 
-        // setup dsl_score_helpers_mock
-        dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
-        dsl_score_helpers_mock::set_returns('get_achieved_scores', [[$course_module->cmid =>1]]);
-        dsl_score_helpers_mock::set_enable_mock('get_dsl_score_objects');
-        dsl_score_helpers_mock::set_returns('get_dsl_score_objects', [[1,2,3]]);
-        // set $dsl_score_helpers
+        // setup adler_score_helpers_mock
+        adler_score_helpers_mock::reset_data();
+        adler_score_helpers_mock::set_enable_mock('get_achieved_scores');
+        adler_score_helpers_mock::set_returns('get_achieved_scores', [[$course_module->cmid =>1]]);
+        adler_score_helpers_mock::set_enable_mock('get_adler_score_objects');
+        adler_score_helpers_mock::set_returns('get_adler_score_objects', [[1,2,3]]);
+        // set $adler_score_helpers
         $reflected_class = new ReflectionClass(score_h5p_learning_element::class);
-        $reflected_property = $reflected_class->getProperty('dsl_score_helpers');
+        $reflected_property = $reflected_class->getProperty('adler_score_helpers');
         $reflected_property->setAccessible(true);
-        $reflected_property->setValue(score_h5p_learning_element::class, dsl_score_helpers_mock::class);
+        $reflected_property->setValue(score_h5p_learning_element::class, adler_score_helpers_mock::class);
 
         score_h5p_learning_element_mock::reset_data();
         score_h5p_learning_element_mock::set_returns('call_external_function', [["error"=>false], ["error"=>false], ["error"=>true, "exception"=>(object)['message'=>'test exception']]]);
@@ -87,24 +87,24 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
             // validate static function calls
             $this->assertEquals($xapi, score_h5p_learning_element_mock::get_calls('call_external_function')[$i][1]['requestjson']);
             $this->assertEquals('mod_h5pactivity', score_h5p_learning_element_mock::get_calls('call_external_function')[$i][1]['component']);
-            $this->assertEquals([$course_module->cmid], dsl_score_helpers_mock::get_calls('get_dsl_score_objects')[$i][0]);
+            $this->assertEquals([$course_module->cmid], adler_score_helpers_mock::get_calls('get_adler_score_objects')[$i][0]);
 
             // validate result
             $this->assertCount(1, $result);
             $this->assertEquals(['module_id' => $course_module->cmid, 'score' => 1], $result['data'][0]);
         }
 
-        // test failed_to_get_dsl_score
+        // test failed_to_get_adler_score
         $xapi = $xapis[0];
         $xapi = str_replace('xapi/activity/41', 'xapi/activity/' . $context->id, $xapi);
 
         // enable fail for get_achieved_scores
-        // setup dsl_score_helpers_mock
-        dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
-        dsl_score_helpers_mock::set_exceptions('get_achieved_scores', [new moodle_exception('blub')]);
-        dsl_score_helpers_mock::set_enable_mock('get_dsl_score_objects');
-        dsl_score_helpers_mock::set_returns('get_dsl_score_objects', [[1,2,3]]);
+        // setup adler_score_helpers_mock
+        adler_score_helpers_mock::reset_data();
+        adler_score_helpers_mock::set_enable_mock('get_achieved_scores');
+        adler_score_helpers_mock::set_exceptions('get_achieved_scores', [new moodle_exception('blub')]);
+        adler_score_helpers_mock::set_enable_mock('get_adler_score_objects');
+        adler_score_helpers_mock::set_returns('get_adler_score_objects', [[1,2,3]]);
 
         // call CUD
         $expected_exception_thrown = false;
@@ -113,18 +113,18 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
         } catch (moodle_exception $e) {
             $expected_exception_thrown = true;
 
-            $this->assertEquals('failed_to_get_dsl_score', $e->errorcode);
+            $this->assertEquals('failed_to_get_adler_score', $e->errorcode);
         }
         $this->assertTrue($expected_exception_thrown, 'expected exception not thrown');
 
         // test xapi process failed
         // enable fail for get_achieved_scores
-        // setup dsl_score_helpers_mock
-        dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_achieved_scores');
-        dsl_score_helpers_mock::set_exceptions('get_achieved_scores', [new moodle_exception('blub')]);
-        dsl_score_helpers_mock::set_enable_mock('get_dsl_score_objects');
-        dsl_score_helpers_mock::set_returns('get_dsl_score_objects', [[1,2,3]]);
+        // setup adler_score_helpers_mock
+        adler_score_helpers_mock::reset_data();
+        adler_score_helpers_mock::set_enable_mock('get_achieved_scores');
+        adler_score_helpers_mock::set_exceptions('get_achieved_scores', [new moodle_exception('blub')]);
+        adler_score_helpers_mock::set_enable_mock('get_adler_score_objects');
+        adler_score_helpers_mock::set_returns('get_adler_score_objects', [[1,2,3]]);
 
         $expected_exception_thrown = false;
         try {

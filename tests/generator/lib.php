@@ -11,7 +11,7 @@ class local_adler_generator extends component_generator_base {
      * @return stdClass
      * @throws dml_exception
      */
-    public function create_dsl_score_item(int $module_id, array $params = array(), bool $insert = true) {
+    public function create_adler_score_item(int $module_id, array $params = array(), bool $insert = true) {
         global $DB;
         $default_params = [
             'cmid' => $module_id,
@@ -20,12 +20,12 @@ class local_adler_generator extends component_generator_base {
             'timemodified' => 0
         ];
         $params = array_merge($default_params, $params);
-        $create_dsl_score_item = (object)$params;
+        $create_adler_score_item = (object)$params;
 
         if ($insert) {
-            $create_dsl_score_item->id = $DB->insert_record('local_adler_scores_items', $create_dsl_score_item);
+            $create_adler_score_item->id = $DB->insert_record('local_adler_scores_items', $create_adler_score_item);
         }
-        return $create_dsl_score_item;
+        return $create_adler_score_item;
     }
 
     /**

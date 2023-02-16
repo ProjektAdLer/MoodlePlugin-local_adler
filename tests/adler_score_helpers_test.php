@@ -13,7 +13,7 @@ use Throwable;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 
-class dsl_score_helpers_dsl_score_mock extends dsl_score {
+class adler_score_helpers_adler_score_mock extends adler_score {
     use static_mock_utilities_trait;
     public function __construct(object $course_module, int $user_id = null) {
         return static::mock_this_function(__FUNCTION__, func_get_args());
@@ -21,14 +21,14 @@ class dsl_score_helpers_dsl_score_mock extends dsl_score {
 }
 
 
-class dsl_score_helpers_test extends local_adler_testcase {
-    public function test_get_dsl_score_objects() {
+class adler_score_helpers_test extends local_adler_testcase {
+    public function test_get_adler_score_objects() {
         // setup
-        // set param $dsl_score_class
-        $reflected_class = new ReflectionClass(dsl_score_helpers::class);
-        $param_dsl_score_class = $reflected_class->getProperty('dsl_score_class');
-        $param_dsl_score_class->setAccessible(true);
-        $param_dsl_score_class->setValue(dsl_score_helpers_dsl_score_mock::class);
+        // set param $adler_score_class
+        $reflected_class = new ReflectionClass(adler_score_helpers::class);
+        $param_adler_score_class = $reflected_class->getProperty('adler_score_class');
+        $param_adler_score_class->setAccessible(true);
+        $param_adler_score_class->setValue(adler_score_helpers_adler_score_mock::class);
 
         // create course
         $course = $this->getDataGenerator()->create_course();
@@ -37,26 +37,26 @@ class dsl_score_helpers_test extends local_adler_testcase {
             $cmids[] = $this->getDataGenerator()->create_module('url', ['course' => $course->id])->cmid;
         }
 
-        dsl_score_helpers_dsl_score_mock::reset_data();
-        dsl_score_helpers_dsl_score_mock::set_exceptions('__construct', [null, null, new not_an_adler_cm_exception()]);
+        adler_score_helpers_adler_score_mock::reset_data();
+        adler_score_helpers_adler_score_mock::set_exceptions('__construct', [null, null, new not_an_adler_cm_exception()]);
 
         // call function
-        $result = dsl_score_helpers::get_dsl_score_objects($cmids);
+        $result = adler_score_helpers::get_adler_score_objects($cmids);
 
         // check result
         $this->assertEquals(3, count($result));
         // check types of result
-        $this->assertTrue($result[$cmids[0]] instanceof dsl_score_helpers_dsl_score_mock);
-        $this->assertTrue($result[$cmids[1]] instanceof dsl_score_helpers_dsl_score_mock);
+        $this->assertTrue($result[$cmids[0]] instanceof adler_score_helpers_adler_score_mock);
+        $this->assertTrue($result[$cmids[1]] instanceof adler_score_helpers_adler_score_mock);
         $this->assertTrue($result[$cmids[2]] === false);
 
         // other exception
-        dsl_score_helpers_dsl_score_mock::reset_data();
-        dsl_score_helpers_dsl_score_mock::set_exceptions('__construct', [new moodle_exception('blub')]);
+        adler_score_helpers_adler_score_mock::reset_data();
+        adler_score_helpers_adler_score_mock::set_exceptions('__construct', [new moodle_exception('blub')]);
 
         $this->expectException(moodle_exception::class);
 
-        dsl_score_helpers::get_dsl_score_objects([$cmids[0]]);
+        adler_score_helpers::get_adler_score_objects([$cmids[0]]);
 
     }
 
@@ -90,25 +90,25 @@ class dsl_score_helpers_test extends local_adler_testcase {
      * @dataProvider provide_test_get_achieved_scores_data
      */
     public function test_get_achieved_scores($data) {
-        // create 3 dsl_score objects and mock get_score
+        // create 3 adler_score objects and mock get_score
         for ($i = 0; $i < 3; $i++) {
-            $dsl_score_objects[] = $this->getMockBuilder(dsl_score_helpers_dsl_score_mock::class)
+            $adler_score_objects[] = $this->getMockBuilder(adler_score_helpers_adler_score_mock::class)
                 ->disableOriginalConstructor()
                 ->getMock();
-            $dsl_score_objects[$i]->method('get_score')->willReturn((float)$i * 2);
+            $adler_score_objects[$i]->method('get_score')->willReturn((float)$i * 2);
         }
-        $dsl_score_objects[] = false;
+        $adler_score_objects[] = false;
 
         // setup exception
         if ($data['exception'] !== null) {
-            $dsl_score_objects[$data['exception_at_index']]->method('get_score')->willThrowException(
+            $adler_score_objects[$data['exception_at_index']]->method('get_score')->willThrowException(
                 new $data['exception']($data['exception_msg'])
             );
         }
 
         // call function
         try {
-            $result = dsl_score_helpers::get_achieved_scores(null, null, $dsl_score_objects);
+            $result = adler_score_helpers::get_achieved_scores(null, null, $adler_score_objects);
         } catch (Throwable $e) {
             if ($data['expected_exception'] !== false) {
                 $this->assertInstanceOf($data['expected_exception'], $e);
@@ -127,28 +127,28 @@ class dsl_score_helpers_test extends local_adler_testcase {
         // setup
         $module_ids = [1, 2, 3];
         $user_id = 1;
-        // create 3 dsl_score objects and mock get_score
+        // create 3 adler_score objects and mock get_score
         for ($i = 0; $i < 3; $i++) {
-            $dsl_score_objects[] = $this->getMockBuilder(dsl_score_helpers_dsl_score_mock::class)
+            $adler_score_objects[] = $this->getMockBuilder(adler_score_helpers_adler_score_mock::class)
                 ->disableOriginalConstructor()
                 ->getMock();
-            $dsl_score_objects[$i]->method('get_score')->willReturn((float)$i * 2);
+            $adler_score_objects[$i]->method('get_score')->willReturn((float)$i * 2);
         }
         $expected_result = [0, 2, 4];
 
-        // mock get_dsl_score_objects
-        dsl_score_helpers_mock::reset_data();
-        dsl_score_helpers_mock::set_enable_mock('get_dsl_score_objects');
-        dsl_score_helpers_mock::set_returns('get_dsl_score_objects', [$dsl_score_objects]);
+        // mock get_adler_score_objects
+        adler_score_helpers_mock::reset_data();
+        adler_score_helpers_mock::set_enable_mock('get_adler_score_objects');
+        adler_score_helpers_mock::set_returns('get_adler_score_objects', [$adler_score_objects]);
 
         // call function
-        $result = dsl_score_helpers_mock::get_achieved_scores($module_ids, $user_id);
+        $result = adler_score_helpers_mock::get_achieved_scores($module_ids, $user_id);
 
         // check result
         $this->assertEquals($expected_result, $result);
 
         // check function call
-        $this->assertEquals([$module_ids, $user_id], dsl_score_helpers_mock::get_calls('get_dsl_score_objects')[0]);
+        $this->assertEquals([$module_ids, $user_id], adler_score_helpers_mock::get_calls('get_adler_score_objects')[0]);
     }
 
     public function test_get_adler_score_record() {
@@ -159,10 +159,10 @@ class dsl_score_helpers_test extends local_adler_testcase {
         $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
 
         // create adler score item
-        $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_dsl_score_item($cm->cmid);
+        $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item($cm->cmid);
 
         // call function
-        $result = dsl_score_helpers::get_adler_score_record($cm->cmid);
+        $result = adler_score_helpers::get_adler_score_record($cm->cmid);
 
         // check result
         $this->assertEquals($adler_score_item->id, $result->id);
@@ -178,6 +178,6 @@ class dsl_score_helpers_test extends local_adler_testcase {
         $cm = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
 
         // call function
-        dsl_score_helpers::get_adler_score_record($cm->cmid);
+        adler_score_helpers::get_adler_score_record($cm->cmid);
     }
 }
