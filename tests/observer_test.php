@@ -61,14 +61,25 @@ class observer_test extends local_adler_testcase {
         }
     }
 
+    public function provide_test_course_deleted_data() {
+        return [
+            'default' => [['case' => 'default']],
+            'no adler course' => [['case' => 'no_adler_course']],
+        ];
+    }
 
-    public function test_course_deleted() {
+    /**
+     * @dataProvider provide_test_course_deleted_data
+     */
+    public function test_course_deleted($data) {
         global $DB;
 
         $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
 
         // create adler courses
-        $adler_generator->create_adler_course_object(7);
+        if ($data['case'] == 'default') {
+            $adler_generator->create_adler_course_object(7);
+        }
 
         // create mock course_deleted
         $event = $this->getMockBuilder(course_deleted::class)
@@ -81,10 +92,12 @@ class observer_test extends local_adler_testcase {
         observer::course_deleted($event);
 
         // check result
-        $this->assertEquals(0, count($DB->get_records('local_adler_course', ['course_id' => 7])));
+        if ($data['case'] == 'default') {
+            $this->assertEquals(0, count($DB->get_records('local_adler_course', ['course_id' => 7])));
+        }
     }
 
-    public function provide_test_course_deleted_data() {
+    public function provide_test_course_module_deleted_data() {
         return [
             'default' => [['case' => 'default']],
             'no adler course' => [['case' => 'no_adler_course']],
@@ -93,7 +106,7 @@ class observer_test extends local_adler_testcase {
     }
 
     /**
-     * @dataProvider provide_test_course_deleted_data
+     * @dataProvider provide_test_course_module_deleted_data
      */
     public function test_course_module_deleted($data) {
         global $DB;
