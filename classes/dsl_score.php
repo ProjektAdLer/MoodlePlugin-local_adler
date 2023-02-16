@@ -2,8 +2,6 @@
 
 namespace local_adler;
 
-# old moodle code without proper class declaration: https://github.com/Wunderbyte-GmbH/moodle-mod_booking/issues/174#issuecomment-855760228
-require_once($CFG->libdir . '/completionlib.php');
 
 use coding_exception;
 use completion_info;
