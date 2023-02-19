@@ -16,7 +16,7 @@ $tempdir = make_backup_temp_directory($foldername);
 //$files = $fp->extract_to_pathname('/mnt/c/Users/heckmarm/Downloads/SoftwareEngineeringNoWordSearch.mbz', $tempdir);
 //$files = $fp->extract_to_pathname('C:\Users\heckmarm\code\phpstorm\moodledata\filedir\f2\03\f2037361cea2c4c54643a482dc46f7fb4a6ac579', $tempdir);
 //$files = $fp->extract_to_pathname('/mnt/c/Users/heckmarm/code/phpstorm/moodledata/filedir/2a/a3/2aa3e54e638356b83e970c4bf4fb94a068ba5083', $tempdir);
-$files = $fp->extract_to_pathname('/var/www/moodledata/filedir/a3/55/a3552cb696c40ee559488c29bdd939f63bb1f1f4', $tempdir);
+$files = $fp->extract_to_pathname('/home/markus/2023-02-14_example_course_with_adler_score_and_moodle_course_attr.mbz', $tempdir);
 
 $controller = new restore_controller(
     $foldername,

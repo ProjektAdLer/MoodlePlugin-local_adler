@@ -22,8 +22,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023021700;
-$plugin->requires = 2022110800;  // Moodle version
+$plugin->version = 2023021701;
+$plugin->requires = 2021051712.05;  // Moodle version
 $plugin->component = 'local_adler';
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->release = '0.1.0';

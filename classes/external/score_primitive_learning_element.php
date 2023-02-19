@@ -45,7 +45,7 @@ class score_primitive_learning_element extends external_api {
      */
     public static function execute($module_id, $is_completed): array {
         global $CFG;
-        require_once("$CFG->libdir/completionlib.php");
+        require_once($CFG->libdir . '/completionlib.php');
 
         // Parameter validation
         $params = self::validate_parameters(self::execute_parameters(), array(

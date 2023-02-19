@@ -17,6 +17,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 class backup_local_adler_plugin_test extends local_adler_testcase {
     public function setUp(): void {
         parent::setUp();
+//        $this->markTestSkipped('testing');
 
         global $CFG;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
@@ -114,7 +115,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->assertEmpty($xml->plugin_local_adler_module->adler_score->children());
+        $this->assertFalse(isset($xml->plugin_local_adler_module->adler_score), 'adler_score should not be in $xml->plugin_local_adler_module');
     }
 
     /** Test course backup */
@@ -170,6 +171,6 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc, 'course');
 
         // validate xml values
-        $this->assertEmpty($xml->plugin_local_adler_course->adler_score->children());
+        $this->assertFalse(isset($xml->plugin_local_adler_course->adler_score), 'adler_score should not be in $xml->plugin_local_adler_course');
     }
 }

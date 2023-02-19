@@ -6,20 +6,14 @@ use local_adler\lib\local_adler_testcase;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
+require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_plugin.class.php');
+
 
 /**
  * PHPunit test for class restore_local_adler_plugin
  */
 class restore_local_adler_plugin_test extends local_adler_testcase {
-    public function setUp(): void {
-        parent::setUp();
-
-        global $CFG;
-        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
-        require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_plugin.class.php');
-    }
-
-
     public function setUpModule(): array {
         // stub the get_task() method to return a mock task object
         $stub_task = $this->getMockBuilder(restore_activity_task::class)
@@ -180,6 +174,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         // create plugin object
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
         $property = new ReflectionProperty(restore_local_adler_plugin::class, 'connectionpoint');
+        $property->setAccessible(true);
         $property->setValue($plugin, $mock_path_element);
         $method = self::getMethodAsPublic('define_module_plugin_structure');
 
@@ -222,6 +217,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         // create plugin object
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
         $property = new ReflectionProperty(restore_local_adler_plugin::class, 'connectionpoint');
+        $property->setAccessible(true);
         $property->setValue($plugin, $mock_path_element);
         $method = self::getMethodAsPublic('define_course_plugin_structure');
 
