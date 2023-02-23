@@ -1,5 +1,17 @@
 # AdLer Moodle Plugin
 
+## Kompabilität
+Die minimal notwendige Moodle Version is auf 3.11.12 gesetzt, daher wird die Installation auf älteren Versionen nicht funktionieren.
+Potenziell sollte das Plugin auch auf älteren Versionen funktionieren, dies wird aber nicht getestet.
+
+Folgende Versionen werden unterstützt:
+
+| Moodle Branch     | PHP Version |
+|-------------------|-------------|
+| MOODLE_311_STABLE | 7.4         |
+| MOODLE_401_STABLE | 7.4         |
+| MOODLE_401_STABLE | 8.1         |
+
 ## Setup
 Setup funktioniert exakt wie bei allen anderen Plugins auch (nach dem manuellen Installationsvorgang, da unser Plugin nicht im Moodle Store ist).
 
