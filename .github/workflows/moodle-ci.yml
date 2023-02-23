@@ -108,6 +108,7 @@ jobs:
 
       - name: Init moodle test env
         # if using moodle-plugin-ci for the init phase the phpunit.xml file is replaced with a generated one including files that should not be included
+        # https://github.com/moodlehq/moodle-plugin-ci/issues/203
         if: ${{ always() }}
         run: |
           cd moodle
@@ -118,11 +119,12 @@ jobs:
         run: |
           cd moodle
           php -d pcov.enabled=1 -d pcov.directory=. vendor/bin/phpunit --coverage-text --configuration local/adler --testdox --coverage-clover local/adler/coverage.xml
-#         restore tests are randomly causing segfaults when run with moodle-plugin-ci, but run totally fine when run with phpunit directly
-#          moodle-plugin-ci phpunit --fail-on-warning --coverage-clover --coverage-text -vvv
+          # restore tests are randomly causing segfaults when run with moodle-plugin-ci, but run totally fine when run with phpunit directly
+          # https://github.com/moodlehq/moodle-plugin-ci/issues/204
+          # moodle-plugin-ci phpunit --fail-on-warning --coverage-clover --coverage-text -vvv
 
       - name: Coveralls upload
-        continue-on-error: true # This step currently does not work although it should
+        continue-on-error: true
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         if: ${{ matrix.php == '8.1' && matrix.moodle-branch == 'MOODLE_401_STABLE' && matrix.database == 'mariadb'}}
@@ -130,7 +132,8 @@ jobs:
           cd moodle
           composer require --dev php-coveralls/php-coveralls
           cd local/adler
-          unset GITHUB_ACTIONS  # workaround for https://github.com/php-coveralls/php-coveralls/issues/358
+          # workaround for https://github.com/php-coveralls/php-coveralls/issues/358
+          unset GITHUB_ACTIONS  
           php ../../vendor/bin/php-coveralls --coverage_clover=coverage.xml -v --json_path coveralls_upload.json --exclude-no-stmt
 
 #     There are no behat tests (yet)
