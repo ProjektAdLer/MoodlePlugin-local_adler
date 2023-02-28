@@ -151,7 +151,23 @@ class observer_test extends local_adler_testcase {
     }
 
 
-    public function test_delete_non_existent_adler_cms_perf() {
+    public function generate_test_delete_non_existent_adler_cms_data() {
+        return [
+            '100/10' => ['cm_count' => 110, 'delete_count' => 10],
+            '1k/10' => ['cm_count' => 1010, 'delete_count' => 10],
+            '10k/10' => ['cm_count' => 10010, 'delete_count' => 10],
+            '100/100' => ['cm_count' => 200, 'delete_count' => 100],
+            '1k/100' => ['cm_count' => 1100, 'delete_count' => 100],
+            '10k/100' => ['cm_count' => 10100, 'delete_count' => 100],
+            '100k/100' => ['cm_count' => 100100, 'delete_count' => 100],
+        ];
+    }
+
+
+    /**
+     * @dataProvider generate_test_delete_non_existent_adler_cms_data
+     */
+    public function test_delete_non_existent_adler_cms_perf($count_cms, $count_delete) {
         $this->markTestSkipped('Test performance of the implementation -> no point in running it during regular unit tests execution');
 
         $generator = $this->getDataGenerator();
@@ -166,7 +182,7 @@ class observer_test extends local_adler_testcase {
 
         // create cms in course
         $modules = [];
-        $count = 100000;
+        $count = $count_cms-$count_delete;
         for ($i = 0; $i < $count; $i++) {
             // log progress
             if ($i % 100 === 0) {
@@ -180,7 +196,7 @@ class observer_test extends local_adler_testcase {
 
 
         // create 100 adler scores without cms
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < $count_delete; $i++) {
             $adler_generator->create_adler_score_item($modules[count($modules) - 1]->cmid + 1 + $i);
         }
 
@@ -189,10 +205,8 @@ class observer_test extends local_adler_testcase {
         observer::delete_non_existent_adler_cms();
         $end = microtime(true);
 
-        // check result
-        $this->assertTrue($end - $start < 10);
-
         // output duration
         fwrite(STDERR, 'duration in s: ' . ($end - $start) . PHP_EOL);
+        fflush(STDERR);
     }
 }

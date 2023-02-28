@@ -16,14 +16,13 @@
 
 /**
  * @package   local_adler
- * @copyright 2020, You Name <your@email.address>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2023, Markus Heck <markus.heck@hs-kempten.de>
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023021701;
+$plugin->version = 2023022801;
 $plugin->requires = 2021051712.05;  // Moodle version
 $plugin->component = 'local_adler';
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '0.1.0';
+$plugin->release = '0.1.2_dev';

@@ -39,6 +39,8 @@
     </testsuite>
   </testsuites>
 
+<!--  Moodle way: define coverage config in coverage.php: https://docs.moodle.org/dev/Writing_PHPUnit_tests#Check_your_coverage  -->
+<!--  This approach does not allow setting any other values of phpunit.xml  -->
   <coverage>
     <include>
       <directory suffix=".php">classes</directory>
