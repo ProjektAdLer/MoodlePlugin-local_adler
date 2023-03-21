@@ -56,6 +56,15 @@ $functions = array(
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
         'capabilities' => '', // comma separated list of capabilities used by the function.
         'loginrequired' => true
+    ),
+    'local_adler_upload_course' => array(
+        'classname'   => 'local_adler\external\upload_course',  //class containing the external function OR namespaced class in classes/external/XXXX.php
+        'description' => 'Upload adler course (as mbz file)',    //human readable description of the web service function
+        'type'        => 'write',                  //database rights of the web service function (read, write)
+        'ajax' => false,        // is the service available to 'internal' ajax calls.
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
+        'capabilities' => '', // comma separated list of capabilities used by the function.
+        'loginrequired' => true
     )
 );
 
