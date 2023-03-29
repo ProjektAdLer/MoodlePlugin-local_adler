@@ -1,6 +1,7 @@
 # AdLer Moodle Plugin
 
-[![Coverage Status](https://coveralls.io/repos/github/ProjektAdLer/MoodlePlugin/badge.svg?branch=main)](https://coveralls.io/github/ProjektAdLer/MoodlePlugin?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/ProjektAdLer/MoodlePluginLocal/badge.svg?branch=main)](https://coveralls.io/github/ProjektAdLer/MoodlePluginLocal?branch=main)
+
 
 ## Kompabilität
 
@@ -15,6 +16,26 @@ Folgende Versionen werden unterstützt:
 | MOODLE_401_STABLE | 7.4         |
 | MOODLE_401_STABLE | 8.1         |
 
+
+## Deinstallation der Plugins
+Die Plugins sind gegenseitig voneinander abhängig. Diese sind ausschließlich dafür gedacht in Kombination verwendet zu werden, 
+für sich alleine können diese nicht eingesetzt werden. Der Uninstaller von moodle kann Plugins mit gegenseitigen Abhängigkeiten
+nicht deinstallieren. Dazu gibt es eine "Won't fix" Issue im moodle issue tracker: [MDL-55624](https://tracker.moodle.org/browse/MDL-56624).
+Die Deinstallation der Plugins erfordert deshalb manuelles Eingreifen.
+1. In der Datei `local/adler/version.php` das Feld `$plugin->dependencies` komplett löschen.
+2. Evtl. ist ein Erhöhen der Versionsnummer und ein upgrade der Moodle Installation notwendig.
+3. Die Plugins können nun deinstalliert werden.
+
+Ein alternativer Ansatz dazu könnte wie folgt aussehen: Das Plugin `availability_adler` kann im Grunde eigenständig installiert werden,
+ist dann aber ohne Funktion, da es ohne das Plugin `local_adler` nicht funktionieren kann (alle Adler-Conditions werden deshalb als 
+erfüllt behandelt). Die Abhängigkeit des Plugins `availability_adler` von `local_adler` könnte somit entfernt werden. So könnten 
+die Plugins erwartungsgemäß deinstalliert werden. Dieser Ansatz hätte aber die folgenden gravierenden Nachteile:
+- Dem Moodle Plugin Konzept folgend dürfte `availability_adler` nicht auf Funktionen von `local_adler` zugreifen, da keine Abhängigkeit
+  besteht. Dies würde aber bedeuten, dass die Adler Raumlogiken nicht funktionieren können.
+- Wird `local_adler` deinstalliert verbleibt `availability_adler` installiert und muss danach manuell entfernt werden.
+- Wird `availability_adler` installiert wird `local_adler` nicht automatisch installiert.
+
+
 ## Setup
 
 Setup funktioniert exakt wie bei allen anderen Plugins auch (nach dem manuellen Installationsvorgang, da unser Plugin nicht im Moodle Store ist).
@@ -23,6 +44,7 @@ Setup funktioniert exakt wie bei allen anderen Plugins auch (nach dem manuellen 
 2. Moodle upgrade ausführen
 
 Damit ist die Installation abgeschlossen. Als Nächstes kann ein mbz mit den Plugin-Feldern wiederhergestellt werden.
+
 
 ### Kurs mit dummy Daten seeden
 
@@ -35,6 +57,7 @@ Dann das Script ausführen `php local/adler/dev_utils/seed/scores.php`.
 
 Nun kann dieser Kurs zum Testen genutzt werden.
 
+
 ## Context ID für xapi events
 
 xapi Events nutzen die Context-ID, um die Kurs-ID zu referenzieren.
@@ -43,6 +66,7 @@ Um für Testzwecke die context-id eines Lernelements zu erhalten, kann wie folgt
 
 1. cmid des Lernelements herausfinden: h5p Element im Browser öffnen, in der URL steht die cmid als Parameter `id=123` (bspw `http://localhost/mod/h5pactivity/view.php?id=2`)
 2. in der DB folgende query ausführen: `SELECT id FROM mdl_context where contextlevel = 70 and instanceid = 2;`  (`instanceid` ist die id aus step 1)
+
 
 ## Löschen eines Kurses / von Lernelementen
 

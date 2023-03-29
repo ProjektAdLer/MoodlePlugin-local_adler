@@ -52,4 +52,21 @@ class local_adler_generator extends component_generator_base {
         }
         return $create_adler_course_item;
     }
+
+    public function create_adler_section_object(int $section_id, array $params = array(), bool $insert = true) {
+        global $DB;
+        $default_params = [
+            'section_id' => $section_id,
+            'required_points_to_complete' => 100,
+            'timecreated' => 0,
+            'timemodified' => 0
+        ];
+        $params = array_merge($default_params, $params);
+        $create_adler_section_item = (object)$params;
+
+        if ($insert) {
+            $create_adler_section_item->id = $DB->insert_record('local_adler_sections', $create_adler_section_item);
+        }
+        return $create_adler_section_item;
+    }
 }
