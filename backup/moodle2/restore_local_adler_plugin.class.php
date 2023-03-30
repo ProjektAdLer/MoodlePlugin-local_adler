@@ -43,6 +43,36 @@ class restore_local_adler_plugin extends restore_local_plugin {
         $DB->insert_record('local_adler_scores_items', $data);
     }
 
+    protected function define_section_plugin_structure(): array {
+        return [
+            new restore_path_element('adler_section', $this->get_pathfor('/adler_section'))
+        ];
+    }
+
+    /**
+     * @throws dml_exception
+     */
+    public function process_adler_section($data) {
+        global $DB;
+
+        // Cast $data to object if it is an array
+        // This is required because the object can sometimes randomly be an array
+        $data = (object)$data;
+
+        $data->section_id = $this->task->get_sectionid();
+
+        // default values for timecreated and timemodified, if they are not set
+        if (!isset($data->timecreated)) {
+            $data->timecreated = time();
+        }
+        if (!isset($data->timemodified)) {
+            $data->timemodified = time();
+        }
+
+        // Insert the record into the database
+        $DB->insert_record('local_adler_sections', $data);
+    }
+
     protected function define_course_plugin_structure(): array {
         return [
             new restore_path_element('adler_course', $this->get_pathfor('/adler_course'))
