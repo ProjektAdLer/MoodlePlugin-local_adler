@@ -67,7 +67,15 @@ class adler_score_test extends local_adler_testcase {
 
         // create module
         $this->module = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id, 'completion' => 1]);
+    }
 
+    public function tearDown(): void {
+        parent::tearDown();
+
+        $reflection = new ReflectionClass(adler_score::class);
+        $property = $reflection->getProperty('completion_info');
+        $property->setAccessible(true);
+        $property->setValue(completion_info::class);
     }
 
     public function provide_test_construct_data() {

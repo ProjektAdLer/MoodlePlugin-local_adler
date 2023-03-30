@@ -22,6 +22,15 @@ class adler_score_helpers_adler_score_mock extends adler_score {
 
 
 class adler_score_helpers_test extends local_adler_testcase {
+    public function tearDown(): void {
+        parent::tearDown();
+
+        $reflected_class = new ReflectionClass(adler_score_helpers::class);
+        $param_adler_score_class = $reflected_class->getProperty('adler_score_class');
+        $param_adler_score_class->setAccessible(true);
+        $param_adler_score_class->setValue(adler_score::class);
+    }
+
     public function test_get_adler_score_objects() {
         // setup
         // set param $adler_score_class
