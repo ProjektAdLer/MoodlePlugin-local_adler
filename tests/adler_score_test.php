@@ -7,6 +7,7 @@ use coding_exception;
 use completion_info;
 use local_adler\lib\local_adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
+use local_adler\local\exceptions\user_not_enrolled_exception;
 use mod_h5pactivity\local\grader;
 use moodle_exception;
 use ReflectionClass;
@@ -110,7 +111,7 @@ class adler_score_test extends local_adler_testcase {
                 'course_module_param' => 'correct',
                 'is_adler_course' => true,
                 'is_adler_cm' => true,
-                'expect_exception' => moodle_exception::class,
+                'expect_exception' => user_not_enrolled_exception::class,
                 'expect_exception_message' => "user_not_enrolled",
             ]],
             'invalid module format' => [[
