@@ -11,7 +11,7 @@ class db {
      * @return stdClass|false adler-section for given moodle section, false if not found
      * @throws dml_exception
      */
-    public static function get_adler_section(int $section_id): stdClass {
+    public static function get_adler_section(int $section_id) {
         global $DB;
         return $DB->get_record('local_adler_sections', ['section_id' => $section_id]);
     }

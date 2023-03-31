@@ -34,7 +34,37 @@ class backup_local_adler_plugin extends backup_local_plugin {
 
         // Define file annotations
 
-        // Return the root element (choice), wrapped into standard activity structure
+        // Return the root element, wrapped into standard activity structure
+        return $plugin;
+    }
+
+    protected function define_section_plugin_structure(): backup_plugin_element {
+        $plugin = $this->get_plugin_element();
+
+        // To know if we are including userinfo
+
+        // Define each element separated
+        $pluginwrapper = new backup_nested_element($this->get_recommended_name());
+
+        // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
+        // For now there is no data to back up. The only relevant information is that the entry exists.
+        // Because of Moodle logics, empty elements are ignored during restore, so there has to be a dummy field.
+        $adler_section = new backup_nested_element("adler_section", null, [
+            'required_points_to_complete'
+        ]);
+
+        // Build the tree
+        $plugin->add_child($pluginwrapper);
+        $pluginwrapper->add_child($adler_section);
+
+        // Define sources
+        $adler_section->set_source_table('local_adler_sections', array('section_id' => backup::VAR_SECTIONID));
+
+        // Define id annotations
+
+        // Define file annotations
+
+        // Return the root element, wrapped into standard activity structure
         return $plugin;
     }
 
@@ -60,15 +90,15 @@ class backup_local_adler_plugin extends backup_local_plugin {
         $pluginwrapper->add_child($adler_course);
 
         // Define sources
+//        $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
         // set data manually
         $adler_course->set_source_array([['foo' => 'bar']]);
-//        $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
 
         // Define id annotations
 
         // Define file annotations
 
-        // Return the root element (choice), wrapped into standard activity structure
+        // Return the root element, wrapped into standard activity structure
         return $plugin;
     }
 }

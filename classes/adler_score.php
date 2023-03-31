@@ -7,6 +7,7 @@ use coding_exception;
 use completion_info;
 use context_course;
 use dml_exception;
+use local_adler\local\exceptions\user_not_enrolled_exception;
 use moodle_exception;
 use stdClass;
 
@@ -29,7 +30,8 @@ class adler_score {
     /**
      * @param object $course_module
      * @param int|null $user_id If null, the current user will be used
-     * @throws moodle_exception course_module_format_not_valid, user_not_enrolled, not_an_adler_cm, course_not_adler_course
+     * @throws user_not_enrolled_exception
+     * @throws moodle_exception course_module_format_not_valid, not_an_adler_cm, course_not_adler_course
      */
     public function __construct(object $course_module, int $user_id = null) {
         $this->course_module = $course_module;
@@ -54,7 +56,7 @@ class adler_score {
         // validate user is enrolled in course
         $course_context = context_course::instance($this->course_module->course);
         if (!is_enrolled($course_context, $this->user_id)) {
-            throw new moodle_exception('user_not_enrolled', 'local_adler');
+            throw new user_not_enrolled_exception();
         }
 
         // validate course is adler course
