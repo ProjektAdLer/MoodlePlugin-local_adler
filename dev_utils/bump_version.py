@@ -5,8 +5,12 @@ If date part is not from today, set it to today and set part_number to 00
 import fileinput
 import sys
 import datetime
+import os
+import pathlib
 
-version_file = "/home/markus/moodle/local/adler/version.php"
+script_path = pathlib.Path(__file__).parent.resolve()
+plugin_path = str(script_path).split("local/adler/")[0]+'local/adler'
+version_file = os.path.join(plugin_path, 'version.php')
 
 for line in fileinput.input(version_file, inplace=True):
     if line.startswith("$plugin->version"):
@@ -27,9 +31,5 @@ for line in fileinput.input(version_file, inplace=True):
             part_number = "00"
 
         print("$plugin->version = " + part_date + part_number + ";")
-
-
-#         version += 1
-#         print("$plugin->version = " + str(version) + ";")
     else:
         print(line, end='')

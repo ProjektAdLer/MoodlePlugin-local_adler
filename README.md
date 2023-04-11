@@ -6,9 +6,9 @@
 ## Kompabilität
 
 Die minimal notwendige Moodle Version ist auf 3.11.12 gesetzt, daher wird die Installation auf älteren Versionen nicht funktionieren.
-Potenziell sollte das Plugin auch auf älteren Versionen funktionieren, dies wird aber nicht getestet.
+Prinzipiell sollte das Plugin auch auf älteren Versionen funktionieren, dies wird aber nicht getestet.
 
-Folgende Versionen werden unterstützt:
+Folgende Versionen werden unterstützt (mit mariadb und postresql getestet):
 
 | Moodle Branch     | PHP Version |
 |-------------------|-------------|
@@ -18,6 +18,11 @@ Folgende Versionen werden unterstützt:
 
 
 ## Deinstallation der Plugins
+### Halbautomatische Deinstallation
+Es gibt ein dev_utils script, welches dieses Plugin deinstalliert `php local/adler/dev_utils/uninstall_plugin.php`.
+Möglicherweise wird dieses Script in Zukunft zu einem PHP CLI script ausgebaut.
+
+### Manuelle Deinstallation und Erklärung des Problems
 Die Plugins sind gegenseitig voneinander abhängig. Diese sind ausschließlich dafür gedacht in Kombination verwendet zu werden, 
 für sich alleine können diese nicht eingesetzt werden. Der Uninstaller von moodle kann Plugins mit gegenseitigen Abhängigkeiten
 nicht deinstallieren. Dazu gibt es eine "Won't fix" Issue im moodle issue tracker: [MDL-55624](https://tracker.moodle.org/browse/MDL-56624).
@@ -49,11 +54,12 @@ Damit ist die Installation abgeschlossen. Als Nächstes kann ein mbz mit den Plu
 ### Kurs mit dummy Daten seeden
 
 Für Testzwecke können bestehende normale Kurse mit dummy Daten gefüllt werden.
-Dazu liegen im Ordner `dev_utils/seed` zwei Skripte, die das automatisieren.
-Zuerst im Script `course.php` die Kurs-ID eintragen, die gefüllt werden soll.
+Dazu liegen im Ordner `dev_utils/seed` Skripte, die das automatisieren.
+1) Zuerst im Script `course.php` die Kurs-ID eintragen, die gefüllt werden soll.
 Dann das Script ausführen `php local/adler/dev_utils/seed/course.php`.
-Danach im Script `scores.php` die Kurs-ID eintragen, die gefüllt werden soll (dieselbe wie im vorherigen Script).
+2) Danach im Script `scores.php` die Kurs-ID eintragen, die gefüllt werden soll (dieselbe wie im vorherigen Script).
 Dann das Script ausführen `php local/adler/dev_utils/seed/scores.php`.
+3) Section seeden: `php local/adler/dev_utils/seed/section.php`
 
 Nun kann dieser Kurs zum Testen genutzt werden.
 
