@@ -5,13 +5,16 @@ namespace local_adler;
 use core\event\course_content_deleted;
 use core\event\course_deleted;
 use core\event\course_module_deleted;
+use core\event\course_section_deleted;
 use dml_exception;
+use local_adler\local\section\db as section_db;
 
 defined('MOODLE_INTERNAL') || die();
 
 
 class observer {
     protected static string $helpers = helpers::class;
+    protected static string $section_db = section_db::class;
     private static string $adler_score_helpers = adler_score_helpers::class;
 
     /**
@@ -20,7 +23,6 @@ class observer {
      * @param course_module_deleted $event
      */
     public static function course_module_deleted(course_module_deleted $event) {
-        debugging('course_module_deleted event triggered234234324');
         $cmid = $event->objectid;
 
         // check if is adler course
@@ -37,6 +39,24 @@ class observer {
         // delete adler cm
         static::$adler_score_helpers::delete_adler_score_record($cmid);
         debugging('deleted adler cm for cmid ' . $cmid);
+    }
+
+    public static function course_section_deleted(course_section_deleted $event) {
+        $sectionid = $event->objectid;
+
+        // check if is adler course
+        if (!static::$helpers::course_is_adler_course($event->courseid)) {
+            return;
+        }
+
+        // check if is adler section
+        if (!static::$section_db::get_adler_section($sectionid)) {
+            return;
+        }
+
+        // delete adler section
+        static::$section_db::delete_adler_section_record($sectionid);
+        debugging('deleted adler section for sectionid ' . $sectionid);
     }
 
     /**
@@ -56,6 +76,33 @@ class observer {
         static::$helpers::delete_adler_course_record($courseid);
         debugging('deleted adler course for courseid ' . $courseid);
     }
+
+
+    /** Delete all adler sections for sections that no longer exist.
+     * @return array
+     * @throws dml_exception
+     */
+    public static function delete_non_existing_adler_sections(): array {
+        global $DB;
+        // get list of all existing sectionids
+        $sectionids = $DB->get_records('course_sections', [], 'id', 'id');
+        $sectionids = array_column($sectionids, 'id');
+
+        $adler_sections = $DB->get_records('local_adler_sections', [], 'section_id', 'id, section_id');
+
+        $deleted_sections = [];
+        // if adler section section_id is not in $sectionids, delete adler section
+        foreach ($adler_sections as $adler_section) {
+            if (!in_array($adler_section->section_id, $sectionids)) {
+                static::$section_db::delete_adler_section_record($adler_section->section_id);
+                $deleted_sections[] = $adler_section->section_id;
+                debugging('deleted adler section for sectionid ' . $adler_section->section_id);
+            }
+        }
+
+        return $deleted_sections;
+    }
+
 
     /** Delete all adler scores for cms that no longer exist.
      * @return array
@@ -98,5 +145,6 @@ class observer {
          */
 
         static::delete_non_existent_adler_cms();
+        static::delete_non_existing_adler_sections();
     }
 }
