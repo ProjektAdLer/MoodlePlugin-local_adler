@@ -3,6 +3,14 @@
  * Restoring logic for the local Adler plugin.
  */
 class restore_local_adler_plugin extends restore_local_plugin {
+    protected $db;
+
+    public function __construct($name, $plugin, $restore) {
+        global $DB;
+        parent::__construct($name, $plugin, $restore);
+        $this->db = $DB;
+    }
+
     /** Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *
      * @return restore_path_element[]
@@ -53,8 +61,6 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @throws dml_exception
      */
     public function process_adler_section($data) {
-        global $DB;
-
         // Cast $data to object if it is an array
         // This is required because the object can sometimes randomly be an array
         $data = (object)$data;
@@ -70,7 +76,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
         }
 
         // Insert the record into the database
-        $DB->insert_record('local_adler_sections', $data);
+        $this->db->insert_record('local_adler_sections', $data);
     }
 
     protected function define_course_plugin_structure(): array {
