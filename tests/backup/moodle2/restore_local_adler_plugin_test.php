@@ -272,4 +272,90 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $this->assertTrue($db_record->timecreated > 0 && $db_record->timecreated <= time());
         $this->assertTrue($db_record->timemodified > 0 && $db_record->timemodified <= time());
     }
+
+    public function test_define_section_plugin_structure() {
+        $restore_mock = $this
+            ->getMockBuilder(restore_local_adler_plugin::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_pathfor'])
+            ->getMock();
+        $restore_mock
+            ->method('get_pathfor')
+            ->with('/adler_section')
+            ->willReturn('blub');
+
+        // make define_section_plugin_structure() public
+        $class = new ReflectionClass($restore_mock);
+        $method = $class->getMethod('define_section_plugin_structure');
+        $method->setAccessible(true);
+
+        $res = $method->invoke($restore_mock);
+
+        $this->assertEquals('blub', $res[0]->get_path());
+    }
+
+    public function provide_test_process_adler_section_data() {
+        return [
+            'full object' => [
+                'restore_data' => (object)[
+                    'required_points_to_complete' => 1,
+                    'timecreated' => 1,
+                    'timemodified' => 1,
+                ],
+            ],
+            'without optional fields' => [
+                'restore_data' => (object)[
+                    'required_points_to_complete' => 1,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provide_test_process_adler_section_data
+     */
+    public function test_process_adler_section($restore_data) {
+        $restore_mock = $this
+            ->getMockBuilder(restore_local_adler_plugin::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([])
+            ->getMock();
+        $db_mock = $this
+            ->getMockBuilder(moodle_database::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['insert_record'])
+            ->getMockForAbstractClass();
+        $task_mock = $this->getMockBuilder(restore_section_task::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['get_sectionid'])
+            ->getMockForAbstractClass();
+
+        $db_mock->method('insert_record')
+            ->will($this->returnCallback(function($table, $data) use ($restore_data) {
+                // verify database call
+                $this->assertEquals('local_adler_sections', $table);
+                $this->assertEquals(1, $data->section_id);
+                $this->assertEquals($restore_data->required_points_to_complete, $data->required_points_to_complete);
+                if (property_exists($restore_data, 'timecreated')) {
+                    $this->assertEquals($restore_data->timecreated, $data->timecreated);
+                } else {
+                    $this->assertTrue($data->timecreated > 0 && $data->timecreated <= time());
+                }
+            }));
+        $task_mock->method('get_sectionid')
+            ->willReturn(1);
+
+        // make define_section_plugin_structure() public
+        $class = new ReflectionClass($restore_mock);
+        $property = $class->getProperty('db');
+        $property->setAccessible(true);
+        $property->setValue($restore_mock, $db_mock);
+        $property = $class->getProperty('task');
+        $property->setAccessible(true);
+        $property->setValue($restore_mock, $task_mock);
+
+
+        // call the method to test
+        $restore_mock->process_adler_section($restore_data);
+    }
 }

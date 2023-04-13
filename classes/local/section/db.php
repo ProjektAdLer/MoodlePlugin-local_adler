@@ -28,7 +28,7 @@ class db {
 
 
     /**
-     * Get all moodle-sections for given section id. I am not aware of any moodle core function that
+     * Get all moodle-cms for given section id. I am not aware of any moodle core function that
      * allows accessing course_modules by only the section_id.
      * @param int $section_id moodle course id
      * @return array moodle-sections for given course
