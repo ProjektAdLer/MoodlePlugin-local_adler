@@ -21,11 +21,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023033008;
+$plugin->version = 2023041102;
 $plugin->requires = 2021051712.05;  // Moodle version
 $plugin->component = 'local_adler';
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->release = '0.1.2_dev';
 $plugin->dependencies = array(
-    'availability_adler' => ANY_VERSION,   // The Foo activity must be present (any version).
+    'availability_adler' => ANY_VERSION,
 );
