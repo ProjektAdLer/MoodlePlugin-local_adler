@@ -50,6 +50,7 @@
       <file>renderer.php</file>
       <file>rsslib.php</file>
       <directory suffix=".php">backup/moodle2</directory>
+      <file>db/uninstall.php</file>
     </include>
     <exclude>
       <directory suffix=".php">tests</directory>

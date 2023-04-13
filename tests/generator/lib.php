@@ -69,4 +69,38 @@ class local_adler_generator extends component_generator_base {
         }
         return $create_adler_section_item;
     }
+
+    /**
+     * Create an adler condition
+     *
+     * @param int $section_id
+     * @param array $depending_on_section_ids a condition is created which requires all sections in this array to be completed. "availability_condition" field in $params has higher priority
+     * @param array $params
+     * @param bool $insert If false: return the object without inserting it into the database
+     * @return stdClass
+     * @throws dml_exception
+     */
+    public function create_adler_condition(int $section_id, array $depending_on_section_ids, array $params = array(), bool $insert = true): stdClass {
+        $condition = '';
+        for ($i = 0; $i < count($depending_on_section_ids); $i++) {
+            $condition .= '(' . $depending_on_section_ids[$i] . ')';
+            if ($i < count($depending_on_section_ids) - 1) {
+                $condition .= '^';
+            }
+        }
+
+        global $DB;
+        $default_params = [
+            'availability_condition' => '{"op":"&","c":[{"type":"adler","condition":"' . $condition . '"}],"showc":[true]}',
+        ];
+        $params = array_merge($default_params, $params);
+
+        $section = $DB->get_record('course_sections', ['id' => $section_id]);
+        $section->availability = $params['availability_condition'];
+
+        if ($insert) {
+            $DB->update_record('course_sections', $section);
+        }
+        return $section;
+    }
 }
