@@ -72,7 +72,16 @@ Dann das Script ausführen `php local/adler/dev_utils/seed/scores.php`.~~
 Nun kann dieser Kurs zum Testen genutzt werden.
 
 
-## Context ID für xapi events
+## Dev Setup / Tests
+Dieses Plugin nutzt Mockery für Tests. 
+Die composer.json von Moodle enthält Mockery nicht, daher enthält das Plugin eine eigene composer.json.
+Diese ist (derzeit) nur für die Entwicklung relevant, sie enthält keine Dependencies die für die normale Nutzung notwendig sind.
+Um die dev-dependencies zu installieren muss `composer install` im Plugin-Ordner ausgeführt werden.
+
+
+## Verschiedenes
+
+### Context ID für xapi events
 
 xapi Events nutzen die Context-ID, um die Kurs-ID zu referenzieren.
 Diese sind aktuell über keine API des Plugins verfügbar, da sie für das moodle-interne Rechtemanagement gedacht sind.
@@ -82,7 +91,7 @@ Um für Testzwecke die context-id eines Lernelements zu erhalten, kann wie folgt
 2. in der DB folgende query ausführen: `SELECT id FROM mdl_context where contextlevel = 70 and instanceid = 2;`  (`instanceid` ist die id aus step 1)
 
 
-## Löschen eines Kurses / von Lernelementen
+### Löschen eines Kurses / von Lernelementen
 
 Beim Löschen eines Kurses oder Lernelements werden die Daten aus der Datenbank gelöscht. Dabei gibt es aber zwei Dinge zu beachten:
 

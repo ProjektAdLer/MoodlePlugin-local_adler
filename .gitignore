@@ -2,3 +2,5 @@
 /coveralls_upload.json
 /.idea
 /old
+/vendor
+/composer.lock
