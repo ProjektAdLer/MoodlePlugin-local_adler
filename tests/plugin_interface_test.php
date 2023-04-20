@@ -9,6 +9,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 use local_adler\lib\local_adler_testcase;
 use local_adler\local\section\section;
+use local_adler\local\section\db as section_db;
 use Mockery;
 
 
@@ -33,5 +34,21 @@ class plugin_interface_test extends local_adler_testcase {
         $result = $systemUnderTest->is_section_completed($section_id, $user_id);
 
         $this->assertFalse($result);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_get_section_name() {
+        $section_db_mock = Mockery::mock('overload:'. section_db::class);
+        $section_db_mock->shouldReceive('get_moodle_section')
+            ->once()
+            ->with(7)
+            ->andReturn((object) ['name' => 'test_section_name']);
+
+        $result = plugin_interface::get_section_name(7);
+
+        $this->assertEquals('test_section_name', $result);
     }
 }
