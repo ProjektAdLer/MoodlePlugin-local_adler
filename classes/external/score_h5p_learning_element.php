@@ -7,14 +7,13 @@ use context;
 use external_api;
 use external_function_parameters;
 use external_value;
-use local_adler\adler_score;
+use invalid_parameter_exception;
 use local_adler\adler_score_helpers;
 use moodle_exception;
 
 
 class score_h5p_learning_element extends external_api {
-    protected static string $adler_score = adler_score::class;
-    protected static string $adler_score_helpers = adler_score_helpers::class;
+    private static string $context = context::class;
 
 
     public static function execute_parameters(): external_function_parameters {
@@ -34,16 +33,25 @@ class score_h5p_learning_element extends external_api {
     /** Get array of all course_module ids of the given xapi event
      * @param $xapi string xapi json payload
      * @return array of course_module ids
-     * @throws coding_exception
+     * @throws coding_exception|invalid_parameter_exception
      */
-    private static function get_module_ids_from_xapi(string $xapi): array {
+    protected static function get_module_ids_from_xapi(string $xapi): array {
         $xapi = json_decode($xapi);
+
+        if (is_object($xapi)) {
+            $xapi = array($xapi);
+        }
+
         $module_ids = array();
         foreach ($xapi as $statement) {
+            if (!is_object($statement)) {
+                throw new invalid_parameter_exception("xapi statement is not an object");
+            }
+
             $url = explode('/', $statement->object->id);
             $url = explode('?', end($url));  // some object->id's have a query string
             $context_id = $url[0];
-            $module_id = context::instance_by_id($context_id)->instanceid;
+            $module_id = self::$context::instance_by_id($context_id)->instanceid;
             // add module id to array if not already in it
             if (!in_array($module_id, $module_ids)) {
                 $module_ids[] = $module_id;
@@ -68,7 +76,7 @@ class score_h5p_learning_element extends external_api {
         // first check if the modules support adler scoring
         // if one cm is not part of an adler course or is not an adler cm an exception is thrown
         $module_ids = static::get_module_ids_from_xapi($xapi);
-        $adler_scores = static::$adler_score_helpers::get_adler_score_objects($module_ids);
+        $adler_scores = adler_score_helpers::get_adler_score_objects($module_ids);
 
         // proxy xapi payload to core xapi library
         $result = static::call_external_function('core_xapi_statement_post', array(
@@ -82,7 +90,7 @@ class score_h5p_learning_element extends external_api {
 
         // get adler score
         try {
-            $scores = static::$adler_score_helpers::get_achieved_scores(null, null, $adler_scores);
+            $scores = adler_score_helpers::get_achieved_scores(null, null, $adler_scores);
         } catch (moodle_exception $e) {
             debugging('Failed to get adler scores, but xapi statements are already processed', E_ERROR);
             throw new moodle_exception('failed_to_get_adler_score', 'local_adler', '', $e->getMessage());

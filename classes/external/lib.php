@@ -30,6 +30,9 @@ class lib {
     }
 
     /**
+     * Convert an array of adler scores in format [<module_id>=><score>,..]
+     * to the response structure ['module_id'=><module_id>, 'score'=><score>]
+     *
      * @throws invalid_parameter_exception
      */
     public static function convert_adler_score_array_format_to_response_structure(array $scores): array {

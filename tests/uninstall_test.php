@@ -12,7 +12,6 @@ class uninstall_test extends local_adler_testcase {
     public function test_xmldb_local_adler_uninstall() {
         global $DB;
 
-        $generator = $this->getDataGenerator();
         $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
 
         // create course

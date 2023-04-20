@@ -2,16 +2,17 @@
 
 namespace local_adler;
 
+
 global $CFG;
-require_once($CFG->dirroot . '/local/adler/vendor/autoload.php');
+require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
+use local_adler\lib\local_adler_testcase;
 use local_adler\local\section\section;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 
 
-class plugin_interface_test extends TestCase {
+class plugin_interface_test extends local_adler_testcase {
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
