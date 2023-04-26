@@ -1,6 +1,9 @@
 <?php
 namespace local_adler\external;
 
+global $CFG;
+require_once($CFG->dirroot . '/lib/externallib.php');
+
 use context_course;
 use external_api;
 use external_function_parameters;
@@ -12,9 +15,7 @@ use moodle_exception;
 use restricted_context_exception;
 
 class score_get_course_scores extends external_api {
-    protected static string $adler_score = adler_score::class;
-    protected static string $adler_score_helpers = adler_score_helpers::class;
-    protected static string $context_course = context_course::class;
+    private static string $context_course = context_course::class;
 
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
@@ -50,7 +51,7 @@ class score_get_course_scores extends external_api {
         }
 
         // get scores
-        $scores = static::$adler_score_helpers::get_achieved_scores($module_ids);
+        $scores = adler_score_helpers::get_achieved_scores($module_ids);
 
         // convert format return
         return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
