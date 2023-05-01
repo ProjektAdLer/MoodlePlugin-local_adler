@@ -74,7 +74,10 @@ class adler_score {
      * @param float $percentage_achieved As float value between 0 and 1
      */
     private static function calculate_score(float $max_score, float $percentage_achieved): float {
-        return $max_score * $percentage_achieved;
+        if ($percentage_achieved === 1.) {
+            return $max_score;
+        }
+        return 0.;
     }
 
     /** Calculate percentage achieved between $min and $max

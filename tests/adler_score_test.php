@@ -354,13 +354,13 @@ class adler_score_test extends local_adler_testcase {
         $test_data = [
             ['maxscore' => 100, 'rawscore' => 0, 'expected_score' => 0],
             ['maxscore' => 100, 'rawscore' => 100, 'expected_score' => 100],
-            ['maxscore' => 100, 'rawscore' => 50, 'expected_score' => 50],
+            ['maxscore' => 100, 'rawscore' => 50, 'expected_score' => 0],
             ['maxscore' => 50, 'rawscore' => 0, 'expected_score' => 0],
             ['maxscore' => 50, 'rawscore' => 50, 'expected_score' => 100],
-            ['maxscore' => 50, 'rawscore' => 25, 'expected_score' => 50],
+            ['maxscore' => 50, 'rawscore' => 25, 'expected_score' => 0],
             ['maxscore' => 200, 'rawscore' => 0, 'expected_score' => 0],
             ['maxscore' => 200, 'rawscore' => 200, 'expected_score' => 100],
-            ['maxscore' => 200, 'rawscore' => 100, 'expected_score' => 50],
+            ['maxscore' => 200, 'rawscore' => 100, 'expected_score' => 0],
         ];
 
         // test attempts with different maxscores and rawscores
