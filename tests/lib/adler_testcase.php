@@ -47,10 +47,12 @@ abstract class local_adler_testcase extends advanced_testcase {
 }
 
 abstract class local_adler_externallib_testcase extends externallib_advanced_testcase {
-    use general_testcase_adjustments;
+    use general_testcase_adjustments {
+        setUp as protected setUpTrait;
+    }
 
     public function setUp(): void {
-        parent::setUp();
+        $this->setUpTrait();
 
         // As of moodle 4.2 it is not possible anymore to load this file outside a test case. This file is now deprecated and
         // only contains aliases to the new implementation. Moodle devs want to be sure this file is only imported in tests
