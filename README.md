@@ -6,28 +6,28 @@
 
 ## MBZ api endpunkt
 Damit der mbz api endpunkt auch mit größeren Dateien funktioniert sind folgende Änderungen an der php.ini notwendig:
+```
 - `post_max_size` auf mindestens 2048M setzen
 - `upload_max_filesize` auf 2048M setzen
 - `max_input_time` auf 600 setzen
 - `memory_limit` auf mindestens 256M setzen
 - `max_execution_time` auf mindestens 60 setzen
 - `output_buffering` auf 8192 setzen
-
 ```
 
 
 ## Kompabilität
-
 Die minimal notwendige Moodle Version ist auf 3.11.12 gesetzt, daher wird die Installation auf älteren Versionen nicht funktionieren.
 Prinzipiell sollte das Plugin auch auf älteren Versionen funktionieren, dies wird aber nicht getestet.
 
 Folgende Versionen werden unterstützt (mit mariadb und postresql getestet):
 
-| Moodle Branch     | PHP Version |
-|-------------------|-------------|
-| MOODLE_311_STABLE | 7.4         |
-| MOODLE_401_STABLE | 7.4         |
-| MOODLE_401_STABLE | 8.1         |
+| Moodle Branch           | PHP Version |
+|-------------------------|-------------|
+| MOODLE_311_STABLE       | 7.4         |
+| MOODLE_401_STABLE (LTS) | 7.4         |
+| MOODLE_401_STABLE (LTS) | 8.1         |
+| MOODLE_402_STABLE       | 8.1         |
 
 
 ## Deinstallation der Plugins
