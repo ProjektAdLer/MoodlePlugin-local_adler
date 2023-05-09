@@ -1,5 +1,9 @@
 <?php
 
+/** This file contains mocks from old mocking approaches of static stuff.
+ * Don't use them anymore in new tests. Use Mockito instead.
+ */
+
 namespace local_adler\external;
 
 global $CFG;
@@ -22,13 +26,3 @@ class context_module_mock {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 }
-
-class context_course_mock {
-    use static_mock_utilities_trait;
-
-    public static function instance($module_id) {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
-}
-
-

@@ -8,16 +8,6 @@ use local_adler\lib\static_mock_utilities_trait;  # import for other classes imp
 use moodle_exception;
 use Throwable;
 
-#require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
-#require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
-
-//class adler_score_helpers_adler_score_mock extends adler_score {
-//    use static_mock_utilities_trait;
-//    public function __construct(object $course_module, int $user_id = null) {
-//        return static::mock_this_function(__FUNCTION__, func_get_args());
-//    }
-//}
-
 
 class helpers_test extends local_adler_testcase {
     public function provide_test_course_is_adler_course_data(): array {

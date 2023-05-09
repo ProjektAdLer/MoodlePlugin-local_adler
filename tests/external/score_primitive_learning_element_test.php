@@ -12,34 +12,19 @@ use local_adler\lib\local_adler_externallib_testcase;
 
 
 global $CFG;
-require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
-class mock_score_primitive_learning_element extends score_primitive_learning_element {
-    private static $index = 0;
-    private static $data = array();
 
-    public static function set_data(array $data) {
-        self::$data = $data;
-        self::$index = 0;
-    }
-
-    protected static function create_adler_score_instance($course_module): adler_score {
-        self::$index += 1;
-        return self::$data[self::$index - 1];
-    }
-
-    public static function call_create_adler_score_instance($course_module): adler_score {
-        // call protected function
-        return parent::create_adler_score_instance($course_module);
-    }
-}
-
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class score_primitive_learning_element_test extends local_adler_externallib_testcase {
     public function setUp(): void {
         parent::setUp();
+
+        require_once(__DIR__ . '/deprecated_mocks.php');
 
         // init test data
         $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));

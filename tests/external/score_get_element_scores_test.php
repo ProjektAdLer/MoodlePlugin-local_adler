@@ -14,21 +14,20 @@ use require_login_exception;
 use Throwable;
 
 global $CFG;
-require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
-require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
-require_once('generic_mocks.php');
-
-class score_get_element_scores_mock extends score_get_element_scores {
-    use external_api_validate_context_trait;
-
-    protected static string $adler_score_helpers = adler_score_helpers_mock::class;
-    protected static string $context_module = context_module_mock::class;
-}
 
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class score_get_element_scores_test extends local_adler_externallib_testcase {
     public function test_execute() {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
+        require_once('generic_mocks.php');
+        require_once('deprecated_mocks.php');
+
         // define test data
         $module_ids = [1, 2, 42];
 
@@ -54,6 +53,10 @@ class score_get_element_scores_test extends local_adler_externallib_testcase {
     }
 
     public function test_execute_exceptions() {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
+        require_once('generic_mocks.php');
+        require_once('deprecated_mocks.php');
         // testcases
         // call parameter fails
         // module does not exist

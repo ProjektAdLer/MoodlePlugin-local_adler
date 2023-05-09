@@ -16,13 +16,13 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once(__DIR__ . '/lib_test.php');
-require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
-
-
-
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class score_h5p_learning_element_test extends local_adler_externallib_testcase {
     public function provide_test_get_module_ids_from_xapi_data() {
         return [
@@ -57,8 +57,6 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_get_module_ids_from_xapi_data
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
      */
     public function test_get_module_ids_from_xapi($xapi, $expect_exception, $contextid_to_instanceid_mapping, $expected_result) {
         // create mock
@@ -118,8 +116,6 @@ class score_h5p_learning_element_test extends local_adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
      */
     public function test_execute($exception_get_adler_score_objects, $core_xapi_statement_post_error, $get_achieved_scores_response, $get_achived_scores_exception) {
         $xapi = "blub";
