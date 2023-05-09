@@ -87,6 +87,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
             2
         );
         $bc->execute_plan();
+        $bc->destroy();
 
         // Get xml from backup.
         $xml = $this->get_xml_from_backup($bc);
@@ -110,6 +111,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
             2
         );
         $bc->execute_plan();
+        $bc->destroy();
 
         // Get xml from backup.
         $xml = $this->get_xml_from_backup($bc);
@@ -147,6 +149,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
             2
         );
         $bc->execute_plan();
+        $bc->destroy();
 
         // Get xml from backup.
         $xml = $this->get_xml_from_backup($bc, 'course');
@@ -166,6 +169,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
             2
         );
         $bc->execute_plan();
+        $bc->destroy();
 
         // Get xml from backup.
         $xml = $this->get_xml_from_backup($bc, 'course');
