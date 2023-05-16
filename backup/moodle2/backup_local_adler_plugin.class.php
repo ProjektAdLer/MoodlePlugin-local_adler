@@ -16,7 +16,7 @@ class backup_local_adler_plugin extends backup_local_plugin {
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
 
         // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
-        $score_item = new backup_nested_element("adler_score", null, array(
+        $score_item = new backup_nested_element("adler_module", null, array(
             'score_max',
             'timecreated',
             'timemodified',
@@ -28,7 +28,7 @@ class backup_local_adler_plugin extends backup_local_plugin {
         $pluginwrapper->add_child($score_item);
 
         // Define sources
-        $score_item->set_source_table('local_adler_scores_items', array('cmid' => backup::VAR_MODID));
+        $score_item->set_source_table('local_adler_course_modules', array('cmid' => backup::VAR_MODID));
 
         // Define id annotations
 

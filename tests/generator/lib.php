@@ -23,7 +23,7 @@ class local_adler_generator extends component_generator_base {
         $create_adler_score_item = (object)$params;
 
         if ($insert) {
-            $create_adler_score_item->id = $DB->insert_record('local_adler_scores_items', $create_adler_score_item);
+            $create_adler_score_item->id = $DB->insert_record('local_adler_course_modules', $create_adler_score_item);
         }
         return $create_adler_score_item;
     }

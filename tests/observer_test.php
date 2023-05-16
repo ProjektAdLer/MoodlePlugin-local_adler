@@ -63,11 +63,11 @@ class observer_test extends local_adler_testcase {
 
         // check if all adler score records without cms were deleted
         foreach ($adler_score_tb_deleted as $adler_score) {
-            $this->assertEquals(0, count($DB->get_records('local_adler_scores_items', ['cmid' => $adler_score->cmid])));
+            $this->assertEquals(0, count($DB->get_records('local_adler_course_modules', ['cmid' => $adler_score->cmid])));
         }
         // check if other adler score records and cms were not deleted
         foreach ($modules as $module) {
-            $this->assertEquals(1, count($DB->get_records('local_adler_scores_items', ['cmid' => $module->cmid])));
+            $this->assertEquals(1, count($DB->get_records('local_adler_course_modules', ['cmid' => $module->cmid])));
             $this->assertEquals(1, count($DB->get_records('course_modules', ['id' => $module->cmid])));
         }
 
@@ -214,8 +214,8 @@ class observer_test extends local_adler_testcase {
 
         // check result
         if ($data['case'] == 'default') {
-            $this->assertEquals(0, count($DB->get_records('local_adler_scores_items', ['cmid' => $module1->cmid])));
-            $this->assertEquals(1, count($DB->get_records('local_adler_scores_items', ['cmid' => $module2->cmid])));
+            $this->assertEquals(0, count($DB->get_records('local_adler_course_modules', ['cmid' => $module1->cmid])));
+            $this->assertEquals(1, count($DB->get_records('local_adler_course_modules', ['cmid' => $module2->cmid])));
         }
     }
 

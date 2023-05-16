@@ -48,7 +48,7 @@ function seed(int $course_id) {
     }
 
     $DB->insert_record('local_adler_course',
-        array('course_id' => $course_id),
+        array('course_id' => $course_id, 'uuid' => (string) new Horde_support_Uuid),
         $returnid = true,
         $bulk = false
     );

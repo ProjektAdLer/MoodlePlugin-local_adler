@@ -1,6 +1,6 @@
 <?php
 /**
- * This script seeds the local_adler_scores_items table with random scores for all modules of a given course.
+ * This script seeds the local_adler_course_modules table with random scores for all modules of a given course.
  */
 
 use local_adler\helpers;
@@ -62,9 +62,10 @@ function seed(int $course_id) {
         }
         if (in_array($module->modname, $module_support['supported_simple']) || in_array($module->modname, $module_support['supported_complex'])) {
             $scores_item_id = $DB->insert_record(
-                'local_adler_scores_items',
+                'local_adler_course_modules',
                 array('type' => 'score',
                     'cmid' => $module->id,
+                    'uuid' => (string) new Horde_support_Uuid,
                     'score_min' => 0,
                     'score_max' => random_int(0, 20)),
                 $returnid = true,

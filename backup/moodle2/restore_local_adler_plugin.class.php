@@ -17,7 +17,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
      */
     protected function define_module_plugin_structure(): array {
         return [
-            new restore_path_element('adler_score', $this->get_pathfor('/adler_score'))
+            new restore_path_element('adler_module', $this->get_pathfor('/adler_module'))
         ];
     }
 
@@ -48,7 +48,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
         // The information whether availability is enabled or not is not (easily) available here -> not checking for it
 
         // Insert the record into the database
-        $DB->insert_record('local_adler_scores_items', $data);
+        $DB->insert_record('local_adler_course_modules', $data);
     }
 
     protected function define_section_plugin_structure(): array {

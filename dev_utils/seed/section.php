@@ -77,6 +77,7 @@ function seed(int $course_id) {
         $DB->insert_record('local_adler_sections',
             array(
                 'section_id' => $section_id,
+                'uuid' => (string) new Horde_support_Uuid,
                 'required_points_to_complete' => round($max_possible_score * .9),
                 'timecreated' => time(),
                 'timemodified' => time()

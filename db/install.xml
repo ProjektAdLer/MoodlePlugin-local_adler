@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/adler/db" VERSION="20230124" COMMENT="XMLDB file for Folder module"
+<XMLDB PATH="local/adler/db" VERSION="20230516" COMMENT="XMLDB file for Folder module"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_adler_scores_items" COMMENT="Metadata for every gradable item (module) like min/max points">
+    <TABLE NAME="local_adler_course_modules" COMMENT="Metadata AdLer course modules like like min/max points">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="uuid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="score_max" TYPE="number" LENGTH="12" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="maxmimum points for a module"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -16,12 +17,15 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="cmid" TYPE="foreign-unique" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="uuid" UNIQUE="true" FIELDS="uuid"/>
+      </INDEXES>
     </TABLE>
-
     <TABLE NAME="local_adler_course" COMMENT="Metadata for adler courses. The mere presence of an entry in this table denotes that it is an adler course.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="uuid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
@@ -29,12 +33,15 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="course_id" TYPE="foreign-unique" FIELDS="course_id" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="uuid" UNIQUE="true" FIELDS="uuid"/>
+      </INDEXES>
     </TABLE>
-
     <TABLE NAME="local_adler_sections" COMMENT="Metadata for rooms like condition to unlock / points for completion">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="section_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="uuid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="required_points_to_complete" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -43,6 +50,9 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="section_id" TYPE="foreign-unique" FIELDS="section_id" REFTABLE="course_sections" REFFIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="uuid" UNIQUE="true" FIELDS="uuid"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

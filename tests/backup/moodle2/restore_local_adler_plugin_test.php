@@ -66,10 +66,10 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
 
 
         // verify that the database contains a record
-        $this->assertEquals(1, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(1, $DB->count_records('local_adler_course_modules'));
 
         // get the record from the database
-        $db_record = $DB->get_records('local_adler_scores_items');
+        $db_record = $DB->get_records('local_adler_course_modules');
         $db_record = (new ArrayIterator($db_record))->current();
         // verify that the record has the correct values
         $this->assertEquals((float)$data[0]->score_max, $db_record->score_max);
@@ -91,10 +91,10 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $plugin->process_adler_score($data[1]);
 
         // verify that the database contains a record
-        $this->assertEquals(1, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(1, $DB->count_records('local_adler_course_modules'));
 
         // verify timecreated and timemodified
-        $db_record = $DB->get_records('local_adler_scores_items');
+        $db_record = $DB->get_records('local_adler_course_modules');
         $db_record = (new ArrayIterator($db_record))->current();
         $this->assertTrue($db_record->timecreated > 0 && $db_record->timecreated <= time());
         $this->assertTrue($db_record->timemodified > 0 && $db_record->timemodified <= time());
@@ -133,7 +133,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $this->assertTrue($exception_thrown, "Exception was not thrown");
 
         // verify that the database contains no records
-        $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
     }
 
     public function test_process_adler_score_missing_fields() {
@@ -157,7 +157,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $this->assertTrue($exception_thrown, "Exception was not thrown");
 
         // verify that the database contains no records
-        $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
     }
 
     /** Test define_module_plugin_structure() */
@@ -183,8 +183,8 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
 
         // verify
         $this->assertCount(1, $paths);
-        $this->assertEquals('adler_score', $paths[0]->get_name());
-        $this->assertStringContainsString('adler_score', $paths[0]->get_path());
+        $this->assertEquals('adler_module', $paths[0]->get_name());
+        $this->assertStringContainsString('adler_module', $paths[0]->get_path());
     }
 
     /** Test course restore */
