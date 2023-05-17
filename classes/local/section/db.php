@@ -12,7 +12,6 @@ class db {
      * @throws dml_exception
      */
     public static function get_adler_section_by_uuid(string $uuid) {
-        // TODO
         global $DB;
         return $DB->get_record('local_adler_sections', ['uuid' => $uuid]);
     }

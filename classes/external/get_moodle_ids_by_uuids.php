@@ -74,14 +74,7 @@ class get_moodle_ids_by_uuids extends external_api {
         $params = self::validate_parameters(self::execute_parameters(), array('element_type' => $element_type, 'uuids' => $uuids));
         $element_type = $params['element_type'];
         $uuids = $params['uuids'];
-        // check $element_type is one of course, section, cm
-        if (!in_array($element_type, ['course', 'section', 'cm'])) {
-            throw new invalid_parameter_exception('invalid element type');
-        }
 
-        // die with json serialize $uuids
-//        die(json_encode($uuids));
-        
         // for each uuid: check permissions and get moodle id and context id
         $data = array();
         foreach ($uuids as $uuid) {
@@ -90,7 +83,7 @@ class get_moodle_ids_by_uuids extends external_api {
             switch ($element_type) {
                 case 'course':
                     $course = course_db::get_adler_course_by_uuid($uuid);
-                    $moodle_id = $course->id;
+                    $moodle_id = $course->course_id;
 
                     $context = static::$context_course::instance($moodle_id);
                     static::validate_context($context);
@@ -98,10 +91,11 @@ class get_moodle_ids_by_uuids extends external_api {
                     $context_id = $context->id;
                     break;
                 case 'section':
-                    $section = section_db::get_adler_section_by_uuid($uuid);
-                    $moodle_id = $section->id;
+                    $adler_section = section_db::get_adler_section_by_uuid($uuid);
+                    $moodle_id = $adler_section->section_id;
 
-                    $context = static::$context_module::instance($section->course);
+                    $moodle_section = section_db::get_moodle_section($moodle_id);
+                    $context = static::$context_course::instance($moodle_section->course);
                     static::validate_context($context);
 
                     // There is no context id for sections
@@ -115,6 +109,8 @@ class get_moodle_ids_by_uuids extends external_api {
 
                     $context_id = $context->id;
                     break;
+                default:
+                    throw new invalid_parameter_exception('invalid element type');
             }
             $data[] = [
                 'uuid' => $uuid,

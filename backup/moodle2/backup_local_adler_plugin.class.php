@@ -1,5 +1,7 @@
 <?php
 
+use local_adler\local\course\db as course_db;
+
 class backup_local_adler_plugin extends backup_local_plugin {
     /** Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *
@@ -18,6 +20,7 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
         $score_item = new backup_nested_element("adler_module", null, array(
             'score_max',
+            'uuid',
             'timecreated',
             'timemodified',
         ));
@@ -46,10 +49,8 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Define each element separated
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
 
-        // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
-        // For now there is no data to back up. The only relevant information is that the entry exists.
-        // Because of Moodle logics, empty elements are ignored during restore, so there has to be a dummy field.
         $adler_section = new backup_nested_element("adler_section", null, [
+            'uuid',
             'required_points_to_complete'
         ]);
 
@@ -83,16 +84,24 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
         // For now there is no data to back up. The only relevant information is that the entry exists.
         // Because of Moodle logics, empty elements are ignored during restore, so there has to be a dummy field.
-        $adler_course = new backup_nested_element("adler_course", null, ['foo']);
+        $adler_course = new backup_nested_element("adler_course", null, [
+            'uuid',
+            'original_instance_uuid',
+        ]);
 
         // Build the tree
         $plugin->add_child($pluginwrapper);
         $pluginwrapper->add_child($adler_course);
 
         // Define sources
-//        $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
+        $original_data = course_db::get_adler_course($this->task->get_courseid());
+        $adler_course->set_source_array([
+            'uuid' => $original_data->uuid,
+            'original_instance_uuid' => $original_data->instance_uuid,
+        ]);
         // set data manually
-        $adler_course->set_source_array([['foo' => 'bar']]);
+        // TODO: remove this field entirely
+//        $adler_course->set_source_array([['foo' => 'bar']]);
 
         // Define id annotations
 

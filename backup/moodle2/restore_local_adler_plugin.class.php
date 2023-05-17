@@ -1,4 +1,7 @@
 <?php
+
+use local_adler\local\course\db as course_db;
+
 /**
  * Restoring logic for the local Adler plugin.
  */
@@ -27,7 +30,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @return void
      * @throws dml_exception
      */
-    public function process_adler_score($data) {
+    public function process_adler_module($data) {
         global $DB;
 
         // Cast $data to object if it is an array
@@ -89,9 +92,6 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @throws dml_exception
      */
     public function process_adler_course($data) {
-        // $data contains a dummy field "foo".
-        // It is required because otherwise moodle thinks there is nothing to restore and skips the restore.
-        // It is ignored by insert_record.
         global $DB;
 
         // Cast $data to object if it is an array
@@ -104,6 +104,12 @@ class restore_local_adler_plugin extends restore_local_plugin {
         }
         if (!isset($data->timemodified)) {
             $data->timemodified = time();
+        }
+
+        $data->instance_uuid = $data->original_instance_uuid ?? (string) new Horde_support_Uuid;
+        unset($data->original_instance_uuid);
+        if (course_db::get_adler_course_by_uuid($data->instance_uuid) !== false) {
+            $data->instance_uuid = (string) new Horde_support_Uuid;
         }
 
         $data->course_id = $this->task->get_courseid();
