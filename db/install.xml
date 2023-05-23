@@ -35,7 +35,7 @@
         <KEY NAME="course_id" TYPE="foreign-unique" FIELDS="course_id" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="instance_uuid" UNIQUE="true" FIELDS="uuid"/>
+        <INDEX NAME="instance_uuid" UNIQUE="true" FIELDS="instance_uuid"/>
         <INDEX NAME="uuid" UNIQUE="false" FIELDS="uuid"/>
       </INDEXES>
     </TABLE>
