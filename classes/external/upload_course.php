@@ -15,6 +15,8 @@ use external_single_structure;
 use external_value;
 use restore_controller;
 use restore_dbops;
+use local_adler\local\course\db as course_db;
+
 
 
 class upload_course extends external_api {
@@ -31,6 +33,7 @@ class upload_course extends external_api {
             'data' => new external_single_structure(
                 array(
                     'course_id' => new external_value(PARAM_INT, 'id of the newly created course', VALUE_REQUIRED),
+                    'instance_uuid' => new external_value(PARAM_TEXT, 'instance uuid of the newly created course', VALUE_REQUIRED),
                 )
             )
         ]);
@@ -88,6 +91,11 @@ class upload_course extends external_api {
         $controller->execute_plan();
         $controller->destroy();
 
+        // get instance_uuid
+        $instance_uuid = course_db::get_adler_course($courseid)->instance_uuid;
+        // todo: rollback if it was not an adler course
+
+
 //        // set restore option: self-enrolment
 //        $course = get_course($courseid);
 //        $course->enrolpassword = '';
@@ -102,6 +110,7 @@ class upload_course extends external_api {
 
         return array('data' => array(
             'course_id' => $courseid,
+            'instance_uuid' => $instance_uuid,
         ));
     }
 }
