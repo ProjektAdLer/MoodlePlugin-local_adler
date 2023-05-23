@@ -106,12 +106,6 @@ class restore_local_adler_plugin extends restore_local_plugin {
             $data->timemodified = time();
         }
 
-        $data->instance_uuid = $data->original_instance_uuid ?? (string) new Horde_support_Uuid;
-        unset($data->original_instance_uuid);
-        if (course_db::get_adler_course_by_uuid($data->instance_uuid) !== false) {
-            $data->instance_uuid = (string) new Horde_support_Uuid;
-        }
-
         $data->course_id = $this->task->get_courseid();
 
         // Insert the record into the database

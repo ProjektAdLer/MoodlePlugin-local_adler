@@ -19,22 +19,33 @@ use local_adler\local\course\db as course_db;
 use local_adler\local\section\db as section_db;
 use local_adler\local\course_module\db as cm_db;
 
-class get_moodle_ids_by_uuids extends external_api {
+class get_element_ids_by_uuids extends external_api {
     private static string $context_course = context_course::class;
     private static string $context_module = context_module::class;
 
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
-                'element_type' => new external_value(
-                    PARAM_TEXT,
-                    'element type, one of cm, section, course',
-                    VALUE_REQUIRED),
-                'uuids' => new external_multiple_structure(
-                    new external_value(
-                        PARAM_TEXT,
-                        'element uuid',
-                        VALUE_REQUIRED),
+                'elements' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'course_id' => new external_value(
+                                PARAM_TEXT,
+                                'course id',
+                                VALUE_REQUIRED
+                            ),
+                            'element_type' => new external_value(
+                                PARAM_TEXT,
+                                'element type',
+                                VALUE_REQUIRED
+                            ),
+                            'uuid' => new external_value(
+                                PARAM_TEXT,
+                                'element uuid',
+                                VALUE_REQUIRED
+                            ),
+                        )
+                    )
                 )
             )
         );
@@ -45,17 +56,26 @@ class get_moodle_ids_by_uuids extends external_api {
             'data' => new external_multiple_structure(
                 new external_single_structure(
                     array(
+                        'course_id' => new external_value(
+                            PARAM_TEXT,
+                            'course id (moodle id aka "instance id")',
+                            VALUE_REQUIRED),
+                        'element_type' => new external_value(
+                            PARAM_TEXT,
+                            'element type',
+                            VALUE_REQUIRED),
                         'uuid' => new external_value(
                             PARAM_TEXT,
                             'element uuid',
                             VALUE_REQUIRED),
+
                         'moodle_id' => new external_value(
                             PARAM_INT,
-                            'moodle id',
+                            'element moodle id',
                             VALUE_REQUIRED),
                         'context_id' => new external_value(
                             PARAM_INT,
-                            'context id, null for sections',
+                            'element context id, null for section',
                             VALUE_REQUIRED),
                     ),
                     'moodle ids and uuid for specified element type with given uuid'
@@ -65,33 +85,32 @@ class get_moodle_ids_by_uuids extends external_api {
     }
 
     /**
+     * @param array $elements [int $course_id, string $element_type, array $uuids]
      * @throws invalid_parameter_exception
      * @throws dml_exception
      * @throws restricted_context_exception
      */
-    public static function execute(string $element_type, array $uuids): array {
+    public static function execute(array $elements): array {
         // Parameter validation
-        $params = self::validate_parameters(self::execute_parameters(), array('element_type' => $element_type, 'uuids' => $uuids));
-        $element_type = $params['element_type'];
-        $uuids = $params['uuids'];
+        $params = self::validate_parameters(self::execute_parameters(), array('elements' => $elements));
+        $elements = $params['elements'];
 
         // for each uuid: check permissions and get moodle id and context id
         $data = array();
-        foreach ($uuids as $uuid) {
+        foreach ($elements as $element) {
+            $course_id = $element['course_id'];
+            $element_type = $element['element_type'];
+            $uuid = $element['uuid'];
+
             $moodle_id = null;
             $context_id = null;
             switch ($element_type) {
-                case 'course':
-                    $course = course_db::get_adler_course_by_uuid($uuid);
-                    $moodle_id = $course->course_id;
-
-                    $context = static::$context_course::instance($moodle_id);
-                    static::validate_context($context);
-
-                    $context_id = $context->id;
-                    break;
                 case 'section':
-                    $adler_section = section_db::get_adler_section_by_uuid($uuid);
+                    try {
+                        $adler_section = section_db::get_adler_section_by_uuid($uuid, $course_id);
+                    } catch (dml_exception $e) {
+                        throw new invalid_parameter_exception('section not found, $uuid: ' . $uuid . ', $course_id: ' . $course_id);
+                    }
                     $moodle_id = $adler_section->section_id;
 
                     $moodle_section = section_db::get_moodle_section($moodle_id);
@@ -101,7 +120,11 @@ class get_moodle_ids_by_uuids extends external_api {
                     // There is no context id for sections
                     break;
                 case 'cm':
-                    $cm = cm_db::get_adler_course_module_by_uuid($uuid);
+                    try {
+                        $cm = cm_db::get_adler_course_module_by_uuid($uuid, $course_id);
+                    } catch (dml_exception $e) {
+                        throw new invalid_parameter_exception('course module not found, $uuid: ' . $uuid . ', $course_id: ' . $course_id);
+                    }
                     $moodle_id = $cm->cmid;
 
                     $context = static::$context_module::instance($moodle_id);
@@ -110,10 +133,13 @@ class get_moodle_ids_by_uuids extends external_api {
                     $context_id = $context->id;
                     break;
                 default:
-                    throw new invalid_parameter_exception('invalid element type');
+                    throw new invalid_parameter_exception('invalid element type ' . $element_type);
             }
             $data[] = [
+                'course_id' => $course_id,
+                'element_type' => $element_type,
                 'uuid' => $uuid,
+
                 'moodle_id' => $moodle_id,
                 'context_id' => $context_id,
             ];

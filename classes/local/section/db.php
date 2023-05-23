@@ -11,9 +11,18 @@ class db {
      * @return stdClass|false adler-section for given moodle section, false if not found
      * @throws dml_exception
      */
-    public static function get_adler_section_by_uuid(string $uuid) {
+    public static function get_adler_section_by_uuid(string $uuid, int $course_id) {
         global $DB;
-        return $DB->get_record('local_adler_sections', ['uuid' => $uuid]);
+        $adler_sections = $DB->get_records('local_adler_sections', ['uuid' => $uuid]);
+
+        foreach ($adler_sections as $adler_section) {
+            // get moodle section
+            $moodle_section = self::get_moodle_section($adler_section->section_id);
+            if ($moodle_section->course == $course_id) {
+                return $adler_section;
+            }
+        }
+        throw new dml_exception('No adler-section found for given uuid and course_id');
     }
 
     /**
@@ -67,7 +76,7 @@ class db {
      * @return stdClass|false moodle section for given section id, false if not found
      * @throws dml_exception
      */
-    public static function get_moodle_section(int $section_id) {
+    public static function get_moodle_section(int $section_id): bool|stdClass {
         global $DB;
         return $DB->get_record('course_sections', ['id' => $section_id]);
     }

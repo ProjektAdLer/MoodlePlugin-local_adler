@@ -26,7 +26,6 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="uuid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="instance_uuid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
@@ -35,7 +34,6 @@
         <KEY NAME="course_id" TYPE="foreign-unique" FIELDS="course_id" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="instance_uuid" UNIQUE="true" FIELDS="instance_uuid"/>
         <INDEX NAME="uuid" UNIQUE="false" FIELDS="uuid"/>
       </INDEXES>
     </TABLE>

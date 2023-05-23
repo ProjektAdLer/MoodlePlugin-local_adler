@@ -16,11 +16,6 @@ class db {
         return $DB->get_record('local_adler_course', ['uuid' => $uuid]);
     }
 
-    public static function get_adler_course_by_instance_uuid(string $instance_uuid) {
-        global $DB;
-        return $DB->get_record('local_adler_course', ['instance_uuid' => $instance_uuid]);
-    }
-
     /**
      * Get adler-course with given course_id
      * @throws dml_exception

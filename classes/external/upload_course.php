@@ -33,7 +33,6 @@ class upload_course extends external_api {
             'data' => new external_single_structure(
                 array(
                     'course_id' => new external_value(PARAM_INT, 'id of the newly created course', VALUE_REQUIRED),
-                    'instance_uuid' => new external_value(PARAM_TEXT, 'instance uuid of the newly created course', VALUE_REQUIRED),
                 )
             )
         ]);
@@ -91,26 +90,15 @@ class upload_course extends external_api {
         $controller->execute_plan();
         $controller->destroy();
 
-        // get instance_uuid
-        $instance_uuid = course_db::get_adler_course($courseid)->instance_uuid;
+        // get uuid and instance_uuid
         // todo: rollback if it was not an adler course
 
 
-//        // set restore option: self-enrolment
-//        $course = get_course($courseid);
-//        $course->enrolpassword = '';
-//        $course->enrolstartdate = 0;
-//        $course->enrolenddate = 0;
-//        $course->enrol = 'self';
-//        update_course($course);
-
-
-        // delete file $savedfilepath
+        // delete file $savedfilepath  // todo??
 
 
         return array('data' => array(
             'course_id' => $courseid,
-            'instance_uuid' => $instance_uuid,
         ));
     }
 }

@@ -86,7 +86,6 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Because of Moodle logics, empty elements are ignored during restore, so there has to be a dummy field.
         $adler_course = new backup_nested_element("adler_course", null, [
             'uuid',
-            'original_instance_uuid',
         ]);
 
         // Build the tree
@@ -94,14 +93,11 @@ class backup_local_adler_plugin extends backup_local_plugin {
         $pluginwrapper->add_child($adler_course);
 
         // Define sources
-        $original_data = course_db::get_adler_course($this->task->get_courseid());
-        $adler_course->set_source_array([
-            'uuid' => $original_data->uuid,
-            'original_instance_uuid' => $original_data->instance_uuid,
-        ]);
-        // set data manually
-        // TODO: remove this field entirely
-//        $adler_course->set_source_array([['foo' => 'bar']]);
+//        $original_data = course_db::get_adler_course($this->task->get_courseid());
+//        $adler_course->set_source_array([
+//            'uuid' => $original_data->uuid
+//        ]);
+        $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
 
         // Define id annotations
 
