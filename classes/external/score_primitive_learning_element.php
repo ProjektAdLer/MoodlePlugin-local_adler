@@ -1,6 +1,9 @@
 <?php
 namespace local_adler\external;
 
+global $CFG;
+require_once($CFG->dirroot . '/lib/externallib.php');
+
 use completion_info;
 use context_course;
 use dml_exception;

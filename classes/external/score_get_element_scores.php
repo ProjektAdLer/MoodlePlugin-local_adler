@@ -2,6 +2,9 @@
 
 namespace local_adler\external;
 
+global $CFG;
+require_once($CFG->dirroot . '/lib/externallib.php');
+
 use context_module;
 use dml_missing_record_exception;
 use external_api;

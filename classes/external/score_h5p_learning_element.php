@@ -2,6 +2,9 @@
 
 namespace local_adler\external;
 
+global $CFG;
+require_once($CFG->dirroot . '/lib/externallib.php');
+
 use coding_exception;
 use context;
 use external_api;
