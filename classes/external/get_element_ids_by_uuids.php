@@ -15,7 +15,6 @@ use external_multiple_structure;
 use external_value;
 use external_single_structure;
 use invalid_parameter_exception;
-use local_adler\local\course\db as course_db;
 use local_adler\local\section\db as section_db;
 use local_adler\local\course_module\db as cm_db;
 
