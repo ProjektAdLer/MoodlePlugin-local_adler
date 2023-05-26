@@ -11,6 +11,7 @@ class local_adler_generator extends component_generator_base {
      * @return stdClass
      * @throws dml_exception
      */
+//    todo maybe rename
     public function create_adler_score_item(int $module_id, array $params = array(), bool $insert = true) {
         global $DB;
         $default_params = [
@@ -58,6 +59,7 @@ class local_adler_generator extends component_generator_base {
         $default_params = [
             'section_id' => $section_id,
             'required_points_to_complete' => 100,
+            'uuid' => (string) new Horde_support_Uuid,
             'timecreated' => 0,
             'timemodified' => 0
         ];

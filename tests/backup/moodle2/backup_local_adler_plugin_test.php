@@ -15,9 +15,9 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * Therefore, this test is implemented as an integration test.
  */
 class backup_local_adler_plugin_test extends local_adler_testcase {
+    # todo: test uuid fields
     public function setUp(): void {
         parent::setUp();
-//        $this->markTestSkipped('testing');
 
         global $CFG;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
@@ -93,7 +93,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->verify_points($score_item, $xml->plugin_local_adler_module->adler_score);
+        $this->verify_points($score_item, $xml->plugin_local_adler_module->adler_module);
     }
 
     /**
@@ -117,7 +117,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc);
 
         // validate xml values
-        $this->assertFalse(isset($xml->plugin_local_adler_module->adler_score), 'adler_score should not be in $xml->plugin_local_adler_module');
+        $this->assertFalse(isset($xml->plugin_local_adler_module->score_max), 'score_max should not be in $xml->plugin_local_adler_module');
     }
 
     /** Test course backup */
@@ -155,7 +155,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc, 'course');
 
         // validate xml values
-        $this->verify_course($adler_course_object, $xml->plugin_local_adler_course->adler_score);
+        $this->verify_course($adler_course_object, $xml->plugin_local_adler_course->score_max);
     }
 
     public function test_backup_course_not_adler_course() {
@@ -175,6 +175,6 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc, 'course');
 
         // validate xml values
-        $this->assertFalse(isset($xml->plugin_local_adler_course->adler_score), 'adler_score should not be in $xml->plugin_local_adler_course');
+        $this->assertFalse(isset($xml->plugin_local_adler_course->score_max), 'score_max should not be in $xml->plugin_local_adler_course');
     }
 }
