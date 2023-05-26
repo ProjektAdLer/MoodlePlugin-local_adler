@@ -8,6 +8,7 @@ define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . "/clilib.php");
+require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 $help = "Command line tool to uninstall plugins.
 
