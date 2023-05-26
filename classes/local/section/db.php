@@ -76,7 +76,7 @@ class db {
      * @return stdClass|false moodle section for given section id, false if not found
      * @throws dml_exception
      */
-    public static function get_moodle_section(int $section_id): bool|stdClass {
+    public static function get_moodle_section(int $section_id): mixed {
         global $DB;
         return $DB->get_record('course_sections', ['id' => $section_id]);
     }
