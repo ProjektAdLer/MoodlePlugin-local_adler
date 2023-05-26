@@ -15,12 +15,12 @@ class local_adler_generator extends component_generator_base {
      * @return stdClass
      * @throws dml_exception
      */
-//    todo maybe rename
-    public function create_adler_score_item(int $module_id, array $params = array(), bool $insert = true) {
+    public function create_adler_course_module(int $module_id, array $params = array(), bool $insert = true) {
         global $DB;
         $default_params = [
             'cmid' => $module_id,
             'score_max' => 100.0,
+            'uuid' => (string) new Horde_Support_Uuid,
             'timecreated' => 0,
             'timemodified' => 0
         ];

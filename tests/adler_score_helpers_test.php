@@ -168,7 +168,7 @@ class adler_score_helpers_test extends local_adler_testcase {
         $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
 
         // create adler score item
-        $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item($cm->cmid);
+        $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm->cmid);
 
         // call function
         $result = adler_score_helpers::get_adler_score_record($cm->cmid);
