@@ -18,6 +18,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 /**
+ * @runTestsInSeparateProcesses
  */
 class get_element_ids_by_uuids_test extends local_adler_externallib_testcase {
     public function provide_test_execute_data() {
