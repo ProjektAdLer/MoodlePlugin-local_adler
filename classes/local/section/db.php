@@ -17,7 +17,7 @@ class db {
 
         foreach ($adler_sections as $adler_section) {
             // get moodle section
-            $moodle_section = self::get_moodle_section($adler_section->section_id);
+            $moodle_section = static::get_moodle_section($adler_section->section_id);
             if ($moodle_section->course == $course_id) {
                 return $adler_section;
             }

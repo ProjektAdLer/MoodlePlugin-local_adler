@@ -67,6 +67,8 @@ class get_element_ids_by_uuids_test extends local_adler_externallib_testcase {
                 'element' => [
                     [
                         'element_type' => 'invalid',
+                        'uuid' => '6464ece5-2cf4-4cbc-9f08-3d106b107075',
+                        'course_id' => '46',
                     ]
                 ],
                 'adler_element_exists' => true,
@@ -105,7 +107,6 @@ class get_element_ids_by_uuids_test extends local_adler_externallib_testcase {
      */
     public function test_execute($element, $adler_element_exists, $expected_result, $expected_exception) {
         $course = $this->getDataGenerator()->create_course();
-
 
         // mock section db
         $section_db_mock = Mockery::mock('overload:' . section_db::class);

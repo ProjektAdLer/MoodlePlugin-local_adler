@@ -3,7 +3,9 @@
 namespace local_adler\local\section;
 
 
+use dml_exception;
 use local_adler\lib\local_adler_testcase;
+use Mockery;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
@@ -13,6 +15,43 @@ class db_test extends local_adler_testcase {
     public function setUp(): void {
         parent::setUp();
         $this->adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
+    }
+
+    public function provide_test_get_adler_section_by_uuid_data() {
+        return [
+            'success' => [
+                'success' => true,
+            ],
+            'exception' => [
+                'success' => false,
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider provide_test_get_adler_section_by_uuid_data
+     */
+    public function test_get_adler_section_by_uuid($success) {
+        // create adler_section entry
+        $adler_section = $this->adler_generator->create_adler_section_object(1);
+
+        // mock section db
+        $db_mock = Mockery::mock(db::class)->makePartial();
+        if ($success) {
+            $db_mock->shouldReceive('get_moodle_section')->andReturn((object)['course' => 1]);
+        } else {
+            $db_mock->shouldReceive('get_moodle_section')->andReturn((object)['course' => 2]);
+
+            $this->expectException(dml_exception::class);
+        }
+
+        // call function
+        $db_adler_section = $db_mock->get_adler_section_by_uuid($adler_section->uuid, 1);
+
+        // check result
+        $this->assertEquals($adler_section, $db_adler_section);
+
+
     }
 
     public function test_get_adler_section() {
