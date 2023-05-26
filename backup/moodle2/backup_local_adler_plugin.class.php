@@ -93,10 +93,6 @@ class backup_local_adler_plugin extends backup_local_plugin {
         $pluginwrapper->add_child($adler_course);
 
         // Define sources
-//        $original_data = course_db::get_adler_course($this->task->get_courseid());
-//        $adler_course->set_source_array([
-//            'uuid' => $original_data->uuid
-//        ]);
         $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
 
         // Define id annotations
