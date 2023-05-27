@@ -46,6 +46,7 @@ class local_adler_generator extends component_generator_base {
         global $DB;
         $default_params = [
             'course_id' => $course_id,
+            'uuid' => (string) new Horde_Support_Uuid,
             'timecreated' => 0,
             'timemodified' => 0
         ];

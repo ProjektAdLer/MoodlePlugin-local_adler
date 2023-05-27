@@ -1,7 +1,6 @@
 <?php
 
-use local_adler\local\course\db as course_db;
-
+# todo: dont include fields (plugin_local_adler_course) if it would be empty / is not adler course / element
 class backup_local_adler_plugin extends backup_local_plugin {
     /** Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *

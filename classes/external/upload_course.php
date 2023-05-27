@@ -9,13 +9,17 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 use backup;
+use Exception;
 use external_api;
 use external_function_parameters;
 use external_single_structure;
 use external_value;
+use invalid_parameter_exception;
+use local_adler\local\exceptions\not_an_adler_course_exception;
+use moodle_exception;
 use restore_controller;
+use restore_controller_exception;
 use restore_dbops;
-use local_adler\local\course\db as course_db;
 
 
 
@@ -38,15 +42,21 @@ class upload_course extends external_api {
         ]);
     }
 
+    /**
+     * @throws invalid_parameter_exception
+     * @throws not_an_adler_course_exception
+     * @throws restore_controller_exception
+     * @throws moodle_exception
+     * @throws Exception
+     */
     public static function execute($mbz): array {
-        global $CFG;
-
         // Parameter validation
         $params = self::validate_parameters(self::execute_parameters(), array(
             'mbz' => $mbz,
         ));
+        $mbz = $params['mbz'];
 
-        // Saving file.
+        // Saving file (taken from externallib.php (file) upload)
         $dir = make_temp_directory('wsupload');
 
         $filename = uniqid('wsupload', true) . '_' . time() . '.tmp';
@@ -60,7 +70,7 @@ class upload_course extends external_api {
         file_put_contents($savedfilepath, base64_decode($mbz));
 
 
-        // restore mbz
+        // extract mbz and prepare restore
         $categoryid = 1; // e.g. 1 == Miscellaneous
         $userdoingrestore = 2; // e.g. 2 == admin
         $courseid = restore_dbops::create_new_course('', '', $categoryid);
@@ -69,8 +79,16 @@ class upload_course extends external_api {
         $foldername = restore_controller::get_tempdir_name($courseid, $userdoingrestore);
         $fp = get_file_packer('application/vnd.moodle.backup');
         $tempdir = make_backup_temp_directory($foldername);
-        $files = $fp->extract_to_pathname($savedfilepath, $tempdir);
+        $fp->extract_to_pathname($savedfilepath, $tempdir);
 
+        // validate course is adler course
+        $course_xml_path = $tempdir . '/course/course.xml';
+        $contents = file_get_contents($course_xml_path);
+        if(!property_exists(simplexml_load_string($contents)->plugin_local_adler_course, 'adler_course')) {
+            throw new not_an_adler_course_exception();
+        }
+
+        // do restore: create controller
         $controller = new restore_controller(
             $foldername,
             $courseid,
@@ -80,21 +98,20 @@ class upload_course extends external_api {
             backup::TARGET_NEW_COURSE
         );
 
+        // do restore: set required enrolment setting
         $plan = $controller->get_plan();
-
         $plan->get_tasks()[0]->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
 
-
-
+        // do restore: execute
         $controller->execute_precheck();
         $controller->execute_plan();
         $controller->destroy();
 
-        // get uuid and instance_uuid
-        // todo: rollback if it was not an adler course
 
-
-        // delete file $savedfilepath  // todo??
+        // delete file $savedfilepath
+        unlink($savedfilepath);
+        // delete tempdir
+        fulldelete($tempdir);
 
 
         return array('data' => array(
