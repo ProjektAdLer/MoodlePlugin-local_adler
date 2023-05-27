@@ -61,7 +61,7 @@ class adler_score_helpers {
         return $achieved_scores;
     }
 
-    /** Get adler score record (local_adler_scores_items) for course module.
+    /** Get adler score record (local_adler_course_modules) for course module.
      * @param int $cmid
      * @return stdClass
      * @throws dml_exception
@@ -69,7 +69,7 @@ class adler_score_helpers {
      */
     public static function get_adler_score_record(int $cmid): stdClass {
         global $DB;
-        $record = $DB->get_record('local_adler_scores_items', array('cmid' => $cmid));
+        $record = $DB->get_record('local_adler_course_modules', array('cmid' => $cmid));
         if (!$record) {
             debugging('Course module with id ' . $cmid . ' is not an adler course module', E_NOTICE);
             throw new not_an_adler_cm_exception();
@@ -77,12 +77,12 @@ class adler_score_helpers {
         return $record;
     }
 
-    /** Delete adler score record (local_adler_scores_items).
+    /** Delete adler score record (local_adler_course_modules).
      * @param int $cmid
      * @throws dml_exception
      */
     public static function delete_adler_score_record(int $cmid): void {
         global $DB;
-        $DB->delete_records('local_adler_scores_items', array('cmid' => $cmid));
+        $DB->delete_records('local_adler_course_modules', array('cmid' => $cmid));
     }
 }

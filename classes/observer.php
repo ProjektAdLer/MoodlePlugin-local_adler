@@ -114,7 +114,7 @@ class observer {
         $cmids = $DB->get_records('course_modules', [], 'id', 'id');
         $cmids = array_column($cmids, 'id');
 
-        $adler_scores = $DB->get_records('local_adler_scores_items', [], 'cmid', 'id, cmid');
+        $adler_scores = $DB->get_records('local_adler_course_modules', [], 'cmid', 'id, cmid');
 
         $deleted_cms = [];
         // if adler score cmid is not in $cmids, delete adler score

@@ -12,6 +12,7 @@ $services = array(
             'core_webservice_get_site_info',
             'core_user_get_users_by_field',
             'core_course_delete_courses',
+            'local_adler_get_moodle_ids_by_uuids',
             'local_adler_upload_course', # temporär, da dieser service aktuell noch nicht im main branch ist, aber trotzdem durch einen merge in den feature branch auf die whitelist soll
         ), // web service functions of this service
         'requiredcapability' => '',                // if set, the web service user need this capability to access
@@ -64,14 +65,23 @@ $functions = array(
         'loginrequired' => true
     ),
     'local_adler_upload_course' => array(
-        'classname'   => 'local_adler\external\upload_course',  //class containing the external function OR namespaced class in classes/external/XXXX.php
+        'classname' => 'local_adler\external\upload_course',  //class containing the external function OR namespaced class in classes/external/XXXX.php
         'description' => 'Upload adler course (as mbz file)',    //human readable description of the web service function
-        'type'        => 'write',                  //database rights of the web service function (read, write)
+        'type' => 'write',                  //database rights of the web service function (read, write)
         'ajax' => false,        // is the service available to 'internal' ajax calls.
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
         'capabilities' => '', // comma separated list of capabilities used by the function.
         'loginrequired' => true
-    )
+    ),
+    'local_adler_get_element_ids_by_uuids' => array(
+        'classname' => 'local_adler\external\get_element_ids_by_uuids',  //class containing the external function OR namespaced class in classes/external/XXXX.php
+        'description' => 'Returns context and database ids for sections / course modules with given UUIDs and course ids',    //human readable description of the web service function
+        'type' => 'read',                  //database rights of the web service function (read, write)
+        'ajax' => false,        // is the service available to 'internal' ajax calls.
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
+        'capabilities' => '', // comma separated list of capabilities used by the function.
+        'loginrequired' => true
+    ),
 );
 
 

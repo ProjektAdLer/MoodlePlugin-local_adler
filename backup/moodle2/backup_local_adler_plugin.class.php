@@ -1,5 +1,6 @@
 <?php
 
+# todo: dont include fields (plugin_local_adler_course) if it would be empty / is not adler course / element
 class backup_local_adler_plugin extends backup_local_plugin {
     /** Defines the structure of the backup file when backing up an instance of the local Adler plugin.
      *
@@ -16,8 +17,9 @@ class backup_local_adler_plugin extends backup_local_plugin {
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
 
         // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
-        $score_item = new backup_nested_element("adler_score", null, array(
+        $score_item = new backup_nested_element("adler_module", null, array(
             'score_max',
+            'uuid',
             'timecreated',
             'timemodified',
         ));
@@ -28,7 +30,7 @@ class backup_local_adler_plugin extends backup_local_plugin {
         $pluginwrapper->add_child($score_item);
 
         // Define sources
-        $score_item->set_source_table('local_adler_scores_items', array('cmid' => backup::VAR_MODID));
+        $score_item->set_source_table('local_adler_course_modules', array('cmid' => backup::VAR_MODID));
 
         // Define id annotations
 
@@ -46,10 +48,8 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Define each element separated
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
 
-        // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
-        // For now there is no data to back up. The only relevant information is that the entry exists.
-        // Because of Moodle logics, empty elements are ignored during restore, so there has to be a dummy field.
         $adler_section = new backup_nested_element("adler_section", null, [
+            'uuid',
             'required_points_to_complete'
         ]);
 
@@ -83,16 +83,16 @@ class backup_local_adler_plugin extends backup_local_plugin {
         // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
         // For now there is no data to back up. The only relevant information is that the entry exists.
         // Because of Moodle logics, empty elements are ignored during restore, so there has to be a dummy field.
-        $adler_course = new backup_nested_element("adler_course", null, ['foo']);
+        $adler_course = new backup_nested_element("adler_course", null, [
+            'uuid',
+        ]);
 
         // Build the tree
         $plugin->add_child($pluginwrapper);
         $pluginwrapper->add_child($adler_course);
 
         // Define sources
-//        $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
-        // set data manually
-        $adler_course->set_source_array([['foo' => 'bar']]);
+        $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
 
         // Define id annotations
 

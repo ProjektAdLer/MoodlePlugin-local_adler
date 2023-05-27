@@ -105,13 +105,17 @@ class adler_score {
     }
 
 
-    /** Calculates the achieved score for the course module if it is of type h5p. There is no type checking, calling this method
-     * for a course module that is not of type h5p will result in an error.
+    /** Calculates the achieved score for the course module if it is of type h5p.
+     * There is no type checking, calling this method for a course module that
+     * is not of type h5p will result in an error.
      * @return float
      */
     private function get_h5p_score(): float {
         global $CFG;
         require_once($CFG->libdir . '/gradelib.php');
+
+        // get h5p result
+
 
         $grading_info = grade_get_grades($this->course_module->course, 'mod', 'h5pactivity', $this->course_module->instance, $this->user_id);
         $grading_info = $grading_info->items[0];
@@ -152,7 +156,7 @@ class adler_score {
 
     /** Get the score for the course module.
      * Gets the completion status and for h5p activities the achieved grade and calculates the adler score with the values from
-     * local_adler_scores_items.
+     * local_adler_course_modules.
      * @throws dml_exception|moodle_exception
      */
     public function get_score(): float {

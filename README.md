@@ -58,6 +58,8 @@ die Plugins erwartungsgemäß deinstalliert werden. Dieser Ansatz hätte aber di
 
 Setup funktioniert exakt wie bei allen anderen Plugins auch (nach dem manuellen Installationsvorgang, da unser Plugin nicht im Moodle Store ist).
 
+TODO: availability_adler
+
 1. Plugin in moodle in den Ordner `local` entpacken (bspw moodle/local/adler/lib.php muss es geben)
 2. Moodle upgrade ausführen
 
@@ -74,13 +76,6 @@ Für den Kurs mit der ID 142 werden Daten für folgende Elemente geseedet:
 - Section (Räume): availability conditions & required points to complete
 - course modules (Lernelemente): AdLer Scoring
 Befehl: `php local/adler/dev_utils/seed.php --course-id=142 -c -m -s`
-
-~~Dazu liegen im Ordner `dev_utils/seed` Skripte, die das automatisieren.~~
-1) ~~Zuerst im Script `course.php` die Kurs-ID eintragen, die gefüllt werden soll.
-Dann das Script ausführen `php local/adler/dev_utils/seed/course.php`.~~
-2) ~~Danach im Script `scores.php` die Kurs-ID eintragen, die gefüllt werden soll (dieselbe wie im vorherigen Script).
-Dann das Script ausführen `php local/adler/dev_utils/seed/scores.php`.~~
-3) ~~Section seeden: `php local/adler/dev_utils/seed/section.php`~~
 
 Nun kann dieser Kurs zum Testen genutzt werden.
 

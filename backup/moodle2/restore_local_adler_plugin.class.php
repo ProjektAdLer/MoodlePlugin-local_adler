@@ -1,4 +1,7 @@
 <?php
+
+use local_adler\local\course\db as course_db;
+
 /**
  * Restoring logic for the local Adler plugin.
  */
@@ -17,7 +20,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
      */
     protected function define_module_plugin_structure(): array {
         return [
-            new restore_path_element('adler_score', $this->get_pathfor('/adler_score'))
+            new restore_path_element('adler_module', $this->get_pathfor('/adler_module'))
         ];
     }
 
@@ -27,7 +30,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @return void
      * @throws dml_exception
      */
-    public function process_adler_score($data) {
+    public function process_adler_module($data) {
         global $DB;
 
         // Cast $data to object if it is an array
@@ -48,7 +51,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
         // The information whether availability is enabled or not is not (easily) available here -> not checking for it
 
         // Insert the record into the database
-        $DB->insert_record('local_adler_scores_items', $data);
+        $DB->insert_record('local_adler_course_modules', $data);
     }
 
     protected function define_section_plugin_structure(): array {
@@ -89,9 +92,6 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @throws dml_exception
      */
     public function process_adler_course($data) {
-        // $data contains a dummy field "foo".
-        // It is required because otherwise moodle thinks there is nothing to restore and skips the restore.
-        // It is ignored by insert_record.
         global $DB;
 
         // Cast $data to object if it is an array

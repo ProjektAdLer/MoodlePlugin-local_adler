@@ -237,7 +237,7 @@ class adler_score_test extends local_adler_testcase {
         // Create score (adler) item.
         $score_item = $this->getDataGenerator()
             ->get_plugin_generator('local_adler')
-            ->create_adler_score_item($cm_other_format->id, [], false);
+            ->create_adler_course_module($cm_other_format->id, [], false);
 
 
         // create adler_score object and set private properties
@@ -320,7 +320,7 @@ class adler_score_test extends local_adler_testcase {
         // Create score (adler) item.
         $score_item_h5p = $this->getDataGenerator()
             ->get_plugin_generator('local_adler')
-            ->create_adler_score_item($cm_other_format->id, [], false);
+            ->create_adler_course_module($cm_other_format->id, [], false);
 
 
         // create adler_score object and set private properties

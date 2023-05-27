@@ -8,6 +8,7 @@ define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . "/clilib.php");
+require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 $help = "Command line tool to uninstall plugins.
 
@@ -48,7 +49,10 @@ function seed(int $course_id) {
     }
 
     $DB->insert_record('local_adler_course',
-        array('course_id' => $course_id),
+        array(
+            'course_id' => $course_id,
+            'uuid' => (string) new Horde_support_Uuid
+        ),
         $returnid = true,
         $bulk = false
     );

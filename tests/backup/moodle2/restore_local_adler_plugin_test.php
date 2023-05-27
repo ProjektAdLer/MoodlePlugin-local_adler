@@ -14,6 +14,7 @@ require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_pl
  * PHPunit test for class restore_local_adler_plugin
  */
 class restore_local_adler_plugin_test extends local_adler_testcase {
+    # todo: test uuid fields
     public function setUpModule(): array {
         // stub the get_task() method to return a mock task object
         $stub_task = $this->getMockBuilder(restore_activity_task::class)
@@ -29,13 +30,13 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
 
         // generate array of 3 test entries
         $data = [
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item(1, array(), false),
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item(2, array(
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module(1, array(), false),
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module(2, array(
                 'score_max' => 10.0,
                 'timecreated' => 123456789,
                 'timemodified' => 123456789
             ), false),
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_score_item(3, array(
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module(3, array(
                 'score_max' => 30.0,
             ), false)
         ];
@@ -55,21 +56,21 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         return $method;
     }
 
-    public function test_process_adler_score_one_element() {
+    public function test_process_adler_module_one_element() {
         // setup
         global $DB;
         list($data, $stub) = $this->setUpModule();
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
-        $plugin->process_adler_score($data[0]);
+        $plugin->process_adler_module($data[0]);
 
 
         // verify that the database contains a record
-        $this->assertEquals(1, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(1, $DB->count_records('local_adler_course_modules'));
 
         // get the record from the database
-        $db_record = $DB->get_records('local_adler_scores_items');
+        $db_record = $DB->get_records('local_adler_course_modules');
         $db_record = (new ArrayIterator($db_record))->current();
         // verify that the record has the correct values
         $this->assertEquals((float)$data[0]->score_max, $db_record->score_max);
@@ -77,7 +78,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $this->assertEquals($data[0]->timemodified, $db_record->timemodified);
     }
 
-    public function test_process_adler_score_one_element_default_values() {
+    public function test_process_adler_module_one_element_default_values() {
         // test without optional fields (timecreated, timemodified)
         global $DB;
         list($data, $stub) = $this->setUpModule();
@@ -88,29 +89,29 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
-        $plugin->process_adler_score($data[1]);
+        $plugin->process_adler_module($data[1]);
 
         // verify that the database contains a record
-        $this->assertEquals(1, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(1, $DB->count_records('local_adler_course_modules'));
 
         // verify timecreated and timemodified
-        $db_record = $DB->get_records('local_adler_scores_items');
+        $db_record = $DB->get_records('local_adler_course_modules');
         $db_record = (new ArrayIterator($db_record))->current();
         $this->assertTrue($db_record->timecreated > 0 && $db_record->timecreated <= time());
         $this->assertTrue($db_record->timemodified > 0 && $db_record->timemodified <= time());
     }
 
-    public function test_process_adler_score_multiple_elements() {
+    public function test_process_adler_module_multiple_elements() {
         list($data, $stub) = $this->setUpModule();
 
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
-        $plugin->process_adler_score($data[0]);
+        $plugin->process_adler_module($data[0]);
         $this->expectException(dml_write_exception::class);
-        $plugin->process_adler_score($data[1]);
+        $plugin->process_adler_module($data[1]);
     }
 
-    public function test_process_adler_score_invalid_datatype() {
+    public function test_process_adler_module_invalid_datatype() {
         // setup
         global $DB;
         list($data, $stub) = $this->setUpModule();
@@ -126,17 +127,17 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
         try {
-            $plugin->process_adler_score($invalid_data);
+            $plugin->process_adler_module($invalid_data);
         } catch (dml_write_exception $e) {
             $exception_thrown = true;
         }
         $this->assertTrue($exception_thrown, "Exception was not thrown");
 
         // verify that the database contains no records
-        $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
     }
 
-    public function test_process_adler_score_missing_fields() {
+    public function test_process_adler_module_missing_fields() {
         // setup
         global $DB;
         list($data, $stub) = $this->setUpModule();
@@ -150,14 +151,14 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         // call the method to test
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
         try {
-            $plugin->process_adler_score($invalid_data);
+            $plugin->process_adler_module($invalid_data);
         } catch (dml_write_exception $e) {
             $exception_thrown = true;
         }
         $this->assertTrue($exception_thrown, "Exception was not thrown");
 
         // verify that the database contains no records
-        $this->assertEquals(0, $DB->count_records('local_adler_scores_items'));
+        $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
     }
 
     /** Test define_module_plugin_structure() */
@@ -183,8 +184,8 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
 
         // verify
         $this->assertCount(1, $paths);
-        $this->assertEquals('adler_score', $paths[0]->get_name());
-        $this->assertStringContainsString('adler_score', $paths[0]->get_path());
+        $this->assertEquals('adler_module', $paths[0]->get_name());
+        $this->assertStringContainsString('adler_module', $paths[0]->get_path());
     }
 
     /** Test course restore */

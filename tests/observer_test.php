@@ -31,14 +31,14 @@ class observer_test extends local_adler_testcase {
         for ($i = 0; $i < 10; $i++) {
             $module = $generator->create_module('url', ['course' => $course->id]);
             // create adler score record
-            $adler_generator->create_adler_score_item($module->cmid);
+            $adler_generator->create_adler_course_module($module->cmid);
             $modules[] = $module;
         }
 
         // create adler scores without cms
         $adler_score_tb_deleted = [];
         for ($i = 0; $i < 10; $i++) {
-            $adler_score_tb_deleted[] = $adler_generator->create_adler_score_item($modules[count($modules) - 1]->cmid + 1 + $i);
+            $adler_score_tb_deleted[] = $adler_generator->create_adler_course_module($modules[count($modules) - 1]->cmid + 1 + $i);
         }
 
 
@@ -63,11 +63,11 @@ class observer_test extends local_adler_testcase {
 
         // check if all adler score records without cms were deleted
         foreach ($adler_score_tb_deleted as $adler_score) {
-            $this->assertEquals(0, count($DB->get_records('local_adler_scores_items', ['cmid' => $adler_score->cmid])));
+            $this->assertEquals(0, count($DB->get_records('local_adler_course_modules', ['cmid' => $adler_score->cmid])));
         }
         // check if other adler score records and cms were not deleted
         foreach ($modules as $module) {
-            $this->assertEquals(1, count($DB->get_records('local_adler_scores_items', ['cmid' => $module->cmid])));
+            $this->assertEquals(1, count($DB->get_records('local_adler_course_modules', ['cmid' => $module->cmid])));
             $this->assertEquals(1, count($DB->get_records('course_modules', ['id' => $module->cmid])));
         }
 
@@ -197,8 +197,8 @@ class observer_test extends local_adler_testcase {
 
         if ($data['case'] == 'default') {
             // create adler score record
-            $adler_generator->create_adler_score_item($module1->cmid);
-            $adler_generator->create_adler_score_item($module2->cmid);
+            $adler_generator->create_adler_course_module($module1->cmid);
+            $adler_generator->create_adler_course_module($module2->cmid);
         }
 
         // create mock course_module_deleted
@@ -214,8 +214,8 @@ class observer_test extends local_adler_testcase {
 
         // check result
         if ($data['case'] == 'default') {
-            $this->assertEquals(0, count($DB->get_records('local_adler_scores_items', ['cmid' => $module1->cmid])));
-            $this->assertEquals(1, count($DB->get_records('local_adler_scores_items', ['cmid' => $module2->cmid])));
+            $this->assertEquals(0, count($DB->get_records('local_adler_course_modules', ['cmid' => $module1->cmid])));
+            $this->assertEquals(1, count($DB->get_records('local_adler_course_modules', ['cmid' => $module2->cmid])));
         }
     }
 
@@ -258,14 +258,14 @@ class observer_test extends local_adler_testcase {
             }
             $module = $generator->create_module('url', ['course' => $course->id]);
             // create adler score record
-            $adler_generator->create_adler_score_item($module->cmid);
+            $adler_generator->create_adler_course_module($module->cmid);
             $modules[] = $module;
         }
 
 
         // create 100 adler scores without cms
         for ($i = 0; $i < $count_delete; $i++) {
-            $adler_generator->create_adler_score_item($modules[count($modules) - 1]->cmid + 1 + $i);
+            $adler_generator->create_adler_course_module($modules[count($modules) - 1]->cmid + 1 + $i);
         }
 
         // call function

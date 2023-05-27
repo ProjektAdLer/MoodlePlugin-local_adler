@@ -7,6 +7,26 @@ use stdClass;
 class db {
     /**
      * Get adler-section with given section_id
+     * @param string $uuid moodle section id
+     * @return stdClass|false adler-section for given moodle section, false if not found
+     * @throws dml_exception
+     */
+    public static function get_adler_section_by_uuid(string $uuid, int $course_id) {
+        global $DB;
+        $adler_sections = $DB->get_records('local_adler_sections', ['uuid' => $uuid]);
+
+        foreach ($adler_sections as $adler_section) {
+            // get moodle section
+            $moodle_section = static::get_moodle_section($adler_section->section_id);
+            if ($moodle_section->course == $course_id) {
+                return $adler_section;
+            }
+        }
+        throw new dml_exception('No adler-section found for given uuid and course_id');
+    }
+
+    /**
+     * Get adler-section with given section_id
      * @param int $section_id moodle section id
      * @return stdClass|false adler-section for given moodle section, false if not found
      * @throws dml_exception
