@@ -50,7 +50,7 @@ class observer_test extends local_adler_testcase {
 
         // create some adler condition records without moodle sections
         for ($i = 0; $i < 10; $i++) {
-            $adler_sections_tb_deleted[] = $adler_generator->create_adler_section_object($sections[count($sections) - 1]->id + 1 + $i, [1]);
+            $adler_sections_tb_deleted[] = $adler_generator->create_adler_section_object($sections[count($sections) - 1]->id + 10 + $i);
         }
 
 
