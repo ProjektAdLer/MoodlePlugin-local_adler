@@ -14,6 +14,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 /**
+ * @runTestsInSeparateProcesses
  */
 class upload_course_test extends local_adler_externallib_testcase {
     public function generate_mbz(bool $is_adler_course): string {
