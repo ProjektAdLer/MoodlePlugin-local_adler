@@ -27,7 +27,7 @@ class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
-                'mbz' => new external_value(PARAM_TEXT, 'mbz in base64 format', VALUE_REQUIRED),
+                'mbz' => new external_value(PARAM_FILE, 'mbz as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
             )
         );
     }
@@ -49,12 +49,12 @@ class upload_course extends external_api {
      * @throws moodle_exception
      * @throws Exception
      */
-    public static function execute($mbz): array {
-        // Parameter validation
-        $params = self::validate_parameters(self::execute_parameters(), array(
-            'mbz' => $mbz,
-        ));
-        $mbz = $params['mbz'];
+    public static function execute(): array {
+        // Moodle parameter validation not needed because moodle is too stupid to support direct file upload
+        // instead manual validation is needed
+        if (!isset($_FILES['mbz'])) {
+            throw new invalid_parameter_exception('mbz is missing');
+        }
 
         // Saving file (taken from externallib.php (file) upload)
         $dir = make_temp_directory('wsupload');
@@ -67,8 +67,8 @@ class upload_course extends external_api {
             $savedfilepath = $dir . $filename;
         }
 
-        file_put_contents($savedfilepath, base64_decode($mbz));
-
+        // move file "mbz" from $_FILES to $savedfilepath
+        rename($_FILES['mbz']['tmp_name'], $savedfilepath);
 
         // extract mbz and prepare restore
         $categoryid = 1; // e.g. 1 == Miscellaneous

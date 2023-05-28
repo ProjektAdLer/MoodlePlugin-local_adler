@@ -46,10 +46,7 @@ class upload_course_test extends local_adler_externallib_testcase {
         $filepath = $CFG->dataroot . '/filedir/' . substr($filepath, 0, 2) . '/' . substr($filepath, 2, 2) . '/' . $filepath;
 
 
-        // base64 encode file
-        $file = base64_encode(file_get_contents($filepath));
-
-        return $file;
+        return $filepath;
     }
 
     public function provide_test_execute_data() {
@@ -67,7 +64,7 @@ class upload_course_test extends local_adler_externallib_testcase {
      * @dataProvider provide_test_execute_data
      */
     public function test_execute($is_adler_course) {
-        $base64_encoded_course = $this->generate_mbz($is_adler_course);
+        $test_course_filepath = $this->generate_mbz($is_adler_course);
 
         global $DB;
         $course_count_before = $DB->count_records('course');
@@ -76,7 +73,15 @@ class upload_course_test extends local_adler_externallib_testcase {
             $this->expectException(not_an_adler_course_exception::class);
         }
 
-        upload_course::execute($base64_encoded_course);
+        $_FILES['mbz'] = [
+            'name' => 'test.mbz',
+            'type' => 'application/zip',
+            'tmp_name' => $test_course_filepath,
+            'error' => 0,
+            'size' => 123,
+        ];
+
+        upload_course::execute();
 
         $course_count_after = $DB->count_records('course');
 
