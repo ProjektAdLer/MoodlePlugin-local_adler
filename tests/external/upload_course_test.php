@@ -53,9 +53,23 @@ class upload_course_test extends local_adler_externallib_testcase {
         return [
             'success' => [
                 'is_adler_course' => true,
+                'upload_error' => UPLOAD_ERR_OK,
+                'fail_validation' => false,
+            ],
+            'fail_validation' => [
+                'is_adler_course' => true,
+                'upload_error' => UPLOAD_ERR_OK,
+                'fail_validation' => true,
+            ],
+            'mbz_upload_failed' => [
+                'is_adler_course' => true,
+                'upload_error' => UPLOAD_ERR_NO_FILE,
+                'fail_validation' => false,
             ],
             'require_login_exception' => [
                 'is_adler_course' => false,
+                'upload_error' => UPLOAD_ERR_OK,
+                'fail_validation' => true,
             ],
         ];
     }
@@ -63,7 +77,7 @@ class upload_course_test extends local_adler_externallib_testcase {
     /**
      * @dataProvider provide_test_execute_data
      */
-    public function test_execute($is_adler_course) {
+    public function test_execute($is_adler_course, $upload_error, $fail_validation) {
         $test_course_filepath = $this->generate_mbz($is_adler_course);
 
         global $DB;
@@ -73,13 +87,21 @@ class upload_course_test extends local_adler_externallib_testcase {
             $this->expectException(not_an_adler_course_exception::class);
         }
 
-        $_FILES['mbz'] = [
-            'name' => 'test.mbz',
-            'type' => 'application/zip',
-            'tmp_name' => $test_course_filepath,
-            'error' => 0,
-            'size' => 123,
-        ];
+        if ($upload_error !== UPLOAD_ERR_OK) {
+            $this->expectException(invalid_parameter_exception::class);
+        }
+
+        if ($fail_validation) {
+            $this->expectException(invalid_parameter_exception::class);
+        } else {
+            $_FILES['mbz'] = [
+                'name' => 'test.mbz',
+                'type' => 'application/zip',
+                'tmp_name' => $test_course_filepath,
+                'error' => $upload_error,
+                'size' => 123,
+            ];
+        }
 
         upload_course::execute();
 
@@ -110,5 +132,9 @@ class upload_course_test extends local_adler_externallib_testcase {
         } else {
             upload_course::validate_parameters(upload_course::execute_returns(), ['data' => ['course_id' => 1]]);
         }
+    }
+
+    public function test_execute_parameters() {
+        upload_course::validate_parameters(upload_course::execute_parameters(), []);
     }
 }

@@ -14,6 +14,7 @@ Damit der mbz api endpunkt auch mit größeren Dateien funktioniert sind folgend
 - `max_execution_time` auf mindestens 60 setzen
 - `output_buffering` auf 8192 setzen
 ```
+# todo: some variable might not be required anymore after upload_course rework
 
 
 ## Kompabilität

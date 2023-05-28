@@ -27,7 +27,7 @@ class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
-                'mbz' => new external_value(PARAM_FILE, 'mbz as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
+                'mbz' => new external_value(PARAM_FILE, 'Required. MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
             )
         );
     }
@@ -54,6 +54,9 @@ class upload_course extends external_api {
         // instead manual validation is needed
         if (!isset($_FILES['mbz'])) {
             throw new invalid_parameter_exception('mbz is missing');
+        }
+        if ($_FILES['mbz']['error'] !== UPLOAD_ERR_OK) {
+            throw new invalid_parameter_exception('mbz upload failed');
         }
 
         // Saving file (taken from externallib.php (file) upload)
