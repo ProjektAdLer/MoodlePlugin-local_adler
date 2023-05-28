@@ -84,7 +84,8 @@ class upload_course extends external_api {
         // validate course is adler course
         $course_xml_path = $tempdir . '/course/course.xml';
         $contents = file_get_contents($course_xml_path);
-        if(!property_exists(simplexml_load_string($contents)->plugin_local_adler_course, 'adler_course')) {
+        if(!property_exists(simplexml_load_string($contents), 'plugin_local_adler_course')
+            || !property_exists(simplexml_load_string($contents)->plugin_local_adler_course, 'adler_course')) {
             throw new not_an_adler_course_exception();
         }
 
