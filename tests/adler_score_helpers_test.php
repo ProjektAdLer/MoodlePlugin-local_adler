@@ -6,6 +6,7 @@ global $CFG;
 
 use local_adler\lib\local_adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
+use local_adler\local\exceptions\not_an_adler_cm_exception;
 use moodle_exception;
 use ReflectionClass;
 use Throwable;

@@ -59,10 +59,9 @@ die Plugins erwartungsgemäß deinstalliert werden. Dieser Ansatz hätte aber di
 
 Setup funktioniert exakt wie bei allen anderen Plugins auch (nach dem manuellen Installationsvorgang, da unser Plugin nicht im Moodle Store ist).
 
-TODO: availability_adler
-
-1. Plugin in moodle in den Ordner `local` entpacken (bspw moodle/local/adler/lib.php muss es geben)
-2. Moodle upgrade ausführen
+1. Dieses Plugin benötigt das Plugin `availability_adler` als Abhängigkeit. Beide müssen zeitgleich installiert werden (= vor dem upgrade in die Moodle-Installation entpackt sein). Installation siehe `availability_adler`
+2. Plugin in moodle in den Ordner `local` entpacken (bspw moodle/local/adler/lib.php muss es geben)
+3. Moodle upgrade ausführen
 
 Damit ist die Installation abgeschlossen. Als Nächstes kann ein mbz mit den Plugin-Feldern wiederhergestellt werden.
 

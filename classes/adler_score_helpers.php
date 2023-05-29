@@ -3,11 +3,10 @@
 namespace local_adler;
 
 use dml_exception;
+use local_adler\local\exceptions\not_an_adler_cm_exception;
 use moodle_exception;
 use stdClass;
 
-global $CFG;
-require_once($CFG->dirroot . '/local/adler/classes/exceptions.php');
 
 class adler_score_helpers {
     protected static string $adler_score_class = adler_score::class;

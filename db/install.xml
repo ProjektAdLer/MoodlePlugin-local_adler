@@ -42,8 +42,8 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="section_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="uuid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
-<!--        todo: why text??-->
-        <FIELD NAME="required_points_to_complete" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+<!--        todo: update in docs??-->
+        <FIELD NAME="required_points_to_complete" TYPE="number" LENGTH="12" NOTNULL="true" SEQUENCE="false" DECIMALS="5" COMMENT="points required to complete this section"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>

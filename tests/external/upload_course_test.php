@@ -66,10 +66,10 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'upload_error' => UPLOAD_ERR_NO_FILE,
                 'fail_validation' => false,
             ],
-            'require_login_exception' => [
+            'not_adler_course' => [
                 'is_adler_course' => false,
                 'upload_error' => UPLOAD_ERR_OK,
-                'fail_validation' => true,
+                'fail_validation' => false,
             ],
         ];
     }

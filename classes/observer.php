@@ -7,6 +7,7 @@ use core\event\course_deleted;
 use core\event\course_module_deleted;
 use core\event\course_section_deleted;
 use dml_exception;
+use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\section\db as section_db;
 
 defined('MOODLE_INTERNAL') || die();
