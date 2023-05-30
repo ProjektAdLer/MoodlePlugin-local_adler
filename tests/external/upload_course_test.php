@@ -130,7 +130,10 @@ class upload_course_test extends local_adler_externallib_testcase {
             $this->expectException(invalid_parameter_exception::class);
             upload_course::validate_parameters(upload_course::execute_returns(), 'blub');
         } else {
-            upload_course::validate_parameters(upload_course::execute_returns(), ['data' => ['course_id' => 1]]);
+            upload_course::validate_parameters(upload_course::execute_returns(), ['data' => [
+                'course_id' => 1,
+                'course_fullname' => 'blub'
+            ]]);
         }
     }
 

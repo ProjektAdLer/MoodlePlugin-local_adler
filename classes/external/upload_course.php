@@ -37,6 +37,7 @@ class upload_course extends external_api {
             'data' => new external_single_structure(
                 array(
                     'course_id' => new external_value(PARAM_INT, 'id of the newly created course', VALUE_REQUIRED),
+                    'course_fullname' => new external_value(PARAM_TEXT, 'fullname of the newly created course. This value might differ from the one specified in mbz. If a name already exists moodle renames the course.', VALUE_REQUIRED),
                 )
             )
         ]);
@@ -118,8 +119,14 @@ class upload_course extends external_api {
         fulldelete($tempdir);
 
 
+        // get course object
+        $course = get_course($courseid);
+        $course_fullname = $course->fullname;
+
+
         return array('data' => array(
             'course_id' => $courseid,
+            'course_fullname' => $course_fullname
         ));
     }
 }
