@@ -15,7 +15,6 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * Therefore, this test is implemented as an integration test.
  */
 class backup_local_adler_plugin_test extends local_adler_testcase {
-    # todo: test uuid fields
     public function setUp(): void {
         parent::setUp();
 
@@ -64,6 +63,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
      * @return void
      */
     private function verify_points($expected, $actual) {
+        $this->assertEquals($expected->uuid, $actual->uuid);
         $this->assertEquals((float)$expected->score_max, (float)$actual->score_max);
         $this->assertEquals((int)$expected->timecreated, (int)$actual->timecreated);
         $this->assertEquals((int)$expected->timemodified, (int)$actual->timemodified);
@@ -128,6 +128,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
      * @return void
      */
     private function verify_course($expected, $actual) {
+        $this->assertEquals($expected->uuid, $actual->uuid);
         $this->assertEquals((int)$expected->timecreated, (int)$actual->timecreated);
         $this->assertEquals((int)$expected->timemodified, (int)$actual->timemodified);
     }
@@ -155,7 +156,7 @@ class backup_local_adler_plugin_test extends local_adler_testcase {
         $xml = $this->get_xml_from_backup($bc, 'course');
 
         // validate xml values
-        $this->verify_course($adler_course_object, $xml->plugin_local_adler_course->score_max);
+        $this->verify_course($adler_course_object, $xml->plugin_local_adler_course->adler_course);
     }
 
     public function test_backup_course_not_adler_course() {

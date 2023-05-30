@@ -14,7 +14,6 @@ require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_pl
  * PHPunit test for class restore_local_adler_plugin
  */
 class restore_local_adler_plugin_test extends local_adler_testcase {
-    # todo: test uuid fields
     public function setUpModule(): array {
         // stub the get_task() method to return a mock task object
         $stub_task = $this->getMockBuilder(restore_activity_task::class)
@@ -73,6 +72,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $db_record = $DB->get_records('local_adler_course_modules');
         $db_record = (new ArrayIterator($db_record))->current();
         // verify that the record has the correct values
+        $this->assertEquals((float)$data[0]->uuid, $db_record->uuid);
         $this->assertEquals((float)$data[0]->score_max, $db_record->score_max);
         $this->assertEquals($data[0]->timecreated, $db_record->timecreated);
         $this->assertEquals($data[0]->timemodified, $db_record->timemodified);
@@ -143,9 +143,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         list($data, $stub) = $this->setUpModule();
 
         // create invalid data
-        $invalid_data = (object)[
-
-        ];
+        $invalid_data = (object)[];
 
         $exception_thrown = false;
         // call the method to test
