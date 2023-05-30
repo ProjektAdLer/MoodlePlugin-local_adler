@@ -72,7 +72,7 @@ class restore_local_adler_plugin_test extends local_adler_testcase {
         $db_record = $DB->get_records('local_adler_course_modules');
         $db_record = (new ArrayIterator($db_record))->current();
         // verify that the record has the correct values
-        $this->assertEquals((float)$data[0]->uuid, $db_record->uuid);
+        $this->assertEquals($data[0]->uuid, $db_record->uuid);
         $this->assertEquals((float)$data[0]->score_max, $db_record->score_max);
         $this->assertEquals($data[0]->timecreated, $db_record->timecreated);
         $this->assertEquals($data[0]->timemodified, $db_record->timemodified);
