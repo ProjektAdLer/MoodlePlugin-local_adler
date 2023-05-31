@@ -9,6 +9,7 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 use backup;
+use core_course_category;
 use Exception;
 use external_api;
 use external_function_parameters;
@@ -27,7 +28,7 @@ class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
-                'mbz' => new external_value(PARAM_FILE, 'Required. MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
+                'mbz' => new external_value(PARAM_FILE, 'Required (moodle tag "optional" is due to moodle limitations). MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
             )
         );
     }
@@ -74,13 +75,15 @@ class upload_course extends external_api {
         // move file "mbz" from $_FILES to $savedfilepath
         rename($_FILES['mbz']['tmp_name'], $savedfilepath);
 
-        // extract mbz and prepare restore
-        $categoryid = 1; // e.g. 1 == Miscellaneous
-        $userdoingrestore = 2; // e.g. 2 == admin
-        $courseid = restore_dbops::create_new_course('', '', $categoryid);
+        // set restore parameters
+        // get id of first category (in case default Miscellaneous category is deleted)
+        $categories = core_course_category::make_categories_list();  # todo: requried capability: create new course in category
+        $category_id = array_key_first($categories);
+        $user_doing_restore = 2; // e.g. 2 == admin  # todo: set to current user
+        $course_id = restore_dbops::create_new_course('', '', $category_id);
 
-
-        $foldername = restore_controller::get_tempdir_name($courseid, $userdoingrestore);
+        // extract mbz
+        $foldername = restore_controller::get_tempdir_name($course_id, $user_doing_restore);
         $fp = get_file_packer('application/vnd.moodle.backup');
         $tempdir = make_backup_temp_directory($foldername);
         $fp->extract_to_pathname($savedfilepath, $tempdir);
@@ -96,10 +99,10 @@ class upload_course extends external_api {
         // do restore: create controller
         $controller = new restore_controller(
             $foldername,
-            $courseid,
+            $course_id,
             backup::INTERACTIVE_NO,
             backup::MODE_GENERAL,
-            $userdoingrestore,
+            $user_doing_restore,
             backup::TARGET_NEW_COURSE
         );
 
@@ -120,12 +123,12 @@ class upload_course extends external_api {
 
 
         // get course object
-        $course = get_course($courseid);
+        $course = get_course($course_id);
         $course_fullname = $course->fullname;
 
 
         return array('data' => array(
-            'course_id' => $courseid,
+            'course_id' => $course_id,
             'course_fullname' => $course_fullname
         ));
     }

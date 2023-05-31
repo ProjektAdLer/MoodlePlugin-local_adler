@@ -37,7 +37,7 @@ class score_primitive_learning_element_test extends local_adler_externallib_test
         $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
 
         // mock adler_score class
-        $this->mock_adler_score = $this->getMockBuilder('local_adler\adler_score')
+        $this->mock_adler_score = $this->getMockBuilder(adler_score::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->mock_adler_score->method('get_score')
