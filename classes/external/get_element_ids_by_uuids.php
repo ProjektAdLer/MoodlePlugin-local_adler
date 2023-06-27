@@ -35,7 +35,7 @@ class get_element_ids_by_uuids extends external_api {
                             ),
                             'element_type' => new external_value(
                                 PARAM_TEXT,
-                                'element type',
+                                'element type, one of section, cm',
                                 VALUE_REQUIRED
                             ),
                             'uuid' => new external_value(
@@ -114,7 +114,7 @@ class get_element_ids_by_uuids extends external_api {
 
                     $moodle_section = section_db::get_moodle_section($moodle_id);
                     $context = static::$context_course::instance($moodle_section->course);
-                    static::validate_context($context);
+//                    static::validate_context($context);  // TODO: check if user is enrolled
 
                     // There is no context id for sections
                     break;
@@ -127,7 +127,7 @@ class get_element_ids_by_uuids extends external_api {
                     $moodle_id = $cm->cmid;
 
                     $context = static::$context_module::instance($moodle_id);
-                    static::validate_context($context);
+//                    static::validate_context($context); // TODO: check if user is enrolled
 
                     $context_id = $context->id;
                     break;
