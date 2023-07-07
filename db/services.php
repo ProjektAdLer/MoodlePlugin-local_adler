@@ -18,7 +18,7 @@ $services = array(
         // into the administration
         'enabled' => 1,                                                       // if enabled, the service can be reachable on a default installation
         'shortname' => 'adler_services',       // optional – but needed if restrictedusers is set so as to allow logins.
-        'downloadfiles' => 0,    // allow file downloads.
+        'downloadfiles' => 1,    // allow file downloads.
         'uploadfiles' => 0,      // allow file uploads.
         'loginrequired' => true
     )
