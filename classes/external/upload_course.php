@@ -29,7 +29,8 @@ class upload_course extends external_api {
         return new external_function_parameters(
             array(
                 'category_id' => new external_value(PARAM_INT, 'ID of the category in which the course should be created. If null, the course will be created in the category with the lowest available ID. Please note that even if a user has restore permissions for a category other than the one with the lowest ID, the course restoration process will not be successful.', VALUE_OPTIONAL),
-                'mbz' => new external_value(PARAM_FILE, 'Required (moodle tag "optional" is due to moodle limitations). MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
+                'only_check_permissions' => new external_value(PARAM_BOOL, 'Check only if user has the permissions for restore. No mbz needed. Will return generic data for course name and id.', VALUE_OPTIONAL),
+                'mbz' => new external_value(PARAM_FILE, 'Required (moodle tag "optional" is due to moodle limitations), except if only_check_permissions is true. MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
             )
         );
     }
@@ -53,8 +54,14 @@ class upload_course extends external_api {
      * @throws moodle_exception
      * @throws Exception
      */
-    public static function execute(int $category_id=null): array {
+    public static function execute(int $category_id=null, $only_check_permissions=false): array {
         global $USER;
+
+        // param validation except mbz
+        $params = self::validate_parameters(self::execute_parameters(), array('category_id' => $category_id, 'only_check_permissions' => $only_check_permissions));
+        $category_id = $params['category_id'];
+        $only_check_permissions = $params['only_check_permissions'];
+
 
         // get category id (if parameter is set, use this id, otherwise the first the user is allowed to restore courses in)
         if (empty($category_id)) {
@@ -69,7 +76,14 @@ class upload_course extends external_api {
         $context = context_coursecat::instance($category_id);
         require_capability('moodle/restore:restorecourse', $context);
 
-        // Moodle parameter validation not needed because moodle is too stupid to support direct file upload
+        if ($only_check_permissions) {
+            return array('data' => array(
+                'course_id' => -1,
+                'course_fullname' => ''
+            ));
+        }
+
+        // Additional check for mbz parameter, because Moodle is too stupid to support direct file upload
         // instead manual validation is needed
         if (!isset($_FILES['mbz'])) {
             throw new invalid_parameter_exception('mbz is missing');

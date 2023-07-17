@@ -57,6 +57,7 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'fail_validation' => false,
                 'valid_user' => true,
                 'specify_course_cat' => false,
+                'dry_run' => false,
             ],
             'fail_validation' => [
                 'is_adler_course' => true,
@@ -64,6 +65,7 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'fail_validation' => true,
                 'valid_user' => true,
                 'specify_course_cat' => false,
+                'dry_run' => false,
             ],
             'mbz_upload_failed' => [
                 'is_adler_course' => true,
@@ -71,6 +73,7 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'fail_validation' => false,
                 'valid_user' => true,
                 'specify_course_cat' => false,
+                'dry_run' => false,
             ],
             'not_adler_course' => [
                 'is_adler_course' => false,
@@ -78,6 +81,7 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'fail_validation' => false,
                 'valid_user' => true,
                 'specify_course_cat' => false,
+                'dry_run' => false,
             ],
             'user_not_allowed' => [
                 'is_adler_course' => true,
@@ -85,6 +89,7 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'fail_validation' => false,
                 'valid_user' => false,
                 'specify_course_cat' => false,
+                'dry_run' => false,
             ],
             'specified_course_cat' => [
                 'is_adler_course' => true,
@@ -92,6 +97,15 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'fail_validation' => false,
                 'valid_user' => true,
                 'specify_course_cat' => true,
+                'dry_run' => false,
+            ],
+            'dry_run' => [
+                'is_adler_course' => true,
+                'upload_error' => UPLOAD_ERR_OK,
+                'fail_validation' => false,
+                'valid_user' => true,
+                'specify_course_cat' => true,
+                'dry_run' => true,
             ]
         ];
     }
@@ -99,7 +113,7 @@ class upload_course_test extends local_adler_externallib_testcase {
     /**
      * @dataProvider provide_test_execute_data
      */
-    public function test_execute($is_adler_course, $upload_error, $fail_validation, $valid_user, $specify_course_cat) {
+    public function test_execute($is_adler_course, $upload_error, $fail_validation, $valid_user, $specify_course_cat, $dry_run) {
         $test_course_filepath = $this->generate_mbz($is_adler_course);
 
         global $DB;
@@ -135,17 +149,22 @@ class upload_course_test extends local_adler_externallib_testcase {
             $this->expectExceptionMessage('not_allowed');
         }
 
-        if($specify_course_cat) {
-            $course_cat = $this->getDataGenerator()->create_category();
-            upload_course::execute($course_cat->id);
-        } else {
-            upload_course::execute();
-        }
+        // case specify_course_cat
+        $course_cat = $this->getDataGenerator()->create_category();
+        $param_course_cat = $specify_course_cat ? $course_cat->id : null;
+
+        // case dry_run
+        $param_dry_run = $dry_run ? true : false;
+        upload_course::execute($param_course_cat, $param_dry_run);
 
 
         $course_count_after = $DB->count_records('course');
 
-        $this->assertEquals($course_count_before + 1, $course_count_after);
+        if ($dry_run) {
+            $this->assertEquals($course_count_before, $course_count_after);
+        } else {
+            $this->assertEquals($course_count_before + 1, $course_count_after);
+        }
     }
 
 
@@ -175,7 +194,29 @@ class upload_course_test extends local_adler_externallib_testcase {
         }
     }
 
-    public function test_execute_parameters() {
-        upload_course::validate_parameters(upload_course::execute_parameters(), []);
+    public function provide_test_execute_parameters_data() {
+        return [
+            '1' => [
+                'data' => [
+                    'category_id' => 7,
+
+                ]
+            ],
+            '2' => [
+                'data' => [
+                    'only_check_permissions' => true
+                ],
+            ],
+            '3' => [
+                'data' => []
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider provide_test_execute_parameters_data
+     */
+    public function test_execute_parameters($data) {
+        upload_course::validate_parameters(upload_course::execute_parameters(), $data);
     }
 }
