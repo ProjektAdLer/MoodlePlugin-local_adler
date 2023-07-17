@@ -9,6 +9,7 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 use backup;
+use context_coursecat;
 use core_course_category;
 use Exception;
 use external_api;
@@ -23,11 +24,11 @@ use restore_controller_exception;
 use restore_dbops;
 
 
-
 class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
+                'category_id' => new external_value(PARAM_INT, 'ID of the category in which the course should be created. If null, the course will be created in the category with the lowest available ID. Please note that even if a user has restore permissions for a category other than the one with the lowest ID, the course restoration process will not be successful.', VALUE_OPTIONAL),
                 'mbz' => new external_value(PARAM_FILE, 'Required (moodle tag "optional" is due to moodle limitations). MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
             )
         );
@@ -45,13 +46,29 @@ class upload_course extends external_api {
     }
 
     /**
+     * @param int $category_id ID of the category the course should be restored in
      * @throws invalid_parameter_exception
      * @throws not_an_adler_course_exception
      * @throws restore_controller_exception
      * @throws moodle_exception
      * @throws Exception
      */
-    public static function execute(): array {
+    public static function execute(int $category_id=null): array {
+        global $USER;
+
+        // get category id (if parameter is set, use this id, otherwise the first the user is allowed to restore courses in)
+        if (empty($category_id)) {
+            $categories = core_course_category::make_categories_list('moodle/restore:restorecourse');
+            if (count($categories) == 0) {
+                throw new moodle_exception('not_allowed', '', '', NULL, 'user requires moodle/restore:restorecourse capability on at least one category');
+            }
+            $category_id = array_key_first($categories);
+        }
+
+        // permission validation
+        $context = context_coursecat::instance($category_id);
+        require_capability('moodle/restore:restorecourse', $context);
+
         // Moodle parameter validation not needed because moodle is too stupid to support direct file upload
         // instead manual validation is needed
         if (!isset($_FILES['mbz'])) {
@@ -75,15 +92,11 @@ class upload_course extends external_api {
         // move file "mbz" from $_FILES to $savedfilepath
         rename($_FILES['mbz']['tmp_name'], $savedfilepath);
 
-        // set restore parameters
-        // get id of first category (in case default Miscellaneous category is deleted)
-        $categories = core_course_category::make_categories_list();  # todo: requried capability: create new course in category
-        $category_id = array_key_first($categories);
-        $user_doing_restore = 2; // e.g. 2 == admin  # todo: set to current user
+        // create course
         $course_id = restore_dbops::create_new_course('', '', $category_id);
 
         // extract mbz
-        $foldername = restore_controller::get_tempdir_name($course_id, $user_doing_restore);
+        $foldername = restore_controller::get_tempdir_name($course_id, $USER->id);
         $fp = get_file_packer('application/vnd.moodle.backup');
         $tempdir = make_backup_temp_directory($foldername);
         $fp->extract_to_pathname($savedfilepath, $tempdir);
@@ -91,7 +104,7 @@ class upload_course extends external_api {
         // validate course is adler course
         $course_xml_path = $tempdir . '/course/course.xml';
         $contents = file_get_contents($course_xml_path);
-        if(!property_exists(simplexml_load_string($contents), 'plugin_local_adler_course')
+        if (!property_exists(simplexml_load_string($contents), 'plugin_local_adler_course')
             || !property_exists(simplexml_load_string($contents)->plugin_local_adler_course, 'adler_course')) {
             throw new not_an_adler_course_exception();
         }
@@ -102,7 +115,7 @@ class upload_course extends external_api {
             $course_id,
             backup::INTERACTIVE_NO,
             backup::MODE_GENERAL,
-            $user_doing_restore,
+            $USER->id,
             backup::TARGET_NEW_COURSE
         );
 

@@ -8,6 +8,7 @@ use backup_controller;
 use invalid_parameter_exception;
 use local_adler\lib\local_adler_externallib_testcase;
 use local_adler\local\exceptions\not_an_adler_course_exception;
+use moodle_exception;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
@@ -45,7 +46,6 @@ class upload_course_test extends local_adler_externallib_testcase {
         $filepath = $file->get_contenthash();
         $filepath = $CFG->dataroot . '/filedir/' . substr($filepath, 0, 2) . '/' . substr($filepath, 2, 2) . '/' . $filepath;
 
-
         return $filepath;
     }
 
@@ -55,29 +55,51 @@ class upload_course_test extends local_adler_externallib_testcase {
                 'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => false,
+                'valid_user' => true,
+                'specify_course_cat' => false,
             ],
             'fail_validation' => [
                 'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => true,
+                'valid_user' => true,
+                'specify_course_cat' => false,
             ],
             'mbz_upload_failed' => [
                 'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_NO_FILE,
                 'fail_validation' => false,
+                'valid_user' => true,
+                'specify_course_cat' => false,
             ],
             'not_adler_course' => [
                 'is_adler_course' => false,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => false,
+                'valid_user' => true,
+                'specify_course_cat' => false,
             ],
+            'user_not_allowed' => [
+                'is_adler_course' => true,
+                'upload_error' => UPLOAD_ERR_OK,
+                'fail_validation' => false,
+                'valid_user' => false,
+                'specify_course_cat' => false,
+            ],
+            'specified_course_cat' => [
+                'is_adler_course' => true,
+                'upload_error' => UPLOAD_ERR_OK,
+                'fail_validation' => false,
+                'valid_user' => true,
+                'specify_course_cat' => true,
+            ]
         ];
     }
 
     /**
      * @dataProvider provide_test_execute_data
      */
-    public function test_execute($is_adler_course, $upload_error, $fail_validation) {
+    public function test_execute($is_adler_course, $upload_error, $fail_validation, $valid_user, $specify_course_cat) {
         $test_course_filepath = $this->generate_mbz($is_adler_course);
 
         global $DB;
@@ -103,7 +125,23 @@ class upload_course_test extends local_adler_externallib_testcase {
             ];
         }
 
-        upload_course::execute();
+        if ($valid_user) {
+            $user = $this->getDataGenerator()->create_user();
+            $role_id = $DB->get_record('role', array('shortname' => 'manager'))->id;
+            role_assign($role_id, $user->id, 1);
+            $this->setUser($user->id);
+        } else {
+            $this->expectException(moodle_exception::class);
+            $this->expectExceptionMessage('not_allowed');
+        }
+
+        if($specify_course_cat) {
+            $course_cat = $this->getDataGenerator()->create_category();
+            upload_course::execute($course_cat->id);
+        } else {
+            upload_course::execute();
+        }
+
 
         $course_count_after = $DB->count_records('course');
 
