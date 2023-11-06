@@ -56,7 +56,7 @@ class score_primitive_learning_element extends external_api {
             'is_completed' => $is_completed
         ));
 
-        // create moodle course object $course
+        // get moodle course object $course
         try {
             $course_module = get_coursemodule_from_id(null, $params['module_id'], 0, false, MUST_EXIST);
         } catch (dml_exception $e) {

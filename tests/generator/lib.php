@@ -4,8 +4,6 @@ global $CFG;
 require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 class local_adler_generator extends component_generator_base {
-    // https://github.com/call-learning/moodle-local_resourcelibrary/blob/master/tests/generator/lib.php
-
     /**
      * Create a course module
      *

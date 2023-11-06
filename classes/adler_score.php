@@ -26,7 +26,6 @@ class adler_score {
 
     protected static string $adler_score_helpers = adler_score_helpers::class;
 
-
     /**
      * @param object $course_module
      * @param int|null $user_id If null, the current user will be used
@@ -151,7 +150,10 @@ class adler_score {
         // get completion status
         $completion_status = (float)$completion->get_data($this->course_module, false, $this->user_id)->completionstate;
 
-        return self::calculate_score($this->score_item->score_max, $completion_status);
+        // completionstate has multiple options, not just COMPLETE and INCOMPLETE
+        $is_completed_successfully = $completion_status == COMPLETION_COMPLETE || $completion_status == COMPLETION_COMPLETE_PASS;
+
+        return self::calculate_score($this->score_item->score_max, $is_completed_successfully);
     }
 
     /** Get the score for the course module.

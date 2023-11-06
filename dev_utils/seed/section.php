@@ -89,10 +89,10 @@ function seed(int $course_id) {
 
         // insert room/availability condition for each section except the first one
         $sections[$section_id]->availability = null;
-        if (count($adler_section_ids) == 2) { // there is one previous room
+        if (count($adler_section_ids) == 2) { // there is one previous section(room)
             $sections[$section_id]->availability = '{"op":"&","c":[{"type":"adler","condition":"' . $adler_section_ids[count($adler_section_ids) - 2] . '"}],"showc":[true]}';
         }
-        if (count($adler_section_ids) > 2) {  // two previous rooms
+        if (count($adler_section_ids) > 2) {  // two previous sections (rooms)
             $sections[$section_id]->availability = '{"op":"&","c":[{"type":"adler","condition":"' . $adler_section_ids[count($adler_section_ids) - 2] . '^' . $adler_section_ids[count($adler_section_ids) - 3] . '"}],"showc":[true]}';
         }
         $DB->update_record('course_sections', $sections[$section_id]);

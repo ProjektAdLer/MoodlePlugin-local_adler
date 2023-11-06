@@ -37,7 +37,7 @@
         <INDEX NAME="uuid" UNIQUE="false" FIELDS="uuid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="local_adler_sections" COMMENT="Metadata for rooms like condition to unlock / points for completion">
+    <TABLE NAME="local_adler_sections" COMMENT="Metadata for sections (rooms) like condition to unlock / points for completion">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="section_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>

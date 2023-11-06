@@ -9,8 +9,6 @@ $services = array(
             'core_webservice_get_site_info',
             'core_user_get_users_by_field',
             'core_course_delete_courses',
-            'local_adler_get_moodle_ids_by_uuids',
-            'local_adler_upload_course', # temporär, da dieser service aktuell noch nicht im main branch ist, aber trotzdem durch einen merge in den feature branch auf die whitelist soll
         ), // web service functions of this service
         'requiredcapability' => '',                // if set, the web service user need this capability to access
         // any function of this service. For example: 'some/capability:specified'
