@@ -21,11 +21,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023110600;
+$plugin->version = 2023110800;
 $plugin->requires = 2021051712.05;  // Moodle version
 $plugin->component = 'local_adler';
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '2.0.0-rc.1_dev';
+$plugin->release = '2.0.0-rc.2';
 $plugin->dependencies = array(
     'availability_adler' => ANY_VERSION,
 );
