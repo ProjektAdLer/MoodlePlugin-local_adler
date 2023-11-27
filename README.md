@@ -85,6 +85,17 @@ Die composer.json von Moodle enthält Mockery nicht, daher enthält das Plugin e
 Diese ist (derzeit) nur für die Entwicklung relevant, sie enthält keine Dependencies die für die normale Nutzung notwendig sind.
 Um die dev-dependencies zu installieren muss `composer install` im Plugin-Ordner ausgeführt werden.
 
+### Unit Test Setup
+- Den richtigen Interpreter wählen (im Falle von der Nutzung von WSL muss bspw unbedingt der Interpreter innerhalb der WSL Installation gewählt werden)
+- moodle composer.json installieren (`cd <path-to-moodle>; composer install`)
+- plugin composer.json installieren (für jedes Plugin dessen tests ausgeführt werden sollen) (`cd <path-to-plugin>; composer install`)
+- Moodle hat eine hardcoded locale dependency bei Tests für `en_AU.UTF-8` ([siehe docs](https://docs.moodle.org/dev/Common_unit_test_problems#core_phpunit_advanced_testcase::test_locale_reset)). Diese muss generiert werden: Ubuntu: `sudo locale-gen en_AU.UTF-8`
+- phpunit.xml aus dem Projekt auswählen (geschieht über den `--configuration` switch von phpunit)
+
+Hinweise:
+- Um Tests lokal nicht in `@RunTestsInSeparateProcesses` ausführen zu müssen in der Datei `moodle/lib/setuplib.php` in der Funktion `require_phpunit_isolation()` vor der Exception `return;` einfügen. \
+**Achtung**: Dies kann potentiell unerwartete Nebeneffekte haben! Tests werden nicht umsonst normalerweise in isolierten Prozessen ausgeführt.
+
 
 ## Verschiedenes
 
