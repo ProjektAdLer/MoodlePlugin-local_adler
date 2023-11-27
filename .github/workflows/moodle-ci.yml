@@ -114,7 +114,7 @@ jobs:
       # running this just before the tests to make sure that the vendor directory is not included in previous steps
       - name: Install plugin dependencies
         run: |
-          cd moodle/mod/adleradaptivity
+          cd moodle/local/adler
           composer i
 
       - name: Init moodle test env
