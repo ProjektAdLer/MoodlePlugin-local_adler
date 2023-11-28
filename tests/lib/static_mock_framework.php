@@ -5,6 +5,8 @@ namespace local_adler\lib;
 
 /**
  * calls, returns and exceptions are arrays, the used index corresponds to the call index. 1st func call uses index 0, 2nd func call uses index 1, ...
+ * 
+ * @deprecated use Mockery instead
  */
 trait static_mock_utilities_trait {
     private static array $calls = array();
