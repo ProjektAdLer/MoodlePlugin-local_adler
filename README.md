@@ -38,6 +38,9 @@ Folgende Versionen werden unterstützt (mit mariadb und postresql getestet):
 |-------------------------|-------------|
 | MOODLE_401_STABLE (LTS) | 8.1         |
 | MOODLE_402_STABLE       | 8.1         |
+| MOODLE_402_STABLE       | 8.2         |
+| MOODLE_403_STABLE       | 8.1         |
+| MOODLE_403_STABLE       | 8.2         |
 
 
 ## Deinstallation der Plugins
