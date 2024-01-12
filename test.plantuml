@@ -1,0 +1,60 @@
+@startuml
+
+!define classdiagram
+skinparam classAttributeIconSize 0
+
+namespace local_adler {
+    class adler_score {
+        -course_module: object
+        -user_id: int
+        #score_item: stdClass
+        #helpers: string
+        #completion_info: string
+        #adler_score_helpers: string
+
+        +__construct(course_module: object, user_id: int = null)
+        +get_cmid(): int
+        +get_score(): float
+        -get_h5p_score(): float
+        -get_primitive_score(): float
+        -calculate_score(max_score: float, percentage_achieved: float): float
+        -calculate_percentage_achieved(value: float, max: float, min: float = 0): float
+    }
+
+    class helpers {
+        +get_course_from_course_id(course_id: int)
+        +delete_adler_course_record(course_id: int)
+        +course_is_adler_course(course_id: int): bool
+        +is_primitive_learning_element(course_module: object): bool
+    }
+}
+
+class completion_info {
+}
+
+class context_course {
+}
+
+class dml_exception {
+}
+
+class user_not_enrolled_exception {
+}
+
+class moodle_exception {
+}
+
+class stdClass {
+}
+
+adler_score ..> helpers: <<use>>
+adler_score ..> completion_info: <<use>>
+adler_score ..> adler_score_helpers: <<use>>
+
+adler_score .. context_course: <<use>>
+adler_score ..> dml_exception: <<use>>
+adler_score ..> user_not_enrolled_exception: <<use>>
+adler_score ..> moodle_exception: <<use>>
+adler_score -- stdClass: <<use>>
+
+@enduml
