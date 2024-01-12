@@ -3,6 +3,16 @@
 [![Coverage Status](https://coveralls.io/repos/github/ProjektAdLer/MoodlePluginLocal/badge.svg?branch=main)](https://coveralls.io/github/ProjektAdLer/MoodlePluginLocal?branch=main)
 
 
+## Dependencies
+> [!CAUTION]
+> Now removed all dependency checks for all plugins as I'm pissed of about moodle saying: no you cannot update, because
+> the updated version of the dependency that IS ALREADY PRESENT IN THE CORRESPONDING DIRECTORY is "Unavailable".
+
+| Plugin             | Version |
+|--------------------|---------|
+| availability_adler | ~3.0.0  |
+
+
 
 ## MBZ api endpunkt
 Damit der mbz api endpunkt auch mit größeren Dateien funktioniert sind folgende Änderungen an der php.ini notwendig:
