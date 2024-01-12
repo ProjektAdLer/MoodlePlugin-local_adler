@@ -21,6 +21,12 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * @preserveGlobalState disabled
  */
 class score_primitive_learning_element_test extends local_adler_externallib_testcase {
+    // Define the properties explicitly
+    public $course;
+    public $course_module;
+    public $user;
+    public $mock_adler_score;
+
     public function setUp(): void {
         parent::setUp();
 
