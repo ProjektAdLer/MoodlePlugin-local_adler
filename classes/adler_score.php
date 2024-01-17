@@ -8,6 +8,7 @@ use completion_info;
 use context_course;
 use dml_exception;
 use local_adler\local\exceptions\user_not_enrolled_exception;
+use local_logging\logger;
 use moodle_exception;
 use stdClass;
 
@@ -15,6 +16,7 @@ use stdClass;
  * Managing adler score system for one course module
  */
 class adler_score {
+    private logger $logger;
     private object $course_module;
 
     private int $user_id;
@@ -33,6 +35,8 @@ class adler_score {
      * @throws moodle_exception course_module_format_not_valid, not_an_adler_cm, course_not_adler_course
      */
     public function __construct(object $course_module, int $user_id = null) {
+        $this->logger = new logger('local_adler', 'adler_score');
+
         $this->course_module = $course_module;
 
         if ($user_id === null) {
@@ -44,11 +48,12 @@ class adler_score {
 
         // validate correct course_module format
         if (!isset($this->course_module->modname)) {
-            debugging('Moodle hast different course_module formats. ' .
+            $this->logger->debug('Moodle hast different course_module formats. ' .
                 'The DB-Format and the one returned by get_coursemodule_from_id().' .
-                ' They are incompatible and only the last one is currently supported by this method.', DEBUG_NORMAL);
-            debugging('Support for DB format can be implemented if required,' .
-                ' the required fields are existing there with different names.', DEBUG_DEVELOPER);
+                ' They are incompatible and only the last one is currently supported by this method.');
+            $this->logger->debug('Support for DB format can be implemented if required,' .
+                ' the required fields are existing there with different names.');
+            $this->logger->error('course_module_format_not_valid');
             throw new coding_exception('course_module_format_not_valid', 'local_adler');
         }
 
@@ -120,7 +125,7 @@ class adler_score {
         $grading_info = $grading_info->items[0];
 
         if ($grading_info->grades[$this->user_id]->grade === null) {
-            debugging('h5p grade not found, probably the user has not submitted the h5p activity yet -> assuming 0%', DEBUG_DEVELOPER);
+            $this->logger->debug('h5p grade not found, probably the user has not submitted the h5p activity yet -> assuming 0%');
             $relative_grade = 0;
         } else {
             $relative_grade = static::calculate_percentage_achieved(
@@ -168,7 +173,7 @@ class adler_score {
         }
 
         // if course_module is not a h5p activity, get completion status
-        debugging('course_module is either a primitive or an unsupported complex activity', DEBUG_ALL);
+        $this->logger->debug('course_module is either a primitive or an unsupported complex activity');
 
         return $this->get_primitive_score();
     }

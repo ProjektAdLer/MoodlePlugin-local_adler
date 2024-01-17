@@ -14,6 +14,7 @@ use external_value;
 use invalid_parameter_exception;
 use local_adler\adler_score;
 use local_adler\helpers;
+use local_logging\logger;
 use moodle_exception;
 use restricted_context_exception;
 
@@ -47,6 +48,7 @@ class score_primitive_learning_element extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function execute($module_id, $is_completed): array {
+        $logger = new logger('local_adler', 'score_primitive_learning_element');
         global $CFG;
         require_once($CFG->libdir . '/completionlib.php');
 
@@ -92,7 +94,7 @@ class score_primitive_learning_element extends external_api {
             return ['data' => lib::convert_adler_score_array_format_to_response_structure(
                 array($course_module->id => $adler_score->get_score()))];
         } else {
-            debugging("Course module is not a known primitive learning element.", E_WARNING);
+            $logger->warning("Course module is not a known primitive learning element.");
             throw new moodle_exception("course_module_is_not_a_primitive_learning_element", 'local_adler');
         }
     }

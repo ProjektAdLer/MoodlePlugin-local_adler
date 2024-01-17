@@ -4,6 +4,7 @@ namespace local_adler;
 
 use dml_exception;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
+use local_logging\logger;
 use moodle_exception;
 use stdClass;
 
@@ -19,6 +20,7 @@ class adler_score_helpers {
      * @throws moodle_exception
      */
     public static function get_adler_score_objects(array $module_ids, int $user_id = null): array {
+        $logger = new logger('local_adler', 'adler_score_helpers');
         $adler_scores = array();
         foreach ($module_ids as $module_id) {
             $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
@@ -26,7 +28,7 @@ class adler_score_helpers {
                 $adler_scores[$module_id] = new static::$adler_score_class($course_module, $user_id);
             } catch (moodle_exception $e) {
                 if ($e->errorcode === 'not_an_adler_cm') {
-                    debugging('Is adler course, but adler scoring is not enabled for cm with id ' . $module_id, E_NOTICE);
+                    $logger->info('Is adler course, but adler scoring is not enabled for cm with id ' . $module_id);
                     $adler_scores[$module_id] = false;
                 } else {
                     throw $e;
@@ -67,10 +69,11 @@ class adler_score_helpers {
      * @throws moodle_exception
      */
     public static function get_adler_score_record(int $cmid): stdClass {
+        $logger = new logger('local_adler', 'adler_score_helpers');
         global $DB;
         $record = $DB->get_record('local_adler_course_modules', array('cmid' => $cmid));
         if (!$record) {
-            debugging('Course module with id ' . $cmid . ' is not an adler course module', E_NOTICE);
+            $logger->debug('Course module with id ' . $cmid . ' is not an adler course module');
             throw new not_an_adler_cm_exception();
         }
         return $record;

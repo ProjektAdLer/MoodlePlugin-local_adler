@@ -12,6 +12,7 @@ use external_function_parameters;
 use external_value;
 use invalid_parameter_exception;
 use local_adler\adler_score_helpers;
+use local_logging\logger;
 use moodle_exception;
 
 
@@ -71,6 +72,8 @@ class score_h5p_learning_element extends external_api {
      * @throws moodle_exception
      */
     public static function execute($xapi): array {
+        $logger = new logger('local_adler', 'score_h5p_learning_element');
+
         $params = self::validate_parameters(self::execute_parameters(), array(
             'xapi' => $xapi,
         ));
@@ -95,7 +98,7 @@ class score_h5p_learning_element extends external_api {
         try {
             $scores = adler_score_helpers::get_achieved_scores(null, null, $adler_scores);
         } catch (moodle_exception $e) {
-            debugging('Failed to get adler scores, but xapi statements are already processed', E_ERROR);
+            $logger->error('Failed to get adler scores, but xapi statements are already processed');
             throw new moodle_exception('failed_to_get_adler_score', 'local_adler', '', $e->getMessage());
         }
 
