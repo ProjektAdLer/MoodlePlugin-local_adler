@@ -8,6 +8,8 @@ use completion_info;
 use local_adler\lib\local_adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
 use local_adler\local\exceptions\user_not_enrolled_exception;
+use local_logging\logger;
+use Mockery;
 use mod_h5pactivity\local\grader;
 use moodle_exception;
 use ReflectionClass;
@@ -265,6 +267,14 @@ class adler_score_test extends local_adler_testcase {
         completion_info_mock::set_returns('is_enabled', [$data['completion_enabled']]);
         completion_info_mock::set_returns('get_data', [(object)['completionstate' => $data['completion_state']]]);
 
+        // mock logger as it does not exist because constructor is not executed
+        $logger_mock = Mockery::mock(Logger::class);
+        // ignore all method calls on mock
+        $logger_mock->shouldIgnoreMissing();
+        // set logger mock to $logger variable in class under test
+        $property = $reflection->getProperty('logger');
+        $property->setAccessible(true);
+        $property->setValue($adler_score, $logger_mock);
 
         // call method
         try {
@@ -338,6 +348,14 @@ class adler_score_test extends local_adler_testcase {
         $property->setAccessible(true);
         $property->setValue($adler_score, $this->user->id);
 
+        // mock logger as it does not exist because constructor is not executed
+        $logger_mock = Mockery::mock(Logger::class);
+        // ignore all method calls on mock
+        $logger_mock->shouldIgnoreMissing();
+        // set logger mock to $logger variable in class under test
+        $property = $reflection->getProperty('logger');
+        $property->setAccessible(true);
+        $property->setValue($adler_score, $logger_mock);
 
         // test no attempt
         // call method
