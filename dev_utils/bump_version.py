@@ -11,6 +11,7 @@ import pathlib
 # Define a list of paths where the version should be updated
 update_paths = [
     "local/adler",
+    "local/logging",
     "mod/adleradaptivity",
     "availability/condition/adler"
 ]
