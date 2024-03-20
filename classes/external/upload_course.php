@@ -23,6 +23,16 @@ use restore_controller;
 use restore_controller_exception;
 use restore_dbops;
 
+// TODO: External function parameters: invalid OPTIONAL value specified.
+//
+//    line 47 of /lib/external/classes/external_function_parameters.php: call to debugging()
+//    line 29 of /local/adler/classes/external/upload_course.php: call to core_external\external_function_parameters->__construct()
+//    line ? of unknownfile: call to local_adler\external\upload_course::execute_parameters()
+//    line 110 of /lib/external/classes/external_api.php: call to call_user_func()
+//    line 56 of /admin/webservice/documentation.php: call to core_external\external_api::external_function_info()
+//
+// http://localhost/admin/webservice/documentation.php
+
 
 class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
@@ -65,16 +75,16 @@ class upload_course extends external_api {
 
         // get category id (if parameter is set, use this id, otherwise the first the user is allowed to restore courses in)
         if (empty($category_id)) {
-            $categories = core_course_category::make_categories_list('moodle/restore:restorecourse');
-            if (count($categories) == 0) {
-                throw new moodle_exception('not_allowed', '', '', NULL, 'user requires moodle/restore:restorecourse capability on at least one category');
-            }
-            $category_id = array_key_first($categories);
+            // this will definitely return a course category where the user has the permission to create courses
+            // TODO: this is dangerous, every user can get a course category where he can create courses in this way
+            $category_id = self::get_category_id_where_user_can_create_courses();
+        } else {
+            // permission validation
+            $context = context_coursecat::instance($category_id);
+            require_capability('moodle/restore:restorecourse', $context);
         }
 
-        // permission validation
-        $context = context_coursecat::instance($category_id);
-        require_capability('moodle/restore:restorecourse', $context);
+
 
         if ($only_check_permissions) {
             return array('data' => array(
@@ -159,5 +169,81 @@ class upload_course extends external_api {
             'course_id' => $course_id,
             'course_fullname' => $course_fullname
         ));
+    }
+
+    /**
+     * Get the course category id of the first course category where the user has the capability create adler courses.
+     * If there is no such course category, create a new one and return its id.
+     *
+     * @throws moodle_exception
+     */
+    private static function get_category_id_where_user_can_create_courses(): string {
+        $categories = core_course_category::make_categories_list('moodle/restore:restorecourse');
+        if (count($categories) == 0) {
+            $category_id = self::create_category_user_can_create_courses_in();
+        } else {
+            $category_id = array_key_first($categories);
+        }
+        return $category_id;
+    }
+
+    /**
+     * Get the course category id by its full path. E.g. "cat_name" or "cat_name / sub_cat_name" (note the spaces around the slash).
+     *
+     * @throws moodle_exception
+     */
+    private static function get_category_id_by_full_path(string $category_name) {
+        $categories = core_course_category::make_categories_list();
+        $key = array_search($category_name, $categories);
+        if ($key === false) {
+            throw new moodle_exception('category_not_found', 'local_adler');
+        }
+        return $key;
+    }
+
+    /**
+     * Create a new course category and grant the user permission to create adler courses in it.
+     *
+     * @return string category_id
+     * @throws moodle_exception
+     */
+    private static function create_category_user_can_create_courses_in(): string {
+        global $USER;
+
+        // create top level course category "adler" if it does not yet exist
+        try {
+            $category_id_adler = self::get_category_id_by_full_path('adler');  // TODO: make this category name configurable
+        } catch (moodle_exception $e) {
+            $category = core_course_category::create([
+                'name' => 'adler',  // TODO: make this category name configurable
+                'parent' => 0,
+                'visible' => 1,
+            ]);
+            $category_id_adler = $category->id;
+        }
+
+
+        // create course category for current user inside "adler" category
+        $course_category_name = "adler_" . $USER->username; // todo generate name, problem: duplicate names
+
+        try {
+            self::get_category_id_by_full_path('adler / '.$course_category_name);
+            throw new moodle_exception('category_already_exists', 'local_adler');
+        } catch (moodle_exception $e) {
+            // it is expected that the category does not exist and the exception is thrown
+        }
+
+        $category = core_course_category::create([
+            'name' => $course_category_name,
+            'parent' => $category_id_adler,
+        ]);
+
+        // grant user permission to create adler courses in the new
+        $context = context_coursecat::instance($category->id);
+//        $manager_role_id = get_all_roles()
+        role_assign(5, $USER->id, 0, $context->id);
+
+
+        return $category->id;
     }
 }
