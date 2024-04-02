@@ -1,0 +1,19 @@
+<?php
+
+namespace local_adler;
+
+use context_coursecat;
+
+/**
+ * This class contains aliases for moodle core functions to allow mocking them.
+ */
+class moodle_core {
+    public static function role_assign(...$args): int {
+        return role_assign(...$args);
+    }
+
+    /** alias for context_coursecat::instance */
+    public static function context_coursecat_instance(...$args): object {
+        return context_coursecat::instance(...$args);
+    }
+}
