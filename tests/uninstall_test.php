@@ -1,14 +1,14 @@
 <?php
 
 
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 require_once($CFG->dirroot . '/local/adler/db/uninstall.php');
 
-class uninstall_test extends local_adler_testcase {
+class uninstall_test extends adler_testcase {
     public function test_xmldb_local_adler_uninstall() {
         global $DB;
 

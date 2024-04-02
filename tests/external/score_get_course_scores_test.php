@@ -5,7 +5,7 @@ namespace local_adler\external;
 
 use context_module;
 use local_adler\adler_score_helpers;
-use local_adler\lib\local_adler_externallib_testcase;
+use local_adler\lib\adler_externallib_testcase;
 use Mockery;
 use ReflectionClass;
 
@@ -16,7 +16,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 /**
  * @runTestsInSeparateProcesses
  */
-class score_get_course_scores_test extends local_adler_externallib_testcase {
+class score_get_course_scores_test extends adler_externallib_testcase {
     public function provide_test_execute_data() {
         return [
             'success' => [

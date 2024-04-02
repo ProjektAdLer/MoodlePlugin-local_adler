@@ -4,7 +4,7 @@ namespace local_adler;
 
 global $CFG;
 
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use moodle_exception;
@@ -22,7 +22,7 @@ class adler_score_helpers_adler_score_mock extends adler_score {
 }
 
 
-class adler_score_helpers_test extends local_adler_testcase {
+class adler_score_helpers_test extends adler_testcase {
     public function tearDown(): void {
         parent::tearDown();
 

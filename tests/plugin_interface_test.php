@@ -7,13 +7,13 @@ global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 use local_adler\local\section\section;
 use local_adler\local\section\db as section_db;
 use Mockery;
 
 
-class plugin_interface_test extends local_adler_testcase {
+class plugin_interface_test extends adler_testcase {
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled

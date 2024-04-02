@@ -5,7 +5,7 @@ namespace local_adler\external;
 
 use context_module;
 use local_adler\adler_score_helpers;
-use local_adler\lib\local_adler_externallib_testcase;
+use local_adler\lib\adler_externallib_testcase;
 use Mockery;
 use moodle_exception;
 use ReflectionClass;
@@ -23,7 +23,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class score_h5p_learning_element_test extends local_adler_externallib_testcase {
+class score_h5p_learning_element_test extends adler_externallib_testcase {
     public function provide_test_get_module_ids_from_xapi_data() {
         return [
             [

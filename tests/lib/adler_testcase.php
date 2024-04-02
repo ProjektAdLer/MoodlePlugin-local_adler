@@ -41,11 +41,11 @@ trait general_testcase_adjustments{
     }
 }
 
-abstract class local_adler_testcase extends advanced_testcase {
+abstract class adler_testcase extends advanced_testcase {
     use general_testcase_adjustments;
 }
 
-abstract class local_adler_externallib_testcase extends externallib_advanced_testcase {
+abstract class adler_externallib_testcase extends externallib_advanced_testcase {
     use general_testcase_adjustments {
         general_testcase_adjustments::setUp as protected setUpTrait;
     }

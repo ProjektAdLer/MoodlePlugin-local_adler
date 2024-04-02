@@ -5,7 +5,7 @@ namespace local_adler\local\section;
 
 use completion_info;
 use local_adler\adler_score_helpers;
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 use local_adler\local\exceptions\not_an_adler_section_exception;
 use ReflectionClass;
 
@@ -13,7 +13,7 @@ global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
-class section_test extends local_adler_testcase {
+class section_test extends adler_testcase {
     public function provide_test_construct_data() {
         return [
             'valid section' => [

@@ -8,7 +8,7 @@ defined('MOODLE_INTERNAL') || die();
 use dml_missing_record_exception;
 use invalid_parameter_exception;
 use local_adler\adler_score_helpers_mock;
-use local_adler\lib\local_adler_externallib_testcase;
+use local_adler\lib\adler_externallib_testcase;
 use moodle_exception;
 use require_login_exception;
 use Throwable;
@@ -21,7 +21,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class score_get_element_scores_test extends local_adler_externallib_testcase {
+class score_get_element_scores_test extends adler_externallib_testcase {
     public function test_execute() {
         global $CFG;
         require_once($CFG->dirroot . '/local/adler/tests/mocks.php');

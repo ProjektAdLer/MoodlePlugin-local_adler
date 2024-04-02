@@ -7,7 +7,7 @@ use context_course;
 use context_module;
 use dml_exception;
 use invalid_parameter_exception;
-use local_adler\lib\local_adler_externallib_testcase;
+use local_adler\lib\adler_externallib_testcase;
 use Mockery;
 use ReflectionClass;
 use local_adler\local\section\db as section_db;
@@ -20,7 +20,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 /**
  * @runTestsInSeparateProcesses
  */
-class get_element_ids_by_uuids_test extends local_adler_externallib_testcase {
+class get_element_ids_by_uuids_test extends adler_externallib_testcase {
     public function provide_test_execute_data() {
         return [
             'cm' => [

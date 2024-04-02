@@ -2,7 +2,7 @@
 // When using namespaces, the namespace of the test class should match the namespace of the code under test
 // -> no namespace for this test as backup/restore is not namespaced
 
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
@@ -13,7 +13,7 @@ require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_pl
 /**
  * PHPunit test for class restore_local_adler_plugin
  */
-class restore_local_adler_plugin_test extends local_adler_testcase {
+class restore__adler_plugin_test extends adler_testcase {
     public function setUpModule(): array {
         // stub the get_task() method to return a mock task object
         $stub_task = $this->getMockBuilder(restore_activity_task::class)

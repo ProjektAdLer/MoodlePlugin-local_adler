@@ -8,7 +8,7 @@ use completion_info;
 use external_api;
 use invalid_parameter_exception;
 use local_adler\adler_score;
-use local_adler\lib\local_adler_externallib_testcase;
+use local_adler\lib\adler_externallib_testcase;
 
 
 global $CFG;
@@ -20,7 +20,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class score_primitive_learning_element_test extends local_adler_externallib_testcase {
+class score_primitive_learning_element_test extends adler_externallib_testcase {
     // Define the properties explicitly
     public $course;
     public $course_module;

@@ -6,13 +6,13 @@ use core\event\course_content_deleted;
 use core\event\course_deleted;
 use core\event\course_module_deleted;
 use core\event\course_section_deleted;
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
-class observer_test extends local_adler_testcase {
+class observer_test extends adler_testcase {
 
     public function test_course_content_deleted() {
         global $DB;

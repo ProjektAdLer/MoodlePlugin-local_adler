@@ -3,13 +3,13 @@
 namespace local_adler;
 
 
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;  # import for other classes importing this class
 use moodle_exception;
 use Throwable;
 
 
-class helpers_test extends local_adler_testcase {
+class helpers_test extends adler_testcase {
     public function provide_test_course_is_adler_course_data(): array {
         return [
             'is adler course' => [['course_exist' => true, 'is_adler_course' => true, 'expected' => true]],

@@ -5,7 +5,7 @@ namespace local_adler;
 
 use coding_exception;
 use completion_info;
-use local_adler\lib\local_adler_testcase;
+use local_adler\lib\adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
 use local_adler\local\exceptions\user_not_enrolled_exception;
 use local_logging\logger;
@@ -58,7 +58,8 @@ class adler_score_mock extends adler_score {
 }
 
 
-class adler_score_test extends local_adler_testcase {
+class adler_score_test extends adler_testcase {
+    // TODO: Deprecated: Creation of dynamic property local_adler\adler_score_test::$course is deprecated in /home/runner/work/MoodlePluginLocal/MoodlePluginLocal/moodle/local/adler/tests/adler_score_test.php on line 69 (https://github.com/ProjektAdLer/MoodlePluginLocal/actions/runs/7917995524/job/21615389855)
     public function setUp(): void {
         parent::setUp();
 

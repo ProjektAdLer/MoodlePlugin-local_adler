@@ -6,7 +6,7 @@ namespace local_adler\external;
 use backup;
 use backup_controller;
 use invalid_parameter_exception;
-use local_adler\lib\local_adler_externallib_testcase;
+use local_adler\lib\adler_externallib_testcase;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use moodle_exception;
 
@@ -17,7 +17,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 /**
  * @runTestsInSeparateProcesses
  */
-class upload_course_test extends local_adler_externallib_testcase {
+class upload_course_test extends adler_externallib_testcase {
     public function generate_mbz(bool $is_adler_course): string {
         global $CFG;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
