@@ -23,16 +23,6 @@ use restore_controller;
 use restore_controller_exception;
 use restore_dbops;
 
-// TODO: External function parameters: invalid OPTIONAL value specified.
-//
-//    line 47 of /lib/external/classes/external_function_parameters.php: call to debugging()
-//    line 29 of /local/adler/classes/external/upload_course.php: call to core_external\external_function_parameters->__construct()
-//    line ? of unknownfile: call to local_adler\external\upload_course::execute_parameters()
-//    line 110 of /lib/external/classes/external_api.php: call to call_user_func()
-//    line 56 of /admin/webservice/documentation.php: call to core_external\external_api::external_function_info()
-//
-// http://localhost/admin/webservice/documentation.php
-
 
 class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
