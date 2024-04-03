@@ -14,6 +14,7 @@ class course_category_manager {
      * @param string $username The username of the existing user.
      * @param string $role shortname of the role to assign to the user.
      * @param string|null $category_path The path of the category. If null or an empty string is passed, it initializes to "adler/{$username}".
+     * @return int The ID of the created category.
      * @throws dml_exception
      * @throws moodle_exception
      * @throws invalid_parameter_exception
