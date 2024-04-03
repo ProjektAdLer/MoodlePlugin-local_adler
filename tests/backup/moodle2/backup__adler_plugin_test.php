@@ -15,6 +15,9 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * Therefore, this test is implemented as an integration test.
  */
 class backup__adler_plugin_test extends adler_testcase {
+    private stdClass $course;
+    private stdClass $module;
+
     public function setUp(): void {
         parent::setUp();
 

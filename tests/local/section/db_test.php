@@ -3,6 +3,7 @@
 namespace local_adler\local\section;
 
 
+use component_generator_base;
 use dml_exception;
 use local_adler\lib\adler_testcase;
 use Mockery;
@@ -12,6 +13,8 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 class db_test extends adler_testcase {
+    private component_generator_base $adler_generator;
+
     public function setUp(): void {
         parent::setUp();
         $this->adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
