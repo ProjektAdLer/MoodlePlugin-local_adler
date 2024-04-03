@@ -87,8 +87,7 @@ class course_category_path_test extends adler_testcase {
         $this->setup_make_categories_list_mock();
 
         $path = new course_category_path('category5/category6');
-        $this->expectException(moodle_exception::class);
-        $path->get_category_id();
+        $this->assertEquals(false, $path->get_category_id());
     }
 
     /**

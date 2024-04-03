@@ -11,7 +11,8 @@ class course_category_path implements Countable {
     private array $path;
 
     /**
-     * @param string|null $path the path in moodle (with spaces around the /) or UNIX format (without spaces), can be empty string or null
+     * @param string|null $path the path in moodle (with spaces around the /) or UNIX format (without spaces),
+     * can be empty string or null to initialize an empty path
      */
     public function __construct(string|null $path) {
         if ($path === null || strlen($path) === 0) {
@@ -28,6 +29,9 @@ class course_category_path implements Countable {
         return implode(' / ', $this->path);
     }
 
+    /**
+     * @return array Returns the path as an array of strings.
+     */
     public function get_path(): array {
         return $this->path;
     }
@@ -36,25 +40,28 @@ class course_category_path implements Countable {
         return count($this->path);
     }
 
+    /**
+     * @return bool Returns true if the category path exists in moodle, false otherwise.
+     */
     public function exists(): bool {
-        try {
-            $this->get_category_id();
-            return true;
-        } catch (moodle_exception $e) {
+        if ($this->get_category_id() === false) {
             return false;
+        } else {
+            return true;
         }
     }
 
     /**
-     * @throws moodle_exception if the category already exists
+     * @return int Returns the ID of the created category (the last category in the path).
      * @throws invalid_parameter_exception if the path is empty
+     * @throws moodle_exception if the category already exists
      */
     public function create(): int {
-        if(count($this) === 0) {
+        if (count($this) === 0) {
             throw new invalid_parameter_exception('path must not be empty');
         }
 
-        if($this->exists()) {
+        if ($this->exists()) {
             throw new moodle_exception('category_already_exists', 'local_adler');
         }
 
@@ -82,15 +89,11 @@ class course_category_path implements Countable {
 
 
     /**
-     * @throws moodle_exception if the category does not exist
+     * @return int|bool Returns the ID of the category, or false if the category does not exist.
      */
-    public function get_category_id(): int {
+    public function get_category_id(): int|bool {
         $categories = core_course_category::make_categories_list();
-        $key = array_search((string)$this, $categories);
-        if ($key === false) {
-            throw new moodle_exception('category_not_found', 'local_adler');
-        }
-        return $key;
+        return array_search((string)$this, $categories);
     }
 
     /**
@@ -104,6 +107,10 @@ class course_category_path implements Countable {
         $this->path = array_merge($this->path, $this->split_and_trim_path($path_part));
     }
 
+    /**
+     * @param string $path The path to split and trim.
+     * @return array Returns the path as an array of strings after splitting by '/' and trimming whitespace.
+     */
     private function split_and_trim_path(string $path): array {
         // remove preceding and trailing /
         $path = trim($path, ' /');
@@ -111,5 +118,4 @@ class course_category_path implements Countable {
         $path_parts = explode('/', $path);
         return array_map('trim', $path_parts);
     }
-
 }

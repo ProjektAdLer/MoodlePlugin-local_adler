@@ -2,12 +2,16 @@
 
 namespace local_adler;
 
+use coding_exception;
 use context_coursecat;
 
 /**
  * This class contains aliases for moodle core functions to allow mocking them.
  */
 class moodle_core {
+    /**
+     * @throws coding_exception
+     */
     public static function role_assign(...$args): int {
         return role_assign(...$args);
     }
