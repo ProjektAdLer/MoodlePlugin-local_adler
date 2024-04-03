@@ -38,9 +38,9 @@ class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
-                'category_id' => new external_value(PARAM_INT, 'ID of the category in which the course should be created. If null, the course will be created in the category with the lowest available ID. Please note that even if a user has restore permissions for a category other than the one with the lowest ID, the course restoration process will not be successful.', VALUE_OPTIONAL),
-                'only_check_permissions' => new external_value(PARAM_BOOL, 'Check only if user has the permissions for restore. No mbz needed. Will return generic data for course name and id.', VALUE_OPTIONAL),
-                'mbz' => new external_value(PARAM_FILE, 'Required (moodle tag "optional" is due to moodle limitations), except if only_check_permissions is true. MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_OPTIONAL),
+                'category_id' => new external_value(PARAM_INT, 'ID of the category in which the course should be created. If null, the course will be created in the category with the lowest available ID. Please note that even if a user has restore permissions for a category other than the one with the lowest ID, the course restoration process will not be successful.', VALUE_DEFAULT, null),
+                'only_check_permissions' => new external_value(PARAM_BOOL, 'Check only if user has the permissions for restore. No mbz needed. Will return generic data for course name and id.', VALUE_DEFAULT, false),
+                'mbz' => new external_value(PARAM_FILE, 'Required (moodle tag "optional" is due to moodle limitations), except if only_check_permissions is true. MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_DEFAULT, null),
             )
         );
     }

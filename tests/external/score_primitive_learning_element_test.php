@@ -33,7 +33,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
         require_once(__DIR__ . '/deprecated_mocks.php');
 
         // init test data
-        $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
+        $this->course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
 
         $this->course_module = $this->getDataGenerator()->create_module('url', array('course' => $this->course->id, 'completion' => 1));
         $this->course_module = get_coursemodule_from_id(null, $this->course_module->cmid, 0, false, MUST_EXIST);

@@ -13,6 +13,7 @@ use Mockery;
 use mod_h5pactivity\local\grader;
 use moodle_exception;
 use ReflectionClass;
+use stdClass;
 use Throwable;
 
 global $CFG;
@@ -59,7 +60,10 @@ class adler_score_mock extends adler_score {
 
 
 class adler_score_test extends adler_testcase {
-    // TODO: Deprecated: Creation of dynamic property local_adler\adler_score_test::$course is deprecated in /home/runner/work/MoodlePluginLocal/MoodlePluginLocal/moodle/local/adler/tests/adler_score_test.php on line 69 (https://github.com/ProjektAdLer/MoodlePluginLocal/actions/runs/7917995524/job/21615389855)
+    private stdClass $course;
+    private stdClass $module;
+    private stdClass $user;
+
     public function setUp(): void {
         parent::setUp();
 
@@ -67,7 +71,7 @@ class adler_score_test extends adler_testcase {
         $this->user = $this->getDataGenerator()->create_user();
 
         // create course
-        $this->course = $this->getDataGenerator()->create_course();
+        $this->course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
 
         // create module
         $this->module = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id, 'completion' => 1]);
