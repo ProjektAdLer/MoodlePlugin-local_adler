@@ -9,7 +9,7 @@ if (!defined('CLI_SCRIPT')) {
 
 require_once(__DIR__ . '/../../../config.php');
 global $CFG;
-require_once("{$CFG->libdir}/clilib.php");
+require_once($CFG->libdir . '/clilib.php');
 
 $help =
     "Create a new course category and grant the user permission to create adler courses in it.

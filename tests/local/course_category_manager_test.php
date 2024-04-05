@@ -3,6 +3,7 @@
 namespace local_adler\local;
 
 use context_coursecat;
+use invalid_parameter_exception;
 use local_adler\lib\adler_testcase;
 use local_adler\local\db\moodle_core_repository;
 use local_adler\moodle_core;
@@ -17,9 +18,11 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  */
 class course_category_manager_test extends adler_testcase {
     private $mockRepo;
+    private $moodle_core_mock;
 
     public function setUp(): void {
         $this->mockRepo = Mockery::mock('overload:' . moodle_core_repository::class);
+        $this->moodle_core_mock = Mockery::mock('alias:' . moodle_core::class);
     }
 
     public function test_username_doesnt_exist() {
@@ -58,7 +61,7 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
-     * @dataProvider providerTestValidUsernameRoleAndCategoryPath
+     * @dataProvider provide_test_valid_username_role_and_category_path_data
      */
     public function test_valid_username_role_and_category_path($category_path, $expected_result) {
         // Arrange
@@ -69,11 +72,15 @@ class course_category_manager_test extends adler_testcase {
         $mockPath->shouldReceive('exists')->andReturn(false);
         $mockPath->shouldReceive('create')->andReturn(42);
 
-        $moodle_core_mock = Mockery::mock('alias:' . moodle_core::class)
+        $this->moodle_core_mock
+            ->shouldReceive('get_role_contextlevels')
+            ->andReturn([CONTEXT_COURSECAT]);
+
+        $this->moodle_core_mock
             ->shouldReceive('context_coursecat_instance')
             ->andReturn(Mockery::mock(context_coursecat::class));
 
-        $moodle_core_mock
+        $this->moodle_core_mock
             ->shouldReceive('role_assign')
             ->withArgs([1, 1, null])
             ->andReturn(true);
@@ -85,11 +92,29 @@ class course_category_manager_test extends adler_testcase {
         $this->assertEquals($expected_result, $result);
     }
 
-    public function providerTestValidUsernameRoleAndCategoryPath() {
+    public function provide_test_valid_username_role_and_category_path_data() {
         return [
             'null category path' => [null, 42],
             'empty category path' => ['', 42],
             'non-existing category path' => ['non_existing_category_path', 42]
         ];
+    }
+
+    public function test_with_role_that_cannot_be_assigned_to_course_category() {
+        // Arrange
+        $this->mockRepo->shouldReceive('get_user_id_by_username')->andReturn(1); // return a valid user ID
+        $this->mockRepo->shouldReceive('get_role_id_by_shortname')->andReturn(1); // return a valid role ID
+
+        $mockPath = Mockery::mock('overload:' . course_category_path::class);
+        $mockPath->shouldReceive('exists')->andReturn(false);
+        $mockPath->shouldReceive('create')->andReturn(42);
+
+        $this->moodle_core_mock
+            ->shouldReceive('get_role_contextlevels')
+            ->andReturn([CONTEXT_SYSTEM]);
+
+        // Act and Assert
+        $this->expectException(invalid_parameter_exception::class);
+        course_category_manager::create_category_user_can_create_courses_in('valid_username', 'valid_role', 'category_path');
     }
 }

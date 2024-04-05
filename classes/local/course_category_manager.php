@@ -40,10 +40,16 @@ class course_category_manager {
             throw new moodle_exception('category_already_exists', 'local_adler');
         }
 
+        // get role id and check if role is assignable to a course category
+        $role_id = $moodle_core_repository->get_role_id_by_shortname($role);
+        if (!in_array(CONTEXT_COURSECAT, moodle_core::get_role_contextlevels($role_id))) {
+            throw new invalid_parameter_exception('role_not_assignable_to_course_category');
+        }
+
 
         // create category and assign user to role
         $category_id = $category_path->create();
-        self::assign_user_to_role_in_category($username, $role, $category_id);
+        self::assign_user_to_role_in_category($username, $role_id, $category_id);
 
         return $category_id;
     }
@@ -52,11 +58,10 @@ class course_category_manager {
      * @throws coding_exception
      * @throws dml_exception
      */
-    private static function assign_user_to_role_in_category(string $username, string $role_shortname, int $category_id): void {
+    private static function assign_user_to_role_in_category(string $username, int $role_id, int $category_id): void {
         $moodle_core_repository = new moodle_core_repository();
 
         $user_id = $moodle_core_repository->get_user_id_by_username($username);
-        $role_id = $moodle_core_repository->get_role_id_by_shortname($role_shortname);
         $context = moodle_core::context_coursecat_instance($category_id);
         moodle_core::role_assign($role_id, $user_id, $context->id);
     }

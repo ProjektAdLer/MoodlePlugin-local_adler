@@ -16,8 +16,13 @@ class moodle_core {
         return role_assign(...$args);
     }
 
-    /** alias for context_coursecat::instance */
+    /** alias for context_coursecat::instance() */
     public static function context_coursecat_instance(...$args): object {
         return context_coursecat::instance(...$args);
+    }
+
+    /** alias for get_role_contextlevels() */
+    public static function get_role_contextlevels(...$args): array {
+        return get_role_contextlevels(...$args);
     }
 }

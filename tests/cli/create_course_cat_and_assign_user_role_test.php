@@ -176,4 +176,29 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
         // default creates two categories, "adler" and "adler / <username>"
         $this->assertEquals($category_count_before + 2, count(core_course_category::make_categories_list()));
     }
+
+    public function test_with_role_that_cannot_be_assigned_to_course_category() {
+        global $CFG, $DB;
+
+        // Arrange
+        $user = $this->getDataGenerator()->create_user();
+        $role_id = $this->getDataGenerator()->create_role();
+        $role = $DB->get_record('role', ['id' => $role_id]);
+        $contextlevels = [
+            CONTEXT_COURSE,
+        ];
+        set_role_contextlevels($role_id, $contextlevels);
+
+        $_SERVER['argv'] = [
+            'create_course_cat_and_assign_user_role.php',
+            '--username=' . $user->username,
+            '--role=' . $role->shortname,
+        ];
+
+        $this->expectException(exit_exception::class);
+        $this->expectExceptionCode(1);
+
+        // Act
+        require $CFG->dirroot . '/local/adler/cli/create_course_cat_and_assign_user_role.php';
+    }
 }
