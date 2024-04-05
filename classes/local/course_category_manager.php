@@ -7,6 +7,7 @@ use dml_exception;
 use invalid_parameter_exception;
 use local_adler\local\db\moodle_core_repository;
 use local_adler\moodle_core;
+use local_logging\logger;
 use moodle_exception;
 
 class course_category_manager {
@@ -60,9 +61,12 @@ class course_category_manager {
      */
     private static function assign_user_to_role_in_category(string $username, int $role_id, int $category_id): void {
         $moodle_core_repository = new moodle_core_repository();
+        $logger = new logger('local_adler', 'course_category_manager');
 
         $user_id = $moodle_core_repository->get_user_id_by_username($username);
         $context = moodle_core::context_coursecat_instance($category_id);
+
+        $logger->info("Assigning user with ID {$user_id} to role with ID {$role_id} in category with ID {$category_id}");
         moodle_core::role_assign($role_id, $user_id, $context->id);
     }
 }
