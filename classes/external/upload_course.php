@@ -6,7 +6,6 @@ namespace local_adler\external;
 global $CFG;
 require_once($CFG->dirroot . '/lib/externallib.php');
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
-require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 use backup;
 use context_coursecat;

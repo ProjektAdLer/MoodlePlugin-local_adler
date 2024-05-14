@@ -1,7 +1,9 @@
 <?php
 
 global $CFG;
-require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
+
+use core\uuid;
+
 
 class local_adler_generator extends component_generator_base {
     /**
@@ -18,7 +20,7 @@ class local_adler_generator extends component_generator_base {
         $default_params = [
             'cmid' => $module_id,
             'score_max' => 100.0,
-            'uuid' => (string) new Horde_Support_Uuid,
+            'uuid' => uuid::generate(),
             'timecreated' => 0,
             'timemodified' => 0
         ];
@@ -44,7 +46,7 @@ class local_adler_generator extends component_generator_base {
         global $DB;
         $default_params = [
             'course_id' => $course_id,
-            'uuid' => (string) new Horde_Support_Uuid,
+            'uuid' => uuid::generate(),
             'timecreated' => 0,
             'timemodified' => 0
         ];
@@ -62,7 +64,7 @@ class local_adler_generator extends component_generator_base {
         $default_params = [
             'section_id' => $section_id,
             'required_points_to_complete' => 100,
-            'uuid' => (string) new Horde_support_Uuid,
+            'uuid' => uuid::generate(),
             'timecreated' => 0,
             'timemodified' => 0
         ];

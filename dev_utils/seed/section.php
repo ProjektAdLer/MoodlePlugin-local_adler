@@ -3,6 +3,7 @@
  * This script seeds the local_adler_sections table for a given course.
  */
 
+use core\uuid;
 use local_adler\adler_score_helpers;
 use local_adler\local\section\db as section_db;
 
@@ -11,7 +12,6 @@ define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . "/clilib.php");
-require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 
 $help = "Command line tool to uninstall plugins.
@@ -78,7 +78,7 @@ function seed(int $course_id) {
         $DB->insert_record('local_adler_sections',
             array(
                 'section_id' => $section_id,
-                'uuid' => (string) new Horde_support_Uuid,
+                'uuid' => uuid::generate(),
                 'required_points_to_complete' => round($max_possible_score * .9),
                 'timecreated' => time(),
                 'timemodified' => time()

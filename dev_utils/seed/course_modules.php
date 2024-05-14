@@ -3,7 +3,9 @@
  * This script seeds the local_adler_course_modules table with random scores for all modules of a given course.
  */
 
+use core\uuid;
 use local_adler\helpers;
+
 
 define('CLI_SCRIPT', true);
 
@@ -11,7 +13,6 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir . "/clilib.php");
 require_once($CFG->libdir . '/completionlib.php');
-require_once($CFG->dirroot . '/lib/horde/framework/Horde/Support/Uuid.php');  # required on some installs (bitnami moodle on phils pc), unknown why
 
 $help = "Command line tool to uninstall plugins.
 
@@ -65,7 +66,7 @@ function seed(int $course_id) {
                 'local_adler_course_modules',
                 array('type' => 'score',
                     'cmid' => $module->id,
-                    'uuid' => (string) new Horde_support_Uuid,
+                    'uuid' => uuid::generate(),
                     'score_min' => 0,
                     'score_max' => random_int(0, 20)),
                 $returnid = true,
@@ -79,7 +80,3 @@ $course_ids = explode(',', $options['course-id']);
 foreach ($course_ids as $course_id) {
     seed((int) $course_id);
 }
-
-//seed_scores(142);
-//seed_scores(46);
-//seed_scores(49);
