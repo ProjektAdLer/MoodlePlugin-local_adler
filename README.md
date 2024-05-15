@@ -24,14 +24,10 @@ Damit der mbz api endpunkt auch mit größeren Dateien funktioniert sind folgend
 - `max_execution_time` auf mindestens 60 setzen
 - `output_buffering` auf 8192 setzen
 ```
-# todo: some variable might not be required anymore after upload_course rework
+todo: some variable might not be required anymore after upload_course rework
 
 
 ## Kompabilität
-Die minimal notwendige Moodle Version ist auf 4.1.0 gesetzt, daher wird die Installation auf älteren Versionen nicht funktionieren.
-Prinzipiell sollte dieses Plugin auch auf älteren Versionen funktionieren, dies wird aber nicht getestet und spätestens bei der 
-Nutzung weiterer AdLer Plugins wird es zu Problemen kommen, da diese Features nutzen, die erst in neueren Moodle Versionen verfügbar sind.
-
 Folgende Versionen werden unterstützt (mit mariadb und postresql getestet):
 
 | Moodle Branch           | PHP Version |
@@ -41,6 +37,9 @@ Folgende Versionen werden unterstützt (mit mariadb und postresql getestet):
 | MOODLE_402_STABLE       | 8.2         |
 | MOODLE_403_STABLE       | 8.1         |
 | MOODLE_403_STABLE       | 8.2         |
+| MOODLE_404_STABLE       | 8.1         |
+| MOODLE_404_STABLE       | 8.2         |
+| MOODLE_404_STABLE       | 8.3         |
 
 
 ## Deinstallation der Plugins
