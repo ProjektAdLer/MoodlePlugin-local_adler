@@ -10,7 +10,7 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 use backup;
 use context_coursecat;
 use core_course_category;
-use Exception;
+use dml_exception;
 use external_api;
 use external_function_parameters;
 use external_single_structure;
@@ -18,6 +18,7 @@ use external_value;
 use invalid_parameter_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use moodle_exception;
+use required_capability_exception;
 use restore_controller;
 use restore_controller_exception;
 use restore_dbops;
@@ -27,7 +28,7 @@ class upload_course extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
-                'category_id' => new external_value(PARAM_INT, 'ID of the category in which the course should be created. If null, the course will be created in the category with the lowest available ID. Please note that even if a user has restore permissions for a category other than the one with the lowest ID, the course restoration process will not be successful.', VALUE_DEFAULT, null),
+                'category_id' => new external_value(PARAM_INT, 'ID of the category in which the course should be created. If null, the course will be created in the first category the user is allowed to create a course in.', VALUE_DEFAULT, null),
                 'only_check_permissions' => new external_value(PARAM_BOOL, 'Check only if user has the permissions for restore. No mbz needed. Will return generic data for course name and id.', VALUE_DEFAULT, false),
                 'mbz' => new external_value(PARAM_FILE, 'Required (moodle tag "optional" is due to moodle limitations), except if only_check_permissions is true. MBZ as file upload. Upload the file in this field. Moodle external_api wont recognize it / this field will be empty but it can be loaded from this field via plain PHP code.', VALUE_DEFAULT, null),
             )
@@ -46,14 +47,17 @@ class upload_course extends external_api {
     }
 
     /**
-     * @param int $category_id ID of the category the course should be restored in
+     * @param int|null $category_id ID of the category the course should be restored in
+     * @param bool $only_check_permissions
+     * @return array
+     * @throws dml_exception
+     * @throws required_capability_exception
      * @throws invalid_parameter_exception
+     * @throws moodle_exception
      * @throws not_an_adler_course_exception
      * @throws restore_controller_exception
-     * @throws moodle_exception
-     * @throws Exception
      */
-    public static function execute(int $category_id=null, $only_check_permissions=false): array {
+    public static function execute(int $category_id=null, bool $only_check_permissions=false): array {
         global $USER;
 
         // param validation except mbz

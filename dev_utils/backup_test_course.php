@@ -21,6 +21,7 @@ $file = $bc->get_results();
 $file = reset($file);
 $filepath = $file->get_contenthash();
 $filepath = $CFG->dataroot . '/filedir/' . substr($filepath, 0, 2) . '/' . substr($filepath, 2, 2) . '/' . $filepath;
+// $this->bc->get_results()['backup_destination']->copy_content_to_temp()
 echo "Backup file path:\n";
 echo $filepath . "\n";
 

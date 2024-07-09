@@ -1,7 +1,6 @@
 {
   "name": "projekt-adler/local_adler",
   "description": "Main plugin for the Adler project",
-  "require": {},
   "require-dev": {
     "mockery/mockery": "^1.5.1"
   }
