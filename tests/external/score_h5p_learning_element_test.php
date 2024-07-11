@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\external;
 
@@ -57,6 +57,8 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_get_module_ids_from_xapi_data
+     *
+     *   ANF-ID: [MVP9]
      */
     public function test_get_module_ids_from_xapi($xapi, $expect_exception, $contextid_to_instanceid_mapping, $expected_result) {
         // create mock
@@ -116,6 +118,8 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
+     *
+     * ANF-ID: [MVP9]
      */
     public function test_execute($exception_get_adler_score_objects, $core_xapi_statement_post_error, $get_achieved_scores_response, $get_achived_scores_exception) {
         $xapi = "blub";
@@ -157,6 +161,9 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
         $this->assertEquals(['data' =>[42]], $result);
     }
 
+    /**
+     * ANF-ID: [MVP9]
+     */
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
         $lib_test = new lib_test();

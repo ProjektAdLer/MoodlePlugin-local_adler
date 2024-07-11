@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\local\section;
 
@@ -33,6 +33,8 @@ class db_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_get_adler_section_by_uuid_data
+     *
+     * ANF-ID: [MVP6]
      */
     public function test_get_adler_section_by_uuid($success) {
         // create adler_section entry
@@ -57,6 +59,9 @@ class db_test extends adler_testcase {
 
     }
 
+    /**
+     * ANF-ID: [MVP6, MVP12]
+     */
     public function test_get_adler_section() {
         // create adler_section entry
         $adler_section = $this->adler_generator->create_adler_section_object(1);
@@ -66,6 +71,9 @@ class db_test extends adler_testcase {
         $this->assertEquals($adler_section, $db_adler_section);
     }
 
+    /**
+     * ANF-ID: [MVP12]
+     */
     public function test_get_course_modules_by_section_id() {
         // create course
         $course = $this->getDataGenerator()->create_course();

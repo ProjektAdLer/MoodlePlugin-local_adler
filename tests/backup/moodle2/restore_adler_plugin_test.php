@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 // When using namespaces, the namespace of the test class should match the namespace of the code under test
 // -> no namespace for this test as backup/restore is not namespaced
 
@@ -10,10 +10,7 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 require_once($CFG->dirroot . '/local/adler/backup/moodle2/restore_local_adler_plugin.class.php');
 
 
-/**
- * PHPunit test for class restore_local_adler_plugin
- */
-class restore__adler_plugin_test extends adler_testcase {
+class restore_adler_plugin_test extends adler_testcase {
     public function setUpModule(): array {
         // stub the get_task() method to return a mock task object
         $stub_task = $this->getMockBuilder(restore_activity_task::class)
@@ -47,6 +44,8 @@ class restore__adler_plugin_test extends adler_testcase {
      * @param $name string Name of method to set as public
      * @return ReflectionMethod
      * @throws ReflectionException
+     *
+     * ANF-ID: [MVP2]
      */
     protected static function getMethodAsPublic(string $name): ReflectionMethod {
         $class = new ReflectionClass(restore_local_adler_plugin::class);
@@ -55,6 +54,9 @@ class restore__adler_plugin_test extends adler_testcase {
         return $method;
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_process_adler_module_one_element() {
         // setup
         global $DB;
@@ -78,6 +80,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertEquals($data[0]->timemodified, $db_record->timemodified);
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_process_adler_module_one_element_default_values() {
         // test without optional fields (timecreated, timemodified)
         global $DB;
@@ -101,6 +106,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertTrue($db_record->timemodified > 0 && $db_record->timemodified <= time());
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_process_adler_module_multiple_elements() {
         list($data, $stub) = $this->setUpModule();
 
@@ -111,6 +119,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $plugin->process_adler_module($data[1]);
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_process_adler_module_invalid_datatype() {
         // setup
         global $DB;
@@ -137,6 +148,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_process_adler_module_missing_fields() {
         // setup
         global $DB;
@@ -159,7 +173,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
     }
 
-    /** Test define_module_plugin_structure() */
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_define_module_plugin_structure() {
         list($data, $stub) = $this->setUpModule();
 
@@ -186,7 +202,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertStringContainsString('adler_module', $paths[0]->get_path());
     }
 
-    /** Test course restore */
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function setUpCourse(): array {
         $data = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_object(1, [], false);
 
@@ -203,6 +221,9 @@ class restore__adler_plugin_test extends adler_testcase {
         return [$data, $stub];
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_define_course_plugin_structure() {
         list($data, $stub) = $this->setUpCourse();
 
@@ -229,6 +250,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertStringContainsString('adler_course', $paths[0]->get_path());
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_process_adler_course() {
         // setup
         global $DB;
@@ -248,6 +272,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertEquals(7, $db_record->course_id);
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_process_adler_course_optional_fields() {
         // setup
         global $DB;
@@ -272,6 +299,9 @@ class restore__adler_plugin_test extends adler_testcase {
         $this->assertTrue($db_record->timemodified > 0 && $db_record->timemodified <= time());
     }
 
+    /**
+     * ANF-ID: [MVP2]
+     */
     public function test_define_section_plugin_structure() {
         $restore_mock = $this
             ->getMockBuilder(restore_local_adler_plugin::class)
@@ -312,6 +342,8 @@ class restore__adler_plugin_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_process_adler_section_data
+     *
+     * ANF-ID: [MVP2]
      */
     public function test_process_adler_section($restore_data) {
         $restore_mock = $this

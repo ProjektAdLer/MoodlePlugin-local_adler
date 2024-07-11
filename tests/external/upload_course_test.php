@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\external;
 
@@ -112,6 +112,8 @@ class upload_course_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
+     *
+     * ANF-ID: [MVP11]
      */
     public function test_execute($is_adler_course, $upload_error, $fail_validation, $valid_user, $specify_course_cat, $dry_run) {
         $test_course_filepath = $this->generate_mbz($is_adler_course);
@@ -181,6 +183,8 @@ class upload_course_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_returns_data
+     *
+     *  ANF-ID: [MVP11]
      */
     public function test_execute_returns($success) {
         if (!$success) {
@@ -215,6 +219,8 @@ class upload_course_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_parameters_data
+     *
+     *  ANF-ID: [MVP11]
      */
     public function test_execute_parameters($data) {
         upload_course::validate_parameters(upload_course::execute_parameters(), $data);

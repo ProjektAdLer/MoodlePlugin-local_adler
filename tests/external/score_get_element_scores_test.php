@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\external;
 
@@ -22,6 +22,9 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * @preserveGlobalState disabled
  */
 class score_get_element_scores_test extends adler_externallib_testcase {
+    /**
+     * ANF-ID: [MVP8]
+     */
     public function test_execute() {
         global $CFG;
         require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
@@ -35,16 +38,16 @@ class score_get_element_scores_test extends adler_externallib_testcase {
         score_get_element_scores_mock::reset_data();
 
         context_module_mock::reset_data();
-        context_module_mock::set_returns('instance', range(1,3));
+        context_module_mock::set_returns('instance', range(1, 3));
 
         adler_score_helpers_mock::reset_data();
         adler_score_helpers_mock::set_enable_mock('get_achieved_scores');
-        adler_score_helpers_mock::set_returns('get_achieved_scores', [[1=>0, 2=>5.0, 42=>42.0]]);
+        adler_score_helpers_mock::set_returns('get_achieved_scores', [[1 => 0, 2 => 5.0, 42 => 42.0]]);
 
         $result = score_get_element_scores_mock::execute($module_ids);
 
         // check return value
-        $this->assertEqualsCanonicalizing([['moduleid'=>1, 'score'=>0.0], ['moduleid'=>2, 'score'=>5.0], ['moduleid'=>42, 'score'=>42.0]], $result['data']);
+        $this->assertEqualsCanonicalizing([['moduleid' => 1, 'score' => 0.0], ['moduleid' => 2, 'score' => 5.0], ['moduleid' => 42, 'score' => 42.0]], $result['data']);
         // check function calls
         for ($i = 0; $i < 3; $i++) {
             $this->assertEquals($module_ids[$i], context_module_mock::get_calls('instance')[$i][0]);
@@ -52,6 +55,9 @@ class score_get_element_scores_test extends adler_externallib_testcase {
         $this->assertEquals($module_ids, adler_score_helpers_mock::get_calls('get_achieved_scores')[0][0]);
     }
 
+    /**
+     * ANF-ID: [MVP8]
+     */
     public function test_execute_exceptions() {
         global $CFG;
         require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
@@ -106,10 +112,10 @@ class score_get_element_scores_test extends adler_externallib_testcase {
                     null,
                 ],
                 'returns' => [
-                    [1=>0],
-                    [1=>0],
-                    [1=>0],
-                    [1=>0],
+                    [1 => 0],
+                    [1 => 0],
+                    [1 => 0],
+                    [1 => 0],
                     ["Lorem ipsum"]
                 ],
             ],
@@ -167,14 +173,17 @@ class score_get_element_scores_test extends adler_externallib_testcase {
             try {
                 score_get_element_scores_mock::execute($params[$i]);
             } catch (Throwable $e) {
-                $this->assertEquals($expectExceptions[$i][0], get_class($e),'$i = '.$i);
-                $this->assertStringContainsString($expectExceptions[$i][1], $e->errorcode, '$i = '.$i);
+                $this->assertEquals($expectExceptions[$i][0], get_class($e), '$i = ' . $i);
+                $this->assertStringContainsString($expectExceptions[$i][1], $e->errorcode, '$i = ' . $i);
                 continue;
             }
-            $this->fail('Exception expected, $i = '.$i);
+            $this->fail('Exception expected, $i = ' . $i);
         }
     }
 
+    /**
+     * ANF-ID: [MVP8]
+     */
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
         require_once(__DIR__ . '/lib_test.php');

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\local\section;
 
@@ -34,6 +34,8 @@ class section_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_construct_data
+     *
+     * ANF-ID: [MVP12]
      */
     public function test_construct($section_response, $exception) {
         $return_map = [
@@ -96,6 +98,8 @@ class section_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_is_completed_data
+     *
+     * ANF-ID: [MVP12]
      */
     public function test_is_completed($modules, $expected) {
         // mock static function calls
@@ -146,6 +150,8 @@ class section_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_is_completed_integration_data
+     *
+     * ANF-ID: [MVP12]
      */
     public function test_is_completed_integration($cm_score, $expected) {
 

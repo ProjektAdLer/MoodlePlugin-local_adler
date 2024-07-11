@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\external;
 
@@ -51,6 +51,9 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
 
+    /**
+     *  ANF-ID: [MVP10]
+     */
     public function test_score_primitive_learning_element() {
         // set data for mocked create_adler_score_instance method
         mock_score_primitive_learning_element::set_data(array($this->mock_adler_score, $this->mock_adler_score));
@@ -77,6 +80,9 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
         );
     }
 
+    /**
+     *   ANF-ID: [MVP10]
+     */
     public function test_score_primitive_learning_element_wrong_datatypes() {
         $exception_thrown = false;
         try {
@@ -97,6 +103,9 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
         }
     }
 
+    /**
+     *   ANF-ID: [MVP10]
+     */
     public function test_score_primitive_learning_element_h5p() {
         // create h5p activity
         $this->course_module = $this->getDataGenerator()->create_module('h5pactivity', array('course' => $this->course->id, 'completion' => 1));
@@ -112,6 +121,9 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
         mock_score_primitive_learning_element::execute($this->course_module->id, false);
     }
 
+    /**
+     *   ANF-ID: [MVP10]
+     */
     public function test_score_primitive_learning_element_completion_disabled() {
         // create module with disabled completion
         $course_module = $this->getDataGenerator()->create_module(
@@ -126,6 +138,9 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
         mock_score_primitive_learning_element::execute($course_module->cmid, true);
     }
 
+    /**
+     *   ANF-ID: [MVP10]
+     */
     public function test_score_primitive_learning_element_user_not_enrolled() {
         // set data for mocked create_adler_score_instance method
         mock_score_primitive_learning_element::set_data(array($this->mock_adler_score));
@@ -141,6 +156,9 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
         mock_score_primitive_learning_element::execute($this->course_module->id, false);
     }
 
+    /**
+     *   ANF-ID: [MVP10]
+     */
     public function test_score_primitive_learning_element_course_module_not_exist() {
         // set data for mocked create_adler_score_instance method
         mock_score_primitive_learning_element::set_data(array($this->mock_adler_score));
@@ -152,12 +170,18 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
         mock_score_primitive_learning_element::execute(987654321, false);
     }
 
+    /**
+     *   ANF-ID: [MVP10]
+     */
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
         require_once(__DIR__ . '/lib_test.php');
         (new lib_test())->test_get_adler_score_response_multiple_structure(score_primitive_learning_element::class);
     }
 
+    /**
+     *   ANF-ID: [MVP10]
+     */
     public function test_create_adler_score_instance() {
         $mock = new mock_score_primitive_learning_element();
         $this->expectException('moodle_exception');

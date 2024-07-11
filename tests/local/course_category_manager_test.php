@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\local;
 
@@ -25,6 +25,9 @@ class course_category_manager_test extends adler_testcase {
         $this->moodle_core_mock = Mockery::mock('alias:' . moodle_core::class);
     }
 
+    /**
+     * ANF-ID: [MVP20, MVP21]
+     */
     public function test_username_doesnt_exist() {
         // Arrange
         $this->mockRepo->shouldReceive('get_user_id_by_username')->andReturn(false);
@@ -35,6 +38,9 @@ class course_category_manager_test extends adler_testcase {
         course_category_manager::create_category_user_can_create_courses_in('non_existing_username', 'role', 'category_path');
     }
 
+    /**
+     * ANF-ID: [MVP20, MVP21]
+     */
     public function test_role_doesnt_exist() {
         // Arrange
         $this->mockRepo->shouldReceive('get_user_id_by_username')->andReturn(1); // return a valid user ID
@@ -46,6 +52,9 @@ class course_category_manager_test extends adler_testcase {
         course_category_manager::create_category_user_can_create_courses_in('username', 'non_existing_role', 'category_path');
     }
 
+    /**
+     * ANF-ID: [MVP20, MVP21]
+     */
     public function test_category_already_exists() {
         // Arrange
         $this->mockRepo->shouldReceive('get_user_id_by_username')->andReturn(1); // return a valid user ID
@@ -62,6 +71,8 @@ class course_category_manager_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_valid_username_role_and_category_path_data
+     *
+     * ANF-ID: [MVP20, MVP21]
      */
     public function test_valid_username_role_and_category_path($category_path, $expected_result) {
         // Arrange
@@ -100,6 +111,9 @@ class course_category_manager_test extends adler_testcase {
         ];
     }
 
+    /**
+     * ANF-ID: [MVP20, MVP21]
+     */
     public function test_with_role_that_cannot_be_assigned_to_course_category() {
         // Arrange
         $this->mockRepo->shouldReceive('get_user_id_by_username')->andReturn(1); // return a valid user ID

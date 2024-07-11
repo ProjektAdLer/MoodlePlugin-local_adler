@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 // When using namespaces, the namespace of the test class should match the namespace of the code under test
 // -> no namespace for this test as backup/restore is not namespaced
 use local_adler\lib\adler_testcase;
@@ -14,7 +14,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * The only way to reliably recreate this object would be using the same code as the original class.
  * Therefore, this test is implemented as an integration test.
  */
-class backup__adler_plugin_test extends adler_testcase {
+class backup_adler_plugin_test extends adler_testcase {
     private stdClass $course;
     private stdClass $module;
 
@@ -36,7 +36,7 @@ class backup__adler_plugin_test extends adler_testcase {
      * @param $type string type of backup, one of 'module', 'course'
      * @return false|SimpleXMLElement
      */
-    private function get_xml_from_backup(backup_controller $bc, string $type='module') {
+    private function get_xml_from_backup(backup_controller $bc, string $type = 'module') {
         // Get the backup file.
         $file = $bc->get_results();
         $file = reset($file);
@@ -75,6 +75,8 @@ class backup__adler_plugin_test extends adler_testcase {
     /**
      * Test the backup score logic.
      * @medium
+     *
+     * ANF-ID: [MVP1]
      */
     public function test_backup_score() {
         // Create score item with generator
@@ -102,6 +104,8 @@ class backup__adler_plugin_test extends adler_testcase {
     /**
      * Test the backup of module without score data.
      * @medium
+     *
+     * ANF-ID: [MVP1]
      */
     public function test_backup_no_score() {
         // Create a backup of the module.
@@ -136,6 +140,9 @@ class backup__adler_plugin_test extends adler_testcase {
         $this->assertEquals((int)$expected->timemodified, (int)$actual->timemodified);
     }
 
+    /**
+     * ANF-ID: [MVP1]
+     */
     public function test_backup_course() {
         // Create score item with generator
         $adler_course_object = $this
@@ -162,6 +169,9 @@ class backup__adler_plugin_test extends adler_testcase {
         $this->verify_course($adler_course_object, $xml->plugin_local_adler_course->adler_course);
     }
 
+    /**
+     * ANF-ID: [MVP1]
+     */
     public function test_backup_course_not_adler_course() {
         // Create a backup of the course.
         $bc = new backup_controller(

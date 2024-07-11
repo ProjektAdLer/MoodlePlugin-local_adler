@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler\local\course_module;
 
@@ -32,6 +32,8 @@ class db_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_get_adler_course_module_by_uuid_data
+     *
+     * ANF-ID: [MVP6]
      */
     public function test_get_adler_course_module_by_uuid($success) {
         // create course

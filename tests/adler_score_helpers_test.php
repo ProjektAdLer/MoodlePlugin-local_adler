@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace local_adler;
 
@@ -16,6 +16,7 @@ require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 
 class adler_score_helpers_adler_score_mock extends adler_score {
     use static_mock_utilities_trait;
+
     public function __construct(object $course_module, int $user_id = null) {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
@@ -32,6 +33,9 @@ class adler_score_helpers_test extends adler_testcase {
         $param_adler_score_class->setValue(adler_score::class);
     }
 
+    /**
+     * ANF-ID: [MVP9, MVP8, MVP7]
+     */
     public function test_get_adler_score_objects() {
         // setup
         // set param $adler_score_class
@@ -67,7 +71,6 @@ class adler_score_helpers_test extends adler_testcase {
         $this->expectException(moodle_exception::class);
 
         adler_score_helpers::get_adler_score_objects([$cmids[0]]);
-
     }
 
     public function provide_test_get_achieved_scores_data(): array {
@@ -98,6 +101,8 @@ class adler_score_helpers_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_get_achieved_scores_data
+     *
+     *  ANF-ID: [MVP9, MVP8, MVP7]
      */
     public function test_get_achieved_scores($data) {
         // create 3 adler_score objects and mock get_score
@@ -133,6 +138,9 @@ class adler_score_helpers_test extends adler_testcase {
         $this->assertEquals($data['expected_result'], $result);
     }
 
+    /**
+     * ANF-ID: [MVP9, MVP8, MVP7]
+     */
     public function test_get_achieved_scores_with_module_ids() {
         // setup
         $module_ids = [1, 2, 3];
@@ -161,6 +169,9 @@ class adler_score_helpers_test extends adler_testcase {
         $this->assertEquals([$module_ids, $user_id], adler_score_helpers_mock::get_calls('get_adler_score_objects')[0]);
     }
 
+    /**
+     * ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
+     */
     public function test_get_adler_score_record() {
         // create course
         $course = $this->getDataGenerator()->create_course();
