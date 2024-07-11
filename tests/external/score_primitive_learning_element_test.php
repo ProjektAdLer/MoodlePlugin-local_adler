@@ -52,7 +52,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
 
 
     /**
-     *  ANF-ID: [MVP10]
+     *  # ANF-ID: [MVP10]
      */
     public function test_score_primitive_learning_element() {
         // set data for mocked create_adler_score_instance method
@@ -81,7 +81,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
     /**
-     *   ANF-ID: [MVP10]
+     *   # ANF-ID: [MVP10]
      */
     public function test_score_primitive_learning_element_wrong_datatypes() {
         $exception_thrown = false;
@@ -104,7 +104,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
     /**
-     *   ANF-ID: [MVP10]
+     *   # ANF-ID: [MVP10]
      */
     public function test_score_primitive_learning_element_h5p() {
         // create h5p activity
@@ -122,7 +122,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
     /**
-     *   ANF-ID: [MVP10]
+     *   # ANF-ID: [MVP10]
      */
     public function test_score_primitive_learning_element_completion_disabled() {
         // create module with disabled completion
@@ -139,7 +139,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
     /**
-     *   ANF-ID: [MVP10]
+     *   # ANF-ID: [MVP10]
      */
     public function test_score_primitive_learning_element_user_not_enrolled() {
         // set data for mocked create_adler_score_instance method
@@ -157,7 +157,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
     /**
-     *   ANF-ID: [MVP10]
+     *   # ANF-ID: [MVP10]
      */
     public function test_score_primitive_learning_element_course_module_not_exist() {
         // set data for mocked create_adler_score_instance method
@@ -171,7 +171,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
     /**
-     *   ANF-ID: [MVP10]
+     *   # ANF-ID: [MVP10]
      */
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
@@ -180,7 +180,7 @@ class score_primitive_learning_element_test extends adler_externallib_testcase {
     }
 
     /**
-     *   ANF-ID: [MVP10]
+     *   # ANF-ID: [MVP10]
      */
     public function test_create_adler_score_instance() {
         $mock = new mock_score_primitive_learning_element();

@@ -18,7 +18,7 @@ class plugin_interface_test extends adler_testcase {
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      *
-     * ANF-ID: [MVP12, MVP13]
+     * # ANF-ID: [MVP12, MVP13]
      */
     public function test_is_section_completed() {
         $user_id = 9;

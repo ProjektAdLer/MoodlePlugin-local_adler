@@ -23,7 +23,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  */
 class score_get_element_scores_test extends adler_externallib_testcase {
     /**
-     * ANF-ID: [MVP8]
+     * # ANF-ID: [MVP8]
      */
     public function test_execute() {
         global $CFG;
@@ -56,7 +56,7 @@ class score_get_element_scores_test extends adler_externallib_testcase {
     }
 
     /**
-     * ANF-ID: [MVP8]
+     * # ANF-ID: [MVP8]
      */
     public function test_execute_exceptions() {
         global $CFG;
@@ -182,7 +182,7 @@ class score_get_element_scores_test extends adler_externallib_testcase {
     }
 
     /**
-     * ANF-ID: [MVP8]
+     * # ANF-ID: [MVP8]
      */
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns

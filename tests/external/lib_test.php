@@ -114,7 +114,7 @@ class lib_test extends adler_externallib_testcase {
     }
 
     /**
-     * ANF-ID: [MVP10, MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP10, MVP9, MVP8, MVP7]
      */
     public function test_convert_adler_score_array_format_to_response_structure() {
         $testcases = [

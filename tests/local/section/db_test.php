@@ -34,7 +34,7 @@ class db_test extends adler_testcase {
     /**
      * @dataProvider provide_test_get_adler_section_by_uuid_data
      *
-     * ANF-ID: [MVP6]
+     * # ANF-ID: [MVP6]
      */
     public function test_get_adler_section_by_uuid($success) {
         // create adler_section entry
@@ -60,7 +60,7 @@ class db_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP6, MVP12]
+     * # ANF-ID: [MVP6, MVP12]
      */
     public function test_get_adler_section() {
         // create adler_section entry
@@ -72,7 +72,7 @@ class db_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP12]
+     * # ANF-ID: [MVP12]
      */
     public function test_get_course_modules_by_section_id() {
         // create course

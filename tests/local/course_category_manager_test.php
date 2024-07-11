@@ -26,7 +26,7 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_username_doesnt_exist() {
         // Arrange
@@ -39,7 +39,7 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_role_doesnt_exist() {
         // Arrange
@@ -53,7 +53,7 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_category_already_exists() {
         // Arrange
@@ -72,7 +72,7 @@ class course_category_manager_test extends adler_testcase {
     /**
      * @dataProvider provide_test_valid_username_role_and_category_path_data
      *
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_valid_username_role_and_category_path($category_path, $expected_result) {
         // Arrange
@@ -112,7 +112,7 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_with_role_that_cannot_be_assigned_to_course_category() {
         // Arrange

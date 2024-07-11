@@ -45,7 +45,7 @@ class restore_adler_plugin_test extends adler_testcase {
      * @return ReflectionMethod
      * @throws ReflectionException
      *
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     protected static function getMethodAsPublic(string $name): ReflectionMethod {
         $class = new ReflectionClass(restore_local_adler_plugin::class);
@@ -55,7 +55,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_module_one_element() {
         // setup
@@ -81,7 +81,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_module_one_element_default_values() {
         // test without optional fields (timecreated, timemodified)
@@ -107,7 +107,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_module_multiple_elements() {
         list($data, $stub) = $this->setUpModule();
@@ -120,7 +120,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_module_invalid_datatype() {
         // setup
@@ -149,7 +149,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_module_missing_fields() {
         // setup
@@ -174,7 +174,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_define_module_plugin_structure() {
         list($data, $stub) = $this->setUpModule();
@@ -203,7 +203,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function setUpCourse(): array {
         $data = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_object(1, [], false);
@@ -222,7 +222,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_define_course_plugin_structure() {
         list($data, $stub) = $this->setUpCourse();
@@ -251,7 +251,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_course() {
         // setup
@@ -273,7 +273,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_course_optional_fields() {
         // setup
@@ -300,7 +300,7 @@ class restore_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_define_section_plugin_structure() {
         $restore_mock = $this
@@ -343,7 +343,7 @@ class restore_adler_plugin_test extends adler_testcase {
     /**
      * @dataProvider provide_test_process_adler_section_data
      *
-     * ANF-ID: [MVP2]
+     * # ANF-ID: [MVP2]
      */
     public function test_process_adler_section($restore_data) {
         $restore_mock = $this

@@ -21,7 +21,7 @@ class helpers_test extends adler_testcase {
     /**
      * @dataProvider provide_test_course_is_adler_course_data
      *
-     * ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
      */
     public function test_course_is_adler_course($data) {
         $course_id = 8001;
@@ -48,7 +48,7 @@ class helpers_test extends adler_testcase {
     /**
      * @dataProvider provide_test_is_primitive_learning_element_data
      *
-     * ANF-ID: [MVP10]
+     * # ANF-ID: [MVP10]
      */
     public function test_is_primitive_learning_element($data) {
         // create course

@@ -13,7 +13,7 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
      * @dataProvider provide_test_create_course_cat_and_assign_user_role_data
      * @runInSeparateProcess
      *
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_create_course_cat_and_assign_user_role($username, $role, $category_path, $expected_parameters, $expected_exit_code) {
         global $CFG;
@@ -85,7 +85,7 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_script_with_unknown_parameter() {
         global $CFG;
@@ -104,7 +104,7 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_script_with_help_parameter() {
         global $CFG;
@@ -127,7 +127,7 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
     /**
      * integration test
      *
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_script_with_valid_parameters() {
         $category_path = 'test / valid_category_path';
@@ -163,7 +163,7 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
     /**
      * integration test
      *
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_script_without_category_path() {
         global $CFG, $DB;
@@ -190,7 +190,7 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP20, MVP21]
+     * # ANF-ID: [MVP20, MVP21]
      */
     public function test_with_role_that_cannot_be_assigned_to_course_category() {
         global $CFG, $DB;

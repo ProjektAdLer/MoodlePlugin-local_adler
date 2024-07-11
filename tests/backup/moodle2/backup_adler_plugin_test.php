@@ -76,7 +76,7 @@ class backup_adler_plugin_test extends adler_testcase {
      * Test the backup score logic.
      * @medium
      *
-     * ANF-ID: [MVP1]
+     * # ANF-ID: [MVP1]
      */
     public function test_backup_score() {
         // Create score item with generator
@@ -105,7 +105,7 @@ class backup_adler_plugin_test extends adler_testcase {
      * Test the backup of module without score data.
      * @medium
      *
-     * ANF-ID: [MVP1]
+     * # ANF-ID: [MVP1]
      */
     public function test_backup_no_score() {
         // Create a backup of the module.
@@ -141,7 +141,7 @@ class backup_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP1]
+     * # ANF-ID: [MVP1]
      */
     public function test_backup_course() {
         // Create score item with generator
@@ -170,7 +170,7 @@ class backup_adler_plugin_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP1]
+     * # ANF-ID: [MVP1]
      */
     public function test_backup_course_not_adler_course() {
         // Create a backup of the course.

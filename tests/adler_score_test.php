@@ -147,7 +147,7 @@ class adler_score_test extends adler_testcase {
     /**
      * @dataProvider provide_test_construct_data
      *
-     * ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
      */
     public function test_construct($test) {
         // reset
@@ -235,7 +235,7 @@ class adler_score_test extends adler_testcase {
     /**
      * @dataProvider provide_test_get_primitive_score_data
      *
-     * ANF-ID: [MVP10]
+     * # ANF-ID: [MVP10]
      */
     public function test_get_primitive_score($data) {
         // create primitive activity
@@ -320,7 +320,7 @@ class adler_score_test extends adler_testcase {
     /**
      * @medium
      *
-     * ANF-ID: [MVP7]
+     * # ANF-ID: [MVP7]
      */
     public function test_get_score_for_h5p_learning_element() {
         global $CFG;
@@ -438,7 +438,7 @@ class adler_score_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP10, MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP10, MVP9, MVP8, MVP7]
      */
     public function test_calculate_percentage_achieved() {
         // test setup

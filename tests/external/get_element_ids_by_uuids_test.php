@@ -105,7 +105,7 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
     /**
      * @dataProvider provide_test_execute_data
      *
-     * ANF-ID: [MVP6]
+     * # ANF-ID: [MVP6]
      */
     public function test_execute($element, $adler_element_exists, $expected_result, $expected_exception) {
         $course = $this->getDataGenerator()->create_course();
@@ -192,7 +192,7 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
     /**
      * @dataProvider provide_test_execute_returns_data
      *
-     * ANF-ID: [MVP6]
+     * # ANF-ID: [MVP6]
      */
     public function test_execute_returns($data, $success) {
         if (!$success) {

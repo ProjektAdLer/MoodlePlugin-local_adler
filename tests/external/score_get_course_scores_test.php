@@ -31,7 +31,7 @@ class score_get_course_scores_test extends adler_externallib_testcase {
     /**
      * @dataProvider provide_test_execute_data
      *
-     * ANF-ID: [MVP7]
+     * # ANF-ID: [MVP7]
      */
     public function test_execute($element_count) {
         $course = $this->getDataGenerator()->create_course();
@@ -73,7 +73,7 @@ class score_get_course_scores_test extends adler_externallib_testcase {
     }
 
     /**
-     * ANF-ID: [MVP7]
+     * # ANF-ID: [MVP7]
      */
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns

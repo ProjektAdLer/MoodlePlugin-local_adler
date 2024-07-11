@@ -34,7 +34,7 @@ class adler_score_helpers_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP9, MVP8, MVP7]
      */
     public function test_get_adler_score_objects() {
         // setup
@@ -102,7 +102,7 @@ class adler_score_helpers_test extends adler_testcase {
     /**
      * @dataProvider provide_test_get_achieved_scores_data
      *
-     *  ANF-ID: [MVP9, MVP8, MVP7]
+     *  # ANF-ID: [MVP9, MVP8, MVP7]
      */
     public function test_get_achieved_scores($data) {
         // create 3 adler_score objects and mock get_score
@@ -139,7 +139,7 @@ class adler_score_helpers_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP9, MVP8, MVP7]
      */
     public function test_get_achieved_scores_with_module_ids() {
         // setup
@@ -170,7 +170,7 @@ class adler_score_helpers_test extends adler_testcase {
     }
 
     /**
-     * ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
      */
     public function test_get_adler_score_record() {
         // create course
