@@ -9,6 +9,7 @@ use core_completion\cm_completion_details;
 use local_adler\lib\adler_externallib_testcase;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
+use stdClass;
 
 
 global $CFG;
@@ -21,6 +22,11 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @runTestsInSeparateProcesses
  */
 class trigger_event_cm_viewed_test extends adler_externallib_testcase {
+    private stdClass $user;
+    private stdClass $course;
+    private stdClass $resource_module;
+    private stdClass $h5p_module;
+
     public function setUp(): void {
         parent::setUp();
 
@@ -52,7 +58,7 @@ class trigger_event_cm_viewed_test extends adler_externallib_testcase {
         $this->expectException(not_an_adler_course_exception::class);
 
         // call execute
-        trigger_event_cm_viewed::execute($this->resource_module->cmid, true);
+        trigger_event_cm_viewed::execute($this->resource_module->cmid);
     }
 
     public function test_not_adler_cm() {
@@ -65,29 +71,22 @@ class trigger_event_cm_viewed_test extends adler_externallib_testcase {
             ->create_adler_course_object($this->course->id);
 
         // call execute
-        trigger_event_cm_viewed::execute($this->resource_module->cmid, true);
+        trigger_event_cm_viewed::execute($this->resource_module->cmid);
     }
 
     public function test_execute_integration() {
+        $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
+
         // make course adler course
-        $this
-            ->getDataGenerator()
-            ->get_plugin_generator('local_adler')
-            ->create_adler_course_object($this->course->id);
+        $adler_generator->create_adler_course_object($this->course->id);
 
         // make both modules adler modules
-        $resource_adler_cm = $this
-            ->getDataGenerator()
-            ->get_plugin_generator('local_adler')
-            ->create_adler_course_module($this->resource_module->cmid);
-        $h5p_adler_cm = $this
-            ->getDataGenerator()
-            ->get_plugin_generator('local_adler')
-            ->create_adler_course_module($this->h5p_module->cmid);
+        $resource_adler_cm = $adler_generator->create_adler_course_module($this->resource_module->cmid);
+        $adler_generator->create_adler_course_module($this->h5p_module->cmid);
 
         // call execute for both modules
-        $result_resource = trigger_event_cm_viewed::execute($this->resource_module->cmid, true);
-        $result_h5p = trigger_event_cm_viewed::execute($this->h5p_module->cmid, true);
+        $result_resource = trigger_event_cm_viewed::execute($this->resource_module->cmid);
+        $result_h5p = trigger_event_cm_viewed::execute($this->h5p_module->cmid);
 
         // assert both modules are marked as viewed
         $resource_cm_info = get_fast_modinfo($this->course->id)->get_cm($this->resource_module->cmid);
