@@ -19,26 +19,10 @@ require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 require_once($CFG->libdir . '/completionlib.php');  # sometimes randomly required
 
 
-class completion_info_mock extends completion_info {
-    use static_mock_utilities_trait;
-
-    public function is_enabled($cm = null) {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
-
-    public function get_data($cm, $wholecourse = false, $userid = 0, $unused = null) {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
-}
-
 class helpers_mock extends helpers {
     use static_mock_utilities_trait;
 
     public static function course_is_adler_course($course_id): bool {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
-
-    public static function get_course_from_course_id($course_id) {
         return static::mock_this_function(__FUNCTION__, func_get_args());
     }
 }
