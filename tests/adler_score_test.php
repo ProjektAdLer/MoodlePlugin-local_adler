@@ -3,18 +3,15 @@
 namespace local_adler;
 
 
-use coding_exception;
 use completion_info;
+use grade_item;
 use local_adler\lib\adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
 use local_adler\local\exceptions\user_not_enrolled_exception;
-use local_logging\logger;
-use Mockery;
-use mod_h5pactivity\local\grader;
 use moodle_exception;
-use ReflectionClass;
 use stdClass;
 use Throwable;
+use TypeError;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
@@ -74,17 +71,14 @@ class adler_score_test extends adler_testcase {
         $this->course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
 
         // create module
-        $this->module = $this->getDataGenerator()->create_module('url', ['course' => $this->course->id, 'completion' => 1]);
+        $this->module = $this->getDataGenerator()->create_module('url', [
+            'course' => $this->course->id,
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completeionview' => 1,
+            'completionpassgrade' => 0
+        ]);
     }
 
-    public function tearDown(): void {
-        parent::tearDown();
-
-        $reflection = new ReflectionClass(adler_score::class);
-        $property = $reflection->getProperty('completion_info');
-        $property->setAccessible(true);
-        $property->setValue(completion_info::class);
-    }
 
     public function provide_test_construct_data() {
         // double array for each case because phpunit otherwise splits the object into individual params
@@ -98,7 +92,6 @@ class adler_score_test extends adler_testcase {
                 'is_adler_cm' => true,
                 'expect_exception' => false,
                 'expect_exception_message' => null,
-
             ]],
             'with user id param' => [[
                 'enrolled' => true,
@@ -109,7 +102,6 @@ class adler_score_test extends adler_testcase {
                 'is_adler_cm' => true,
                 'expect_exception' => false,
                 'expect_exception_message' => null,
-
             ]],
             'not enrolled' => [[
                 'enrolled' => false,
@@ -128,8 +120,8 @@ class adler_score_test extends adler_testcase {
                 'course_module_param' => 'incorrect',
                 'is_adler_course' => true,
                 'is_adler_cm' => true,
-                'expect_exception' => coding_exception::class,
-                'expect_exception_message' => 'course_module_format_not_valid',
+                'expect_exception' => TypeError::class,
+                'expect_exception_message' => 'must be of type cm_info',
             ]],
             'not adler course' => [[
                 'enrolled' => true,
@@ -203,274 +195,142 @@ class adler_score_test extends adler_testcase {
         // No exception thrown and no exception expected -> check result
         // test score
         $this->assertEquals(17, $result->test_get_score_item()->score);
-        $this->assertEquals($module_format_correct->id, $result->get_cmid());
     }
 
     public function provide_test_get_primitive_score_data() {
         return [
-            'complete' => [[
-                'completion_enabled' => true,
+            'complete' => [
+                'completion_enabled_cm' => true,
+                'completion_enabled_course' => true,
                 'completion_state' => COMPLETION_COMPLETE,
                 'expect_exception' => false,
                 'expect_exception_message' => null,
-                'expect_score' => 1,
-            ]],
-            'incomplete' => [[
-                'completion_enabled' => true,
+                'expect_score' => 100,
+            ],
+            'incomplete' => [
+                'completion_enabled_cm' => true,
+                'completion_enabled_course' => true,
                 'completion_state' => COMPLETION_INCOMPLETE,
                 'expect_exception' => false,
                 'expect_exception_message' => null,
                 'expect_score' => 0,
-            ]],
-            'completion_disabled' => [[
-                'completion_enabled' => false,
+            ],
+            'completion_disabled' => [
+                'completion_enabled_cm' => false,
+                'completion_enabled_course' => false,
                 'completion_state' => COMPLETION_INCOMPLETE,
                 'expect_exception' => moodle_exception::class,
                 'expect_exception_message' => "completion_not_enabled",
                 'expect_score' => 0,
-            ]],
+            ],
+            'completion_disabled_cm' => [
+                'completion_enabled_cm' => false,
+                'completion_enabled_course' => true,
+                'completion_state' => COMPLETION_INCOMPLETE,
+                'expect_exception' => moodle_exception::class,
+                'expect_exception_message' => "completion_not_enabled",
+                'expect_score' => 0,
+            ],
         ];
     }
 
-    /**
-     * @dataProvider provide_test_get_primitive_score_data
-     *
-     * # ANF-ID: [MVP10]
-     */
-    public function test_get_primitive_score($data) {
+    private function set_up_course_with_primitive_element(bool $enable_completion_course, bool $enable_completion_module) {
+        // create user, course and enrol user
+        $this->user = $this->getDataGenerator()->create_user();
+        $this->course = $this->getDataGenerator()->create_course(['enablecompletion' => $enable_completion_course ? '1' : '0']);
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id);
+        $this->setUser($this->user);
+
         // create primitive activity
-        $generator = $this->getDataGenerator()->get_plugin_generator('mod_url');
-        $cm = $generator->create_instance(array(
+        $cm_data = [
             'course' => $this->course->id,
-        ));
-        $cm_other_format = get_fast_modinfo($this->course->id)->get_cm($cm->cmid);
+            'completion' => $enable_completion_module ? COMPLETION_TRACKING_AUTOMATIC : COMPLETION_TRACKING_NONE];
+        if ($enable_completion_module) {
+            $cm_data += [
+                'completionview' => 1,
+                'completionpassgrade' => 0
+            ];
+        }
+        $url_module = $this->getDataGenerator()->get_plugin_generator('mod_url')->create_instance($cm_data);
+        $this->url_module_cm_info = get_fast_modinfo($url_module->course)->get_cm($url_module->cmid);
 
-        // Create score (adler) item.
-        $score_item = $this->getDataGenerator()
-            ->get_plugin_generator('local_adler')
-            ->create_adler_course_module($cm_other_format->id, [], false);
+        // make course and module adler course/module
+        $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
+        $adler_generator->create_adler_course_object($this->course->id);
+        $adler_generator->create_adler_course_module($url_module->cmid);
+    }
 
+    /**
+     *
+     * @dataProvider provide_test_get_primitive_score_data
+     * # ANF-ID: [MVP7, MVP9, MVP10, MVP8]
+     */
+    public function test_get_primitive_score(bool $completion_enabled_cm, bool $completion_enabled_course, int $completion_state, string|false $expect_exception, ?string $expect_exception_message, int $expect_score) {
+        $this->set_up_course_with_primitive_element($completion_enabled_course, $completion_enabled_cm);
 
-        // create adler_score object and set private properties
-        $reflection = new ReflectionClass(adler_score::class);
-        // create adler_score without constructor
-        $adler_score = $reflection->newInstanceWithoutConstructor();
-        // set private properties of adler_score
-        $property = $reflection->getProperty('score_item');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $score_item);
-        $property = $reflection->getProperty('course_module');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $cm_other_format);
-        $property = $reflection->getProperty('user_id');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $this->user->id);
+        if ($completion_state === COMPLETION_COMPLETE) {
+            $completion = new completion_info($this->course);
+            $completion->set_module_viewed($this->url_module_cm_info);
+        }
 
-        // set completion_info mock
-        $property = $reflection->getProperty('completion_info');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, completion_info_mock::class);
-
-        // set parameters for completion_info mock
-        completion_info_mock::reset_data();
-        completion_info_mock::set_returns('is_enabled', [$data['completion_enabled']]);
-        completion_info_mock::set_returns('get_data', [(object)['completionstate' => $data['completion_state']]]);
-
-        // mock logger as it does not exist because constructor is not executed
-        $logger_mock = Mockery::mock(Logger::class);
-        // ignore all method calls on mock
-        $logger_mock->shouldIgnoreMissing();
-        // set logger mock to $logger variable in class under test
-        $property = $reflection->getProperty('logger');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $logger_mock);
-
-        // call method
+        $adler_score = new adler_score($this->url_module_cm_info);
         try {
-            $result = $adler_score->get_score();
+            $result = $adler_score->get_score_by_completion_state();
         } catch (Throwable $e) {
-            $this->assertEquals($data['expect_exception'], get_class($e));
-            if ($data['expect_exception_message'] !== null) {
-                $this->assertStringContainsString($data['expect_exception_message'], $e->getMessage());
+            $this->assertEquals($expect_exception, get_class($e));
+            if ($expect_exception_message !== null) {
+                $this->assertStringContainsString($expect_exception_message, $e->getMessage());
             }
             return;
         }
 
-        $this->assertEquals($data['expect_score'] == 1 ? $score_item->score_max : 0, $result);
-
+        $this->assertEquals($expect_score, $result);
     }
 
-    /** h5p attempt generator is not calculating the scaled attribute.
-     * When accessing h5pactivity_attempts it's not using the rawscore field,
-     * but instead calculates the scaled value (maxscore * scaled), making this field required for tests.
-     * This method works around this issue by calculating the redundant "scaled" field for all existing attempts.
-     *
-     * Note that this method does not set/update gradebook entries.
-     */
-    private function fix_scaled_attribute_of_h5pactivity_attempts() {
-        global $DB;
-
-        $attempts = $DB->get_records('h5pactivity_attempts');
-        foreach ($attempts as $attempt) {
-            $attempt->scaled = $attempt->rawscore / $attempt->maxscore;
-            $DB->update_record('h5pactivity_attempts', $attempt);
-        }
-    }
-
-    /**
-     * @medium
-     *
-     * # ANF-ID: [MVP7]
-     */
-    public function test_get_score_for_h5p_learning_element() {
-        global $CFG;
-        require_once($CFG->libdir . '/gradelib.php');
-
-
-        // set current user (required by h5p generator)
+    private function set_up_course_with_h5p_grade_element() {
+        // create user, course and enrol user
+        $this->user = $this->getDataGenerator()->create_user();
+        $this->course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id);
         $this->setUser($this->user);
 
-
-        // create h5p activity
-        $generator = $this->getDataGenerator()->get_plugin_generator('mod_h5pactivity');
-        $cm = $generator->create_instance(array(
+        // create h5p with completionpassgrade
+        $this->h5p_module = $this->getDataGenerator()->create_module('h5pactivity', [
             'course' => $this->course->id,
-        ));
-        $cm_other_format = get_fast_modinfo($this->course->id)->get_cm($cm->cmid);
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 0,
+            'completionpassgrade' => 1,
+            'completiongradeitemnumber' => 0
+        ]);
 
-        // Create score (adler) item.
-        $score_item_h5p = $this->getDataGenerator()
-            ->get_plugin_generator('local_adler')
-            ->create_adler_course_module($cm_other_format->id, [], false);
-
-
-        // create adler_score object and set private properties
-        $reflection = new ReflectionClass(adler_score::class);
-        // create adler_score without constructor
-        $adler_score = $reflection->newInstanceWithoutConstructor();
-        // set private properties of adler_score
-        $property = $reflection->getProperty('score_item');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $score_item_h5p);
-        $property = $reflection->getProperty('course_module');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $cm_other_format);
-        $property = $reflection->getProperty('user_id');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $this->user->id);
-
-        // mock logger as it does not exist because constructor is not executed
-        $logger_mock = Mockery::mock(Logger::class);
-        // ignore all method calls on mock
-        $logger_mock->shouldIgnoreMissing();
-        // set logger mock to $logger variable in class under test
-        $property = $reflection->getProperty('logger');
-        $property->setAccessible(true);
-        $property->setValue($adler_score, $logger_mock);
-
-        // test no attempt
-        // call method
-        $result = $adler_score->get_score();
-        $this->assertEquals(0, $result);
-
-
-        // Test with attempts.
-
-        // create grader
-        $grader = new grader($cm);
-
-        // array with test data for attempts with different maxscores and rawscores
-        $test_data = [
-            ['maxscore' => 100, 'rawscore' => 0, 'expected_score' => 0],
-            ['maxscore' => 100, 'rawscore' => 100, 'expected_score' => 100],
-            ['maxscore' => 100, 'rawscore' => 50, 'expected_score' => 0],
-            ['maxscore' => 50, 'rawscore' => 0, 'expected_score' => 0],
-            ['maxscore' => 50, 'rawscore' => 50, 'expected_score' => 100],
-            ['maxscore' => 50, 'rawscore' => 25, 'expected_score' => 0],
-            ['maxscore' => 200, 'rawscore' => 0, 'expected_score' => 0],
-            ['maxscore' => 200, 'rawscore' => 200, 'expected_score' => 100],
-            ['maxscore' => 200, 'rawscore' => 100, 'expected_score' => 0],
-        ];
-
-        // test attempts with different maxscores and rawscores
-        foreach ($test_data as $data) {
-            // Create h5p attempt
-            $params = [
-                'h5pactivityid' => $cm->id,
-                'userid' => $this->user->id,
-                'rawscore' => $data['rawscore'],
-                'maxscore' => $data['maxscore']
-            ];
-            $generator->create_attempt($params);
-            $this->fix_scaled_attribute_of_h5pactivity_attempts();
-
-            // Create grade entry (grade_grades)
-            $grader->update_grades();
-
-            // check result
-            $this->assertEquals(round($data['expected_score'], 3), round($adler_score->get_score(), 3));
-        }
-
-
-        // test invalid rawscore
-        $params = [[
-            'h5pactivityid' => $cm->id,
-            'userid' => $this->user->id,
-            'rawscore' => -1,
-            'maxscore' => 100
-        ], [
-            'h5pactivityid' => $cm->id,
-            'userid' => $this->user->id,
-            'rawscore' => 101,
-            'maxscore' => 100
-        ]];
-        // use indexed loop
-        for ($i = 0; $i < count($params); $i++) {
-            $generator->create_attempt($params[$i]);
-            $this->fix_scaled_attribute_of_h5pactivity_attempts();
-
-            // Create grade entry (grade_grades)
-            $grader->update_grades();
-
-            // check result
-            $this->assertEquals($i == 0 ? 0 : $params[$i]['maxscore'], $adler_score->get_score());
-        }
+        // make course and module adler course/module
+        $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
+        $adler_generator->create_adler_course_object($this->course->id);
+        $this->h5p_adler_cm = $adler_generator->create_adler_course_module($this->h5p_module->cmid);
     }
 
     /**
-     * # ANF-ID: [MVP10, MVP9, MVP8, MVP7]
+     * # ANF-ID: [MVP7, MVP8, MVP9]
      */
-    public function test_calculate_percentage_achieved() {
-        // test setup
-        // create adler_score object without constructor call
-        $adler_score = $this->getMockBuilder(adler_score::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+    public function test_get_score_for_h5p_grade_learning_element() {
+        $this->set_up_course_with_h5p_grade_element();
 
-        // make calculate_percentage_achieved public
-        $reflection = new ReflectionClass(adler_score::class);
-        $method = $reflection->getMethod('calculate_percentage_achieved');
-        $method->setAccessible(true);
+        global $CFG;
+        require_once($CFG->libdir . '/gradelib.php');
+        $grade_item = grade_item::fetch([
+            'itemname' => $this->h5p_module->name,
+            'gradetype' => GRADE_TYPE_VALUE,
+            'courseid' => $this->h5p_module->course
+        ]);
+        $grade_data_class = new stdClass();
+        $grade_data_class->userid = $this->user->id;
+        $grade_data_class->rawgrade = $this->h5p_module->grade;
+        require_once($CFG->dirroot . '/mod/h5pactivity/lib.php');
+        h5pactivity_grade_item_update($this->h5p_module, $grade_data_class);
 
-        // enroll user
-        $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id, 'student');
+        $h5p_module_as_course_modinfo = get_fast_modinfo($this->course->id)->get_cm($this->h5p_module->cmid);
+        $adler_score = new adler_score($h5p_module_as_course_modinfo);
 
-        // test data
-        $test_data = [
-            ['min' => 0, 'max' => 100, 'value' => 0, 'expected' => 0],
-            ['min' => 0, 'max' => 100, 'value' => 50, 'expected' => .5],
-            ['min' => 0, 'max' => 100, 'value' => 100, 'expected' => 1],
-            ['min' => 10, 'max' => 20, 'value' => 10, 'expected' => 0],
-            ['min' => 10, 'max' => 20, 'value' => 15, 'expected' => .5],
-            ['min' => 10, 'max' => 20, 'value' => 20, 'expected' => 1],
-            ['min' => 0, 'max' => 100, 'value' => -1, 'expected' => 0],
-            ['min' => 0, 'max' => 100, 'value' => 101, 'expected' => 1],
-        ];
-
-        // test
-        foreach ($test_data as $data) {
-            $result = $method->invokeArgs($adler_score, [$data['value'], $data['max'], $data['min']]);
-            $this->assertEquals($data['expected'], $result);
-        }
+        $this->assertEquals($this->h5p_adler_cm->score_max, $adler_score->get_score_by_completion_state());
     }
 }

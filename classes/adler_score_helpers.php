@@ -24,9 +24,11 @@ class adler_score_helpers {
         $adler_scores = array();
         foreach ($module_ids as $module_id) {
             $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
+            $course_module = get_fast_modinfo($course_module->course)->get_cm($course_module->id);
             try {
                 $adler_scores[$module_id] = new static::$adler_score_class($course_module, $user_id);
             } catch (moodle_exception $e) {
+//                todo: either moodle_exception is really never thrown, then delete code, otherwise fix linting
                 if ($e->errorcode === 'not_an_adler_cm') {
                     $logger->info('Is adler course, but adler scoring is not enabled for cm with id ' . $module_id);
                     $adler_scores[$module_id] = false;
@@ -56,7 +58,7 @@ class adler_score_helpers {
             if ($adler_score === false) {
                 $achieved_scores[$cmid] = false;
             } else {
-                $achieved_scores[$cmid] = $adler_score->get_score();
+                $achieved_scores[$cmid] = $adler_score->get_score_by_completion_state();
             }
         }
         return $achieved_scores;
@@ -69,6 +71,7 @@ class adler_score_helpers {
      * @throws moodle_exception
      */
     public static function get_adler_score_record(int $cmid): stdClass {
+//        todo: repo pattern
         $logger = new logger('local_adler', 'adler_score_helpers');
         global $DB;
         $record = $DB->get_record('local_adler_course_modules', array('cmid' => $cmid));
@@ -84,6 +87,7 @@ class adler_score_helpers {
      * @throws dml_exception
      */
     public static function delete_adler_score_record(int $cmid): void {
+//        todo: repo pattern
         global $DB;
         $DB->delete_records('local_adler_course_modules', array('cmid' => $cmid));
     }

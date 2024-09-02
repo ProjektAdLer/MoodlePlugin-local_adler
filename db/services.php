@@ -23,15 +23,15 @@ $services = array(
 );
 
 $functions = array(
-    'local_adler_score_primitive_learning_element' => array(         //web service function name
-        'classname' => 'local_adler\external\score_primitive_learning_element',  //class containing the external function OR namespaced class in classes/external/XXXX.php
-        'description' => 'Submit result for primitive learning elements (completed/not completed)',    //human readable description of the web service function
+    'local_adler_trigger_event_cm_viewed' => [         //web service function name
+        'classname' => 'local_adler\external\trigger_event_cm_viewed',  //class containing the external function OR namespaced class in classes/external/XXXX.php
+        'description' => 'Marks the element as viewed by triggering the "viewed" event for the cm.',    //human readable description of the web service function
         'type' => 'write',                  //database rights of the web service function (read, write)
         'ajax' => false,        // is the service available to 'internal' ajax calls.
         'services' => array('adler_services'),   // Optional, only available for Moodle 3.1 onwards. List of built-in services (by shortname) where the function will be included.  Services created manually via the Moodle interface are not supported.
         'capabilities' => '', // comma separated list of capabilities used by the function.
         'loginrequired' => true
-    ),
+    ],
     'local_adler_score_h5p_learning_element' => array(
         'classname' => 'local_adler\external\score_h5p_learning_element',
         'description' => 'Submit result for h5p. This is just a proxy function and forwards its payload to {"wsfunction", "core_xapi_statement_post"}, {"component", "mod_h5pactivity"}, {"requestjson", "[" + statement + "]"}',    //human readable description of the web service function

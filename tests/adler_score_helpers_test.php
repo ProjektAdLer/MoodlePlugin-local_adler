@@ -105,18 +105,18 @@ class adler_score_helpers_test extends adler_testcase {
      *  # ANF-ID: [MVP9, MVP8, MVP7]
      */
     public function test_get_achieved_scores($data) {
-        // create 3 adler_score objects and mock get_score
+        // create 3 adler_score objects and mock get_score_by_completion_state
         for ($i = 0; $i < 3; $i++) {
             $adler_score_objects[] = $this->getMockBuilder(adler_score_helpers_adler_score_mock::class)
                 ->disableOriginalConstructor()
                 ->getMock();
-            $adler_score_objects[$i]->method('get_score')->willReturn((float)$i * 2);
+            $adler_score_objects[$i]->method('get_score_by_completion_state')->willReturn((float)$i * 2);
         }
         $adler_score_objects[] = false;
 
         // setup exception
         if ($data['exception'] !== null) {
-            $adler_score_objects[$data['exception_at_index']]->method('get_score')->willThrowException(
+            $adler_score_objects[$data['exception_at_index']]->method('get_score_by_completion_state')->willThrowException(
                 new $data['exception']($data['exception_msg'])
             );
         }
@@ -145,12 +145,12 @@ class adler_score_helpers_test extends adler_testcase {
         // setup
         $module_ids = [1, 2, 3];
         $user_id = 1;
-        // create 3 adler_score objects and mock get_score
+        // create 3 adler_score objects and mock get_score_by_completion_state
         for ($i = 0; $i < 3; $i++) {
             $adler_score_objects[] = $this->getMockBuilder(adler_score_helpers_adler_score_mock::class)
                 ->disableOriginalConstructor()
                 ->getMock();
-            $adler_score_objects[$i]->method('get_score')->willReturn((float)$i * 2);
+            $adler_score_objects[$i]->method('get_score_by_completion_state')->willReturn((float)$i * 2);
         }
         $expected_result = [0, 2, 4];
 
