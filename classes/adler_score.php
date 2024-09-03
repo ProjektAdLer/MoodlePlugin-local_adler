@@ -5,7 +5,7 @@ namespace local_adler;
 
 use cm_info;
 use context_course;
-use core_completion\cm_completion_details;
+use local_adler\local\backport\backport_cm_completion_details;
 use local_adler\local\exceptions\user_not_enrolled_exception;
 use local_logging\logger;
 use moodle_exception;
@@ -60,7 +60,7 @@ class adler_score {
      * @throws moodle_exception If completion is not enabled for the course module.
      */
     public function get_score_by_completion_state(): float {
-        $cm_completion_details = cm_completion_details::get_instance(
+        $cm_completion_details = backport_cm_completion_details::get_instance(
             get_fast_modinfo($this->course_module->course)->get_cm($this->course_module->id),
             $this->user_id
         );
