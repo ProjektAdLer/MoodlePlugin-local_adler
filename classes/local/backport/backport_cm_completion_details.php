@@ -3,6 +3,7 @@
 namespace local_adler\local\backport;
 
 
+use cm_info;
 use core_completion\cm_completion_details as core_cm_completion_details;
 
 if (get_config('moodle', 'version') < 2023100900) {
@@ -47,6 +48,22 @@ if (get_config('moodle', 'version') < 2023100900) {
             }
 
             return in_array($this->get_overall_completion(), $completionstates);
+        }
+
+        /**
+         * From Moodle 4.4 to make backports work, as otherwise the baseclass is returned by this method.
+ *
+         * Generates an instance of this class.
+         *
+         * @param cm_info $cminfo The course module info instance.
+         * @param int $userid The user ID that we're fetching completion details for.
+         * @param bool $returndetails  Whether to return completion details or not.
+         * @return core_cm_completion_details
+         */
+        public static function get_instance(cm_info $cminfo, int $userid, bool $returndetails = true): core_cm_completion_details {
+            $course = $cminfo->get_course();
+            $completioninfo = new \completion_info($course);
+            return new self($completioninfo, $cminfo, $userid, $returndetails);
         }
     }
 } else {
