@@ -5,8 +5,8 @@ namespace local_adler\external;
 defined('MOODLE_INTERNAL') || die();
 
 
-use core_completion\cm_completion_details;
 use local_adler\lib\adler_externallib_testcase;
+use local_adler\local\backport\backport_cm_completion_details;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use stdClass;
@@ -90,12 +90,12 @@ class trigger_event_cm_viewed_test extends adler_externallib_testcase {
 
         // assert both modules are marked as viewed
         $resource_cm_info = get_fast_modinfo($this->course->id)->get_cm($this->resource_module->cmid);
-        $resource_view_state = cm_completion_details::get_instance($resource_cm_info, $this->user->id);
+        $resource_view_state = backport_cm_completion_details::get_instance($resource_cm_info, $this->user->id);
         $this->assertEquals(1, $resource_view_state->get_details()['completionview']->status);
         $this->assertTrue($resource_view_state->is_overall_complete());
 
         $h5p_cm_info = get_fast_modinfo($this->course->id)->get_cm($this->h5p_module->cmid);
-        $h5p_view_state = cm_completion_details::get_instance($h5p_cm_info, $this->user->id);
+        $h5p_view_state = backport_cm_completion_details::get_instance($h5p_cm_info, $this->user->id);
 //        $this->assertEquals(1, $h5p_view_state->get_details()['completionview']->status);  // "viewed" is not tracked if it is not a completion criteria
         $this->assertFalse($h5p_view_state->is_overall_complete());
 
