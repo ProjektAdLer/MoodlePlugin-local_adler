@@ -60,7 +60,7 @@ function seed(int $course_id) {
         $max_possible_score = 0;
         foreach ($cms_in_section as $cm) {
             try {
-                $adler_cm = $adler_course_module_repository->get_adler_score_record_by_cmid($cm->id);
+                $adler_cm = $adler_course_module_repository->get_adler_course_module_by_cmid($cm->id);
             } catch (dml_exception $e) {
                 continue;
             }

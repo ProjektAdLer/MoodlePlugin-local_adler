@@ -35,7 +35,7 @@ class observer {
         }
         // check if is adler cm
         try {
-            $adler_course_module_repository->get_adler_score_record_by_cmid($cmid);
+            $adler_course_module_repository->get_adler_course_module_by_cmid($cmid);
         } catch (dml_exception $e) {
             return;
         }

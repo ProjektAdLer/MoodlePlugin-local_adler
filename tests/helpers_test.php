@@ -4,7 +4,6 @@ namespace local_adler;
 
 
 use local_adler\lib\adler_testcase;
-use local_adler\lib\static_mock_utilities_trait;  # import for other classes importing this class
 use moodle_exception;
 use Throwable;
 

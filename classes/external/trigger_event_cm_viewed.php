@@ -43,8 +43,6 @@ class trigger_event_cm_viewed extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function execute($module_id): array {
-        // TODO: a lot of unused code -> refactor
-        $logger = new logger('local_adler', 'trigger_event_cm_viewed');
         $adler_course_module_repository = new adler_course_module_repository();
 
         // Parameter validation
@@ -56,8 +54,7 @@ class trigger_event_cm_viewed extends external_api {
         try {
             $course_module = get_coursemodule_from_id(null, $params['module_id'], 0, false, MUST_EXIST);
         } catch (dml_exception $e) {
-            // PHPStorm says this exception is never thrown, but this is wrong,
-            // see test test_score_primitive_learning_element_course_module_not_exist
+            // dml_exception is thrown, but not documented in get_coursemodule_from_id function signature
             throw new invalid_parameter_exception('failed_to_get_course_module');
         }
         $course_module_cm_info = get_fast_modinfo($course_module->course)->get_cm($course_module->id);
@@ -69,17 +66,13 @@ class trigger_event_cm_viewed extends external_api {
             throw new not_an_adler_course_exception();
         }
         // validate course module is adler course module
-        try {
-            $adler_course_module_repository->get_adler_score_record_by_cmid($course_module->id);
-            // todo: improve this -> separate function to test if cm is adler cm
-        } catch (dml_exception $e) {
+        if (!$adler_course_module_repository->record_for_cmid_exists($course_module->id)) {
             throw new not_an_adler_cm_exception();
         }
 
         // security stuff https://docs.moodle.org/dev/Access_API#Context_fetching
         $context = context_course::instance($course_id);
         self::validate_context($context);
-
 
 
         // trigger event
@@ -95,7 +88,7 @@ class trigger_event_cm_viewed extends external_api {
     /**
      * @throws coding_exception
      */
-    private static function trigger_module_specific_view_event($course_module, $course) {
+    private static function trigger_module_specific_view_event($course_module, $course): void {
         $module_context = context_module::instance($course_module->id);
 
         // Determine the specific event class for the module
@@ -111,11 +104,8 @@ class trigger_event_cm_viewed extends external_api {
         ]);
         $event->trigger();
 
-
         // completion
         $completion = new completion_info($course);
         $completion->set_module_viewed($course_module);
-
-        // todo: maybe prefer <modname>_view() function of each module if it exists
     }
 }

@@ -27,7 +27,7 @@ class adler_course_module_repository_test extends adler_testcase {
         $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm->cmid);
 
         // call function
-        $result = $adler_course_module_repository->get_adler_score_record_by_cmid($cm->cmid);
+        $result = $adler_course_module_repository->get_adler_course_module_by_cmid($cm->cmid);
 
         // check result
         $this->assertEquals($adler_score_item->id, $result->id);
@@ -42,7 +42,7 @@ class adler_course_module_repository_test extends adler_testcase {
         $cm = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
 
         // call function
-        $adler_course_module_repository->get_adler_score_record_by_cmid($cm->cmid);
+        $adler_course_module_repository->get_adler_course_module_by_cmid($cm->cmid);
     }
 
     public function test_delete_adler_course_module_record() {

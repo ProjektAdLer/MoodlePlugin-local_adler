@@ -6,7 +6,6 @@
 
 namespace local_adler\external;
 
-use local_adler\adler_score;
 use local_adler\adler_score_helpers_mock;
 
 require_once(__DIR__ . '/generic_mocks.php');
