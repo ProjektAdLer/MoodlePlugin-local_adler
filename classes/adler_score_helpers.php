@@ -62,32 +62,4 @@ class adler_score_helpers {
         }
         return $achieved_scores;
     }
-
-    /** Get adler score record (local_adler_course_modules) for course module.
-     * @param int $cmid
-     * @return stdClass
-     * @throws dml_exception
-     * @throws moodle_exception
-     */
-    public static function get_adler_score_record(int $cmid): stdClass {
-//        todo: repo pattern
-        $logger = new logger('local_adler', 'adler_score_helpers');
-        global $DB;
-        $record = $DB->get_record('local_adler_course_modules', array('cmid' => $cmid));
-        if (!$record) {
-            $logger->debug('Course module with id ' . $cmid . ' is not an adler course module');
-            throw new not_an_adler_cm_exception();
-        }
-        return $record;
-    }
-
-    /** Delete adler score record (local_adler_course_modules).
-     * @param int $cmid
-     * @throws dml_exception
-     */
-    public static function delete_adler_score_record(int $cmid): void {
-//        todo: repo pattern
-        global $DB;
-        $DB->delete_records('local_adler_course_modules', array('cmid' => $cmid));
-    }
 }

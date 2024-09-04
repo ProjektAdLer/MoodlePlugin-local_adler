@@ -15,8 +15,8 @@ use external_function_parameters;
 use external_value;
 use invalid_parameter_exception;
 use local_adler\adler_score;
-use local_adler\adler_score_helpers;
 use local_adler\helpers;
+use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use local_logging\logger;
@@ -45,6 +45,7 @@ class trigger_event_cm_viewed extends external_api {
     public static function execute($module_id): array {
         // TODO: a lot of unused code -> refactor
         $logger = new logger('local_adler', 'trigger_event_cm_viewed');
+        $adler_course_module_repository = new adler_course_module_repository();
 
         // Parameter validation
         $params = self::validate_parameters(self::execute_parameters(), array(
@@ -69,10 +70,10 @@ class trigger_event_cm_viewed extends external_api {
         }
         // validate course module is adler course module
         try {
-            adler_score_helpers::get_adler_score_record($course_module->id);
+            $adler_course_module_repository->get_adler_score_record_by_cmid($course_module->id);
             // todo: improve this -> separate function to test if cm is adler cm
-        } catch (not_an_adler_cm_exception $e) {
-            throw $e;
+        } catch (dml_exception $e) {
+            throw new not_an_adler_cm_exception();
         }
 
         // security stuff https://docs.moodle.org/dev/Access_API#Context_fetching

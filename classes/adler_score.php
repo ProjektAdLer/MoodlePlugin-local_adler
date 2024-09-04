@@ -5,7 +5,10 @@ namespace local_adler;
 
 use cm_info;
 use context_course;
+use dml_exception;
 use local_adler\local\backport\backport_cm_completion_details;
+use local_adler\local\db\adler_course_module_repository;
+use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\user_not_enrolled_exception;
 use local_logging\logger;
 use moodle_exception;
@@ -17,12 +20,10 @@ use stdClass;
 class adler_score {
     private logger $logger;
     private object $course_module;
-
     private int $user_id;
     protected stdClass $score_item;
-
+    private adler_course_module_repository $adler_course_module_repository;
     protected static string $helpers = helpers::class;
-
     protected static string $adler_score_helpers = adler_score_helpers::class;
 
     /**
@@ -34,6 +35,7 @@ class adler_score {
     public function __construct(cm_info $course_module, int $user_id = null) {
         global $USER;
         $this->logger = new logger('local_adler', 'adler_score');
+        $this->adler_course_module_repository = new adler_course_module_repository();
         $this->course_module = $course_module;
         $this->user_id = $user_id ?? $USER->id;
 
@@ -49,8 +51,12 @@ class adler_score {
         }
 
         // get adler score metadata object
-        // throws not_an_adler_cm exception if not adler course module
-        $this->score_item = static::$adler_score_helpers::get_adler_score_record($this->course_module->id);
+        try {
+            $this->score_item = $this->adler_course_module_repository->get_adler_score_record_by_cmid($this->course_module->id);
+        } catch (dml_exception $e) {
+            $this->logger->error('Could not get adler score record for cmid ' . $this->course_module->id . ': ' . $e->getMessage());
+            throw new not_an_adler_cm_exception();
+        }
     }
 
     /**

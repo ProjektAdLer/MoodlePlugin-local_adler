@@ -168,37 +168,4 @@ class adler_score_helpers_test extends adler_testcase {
         // check function call
         $this->assertEquals([$module_ids, $user_id], adler_score_helpers_mock::get_calls('get_adler_score_objects')[0]);
     }
-
-    /**
-     * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
-     */
-    public function test_get_adler_score_record() {
-        // create course
-        $course = $this->getDataGenerator()->create_course();
-
-        // create cm
-        $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
-
-        // create adler score item
-        $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm->cmid);
-
-        // call function
-        $result = adler_score_helpers::get_adler_score_record($cm->cmid);
-
-        // check result
-        $this->assertEquals($adler_score_item->id, $result->id);
-        $this->assertEquals($adler_score_item->cmid, $result->cmid);
-        $this->assertEquals($adler_score_item->score_max, $result->score_max);
-
-
-        // error case
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('not_an_adler_cm');
-
-        // create cm
-        $cm = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
-
-        // call function
-        adler_score_helpers::get_adler_score_record($cm->cmid);
-    }
 }

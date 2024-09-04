@@ -7,7 +7,9 @@ use completion_info;
 use grade_item;
 use local_adler\lib\adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
+use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\exceptions\user_not_enrolled_exception;
+use Mockery;
 use moodle_exception;
 use stdClass;
 use Throwable;
@@ -31,8 +33,6 @@ class adler_score_mock extends adler_score {
     use static_mock_utilities_trait;
 
     protected static string $helpers = helpers_mock::class;
-
-    protected static string $adler_score_helpers = adler_score_helpers_mock::class;
 
     public function test_get_score_item() {
         return $this->score_item;
@@ -122,6 +122,7 @@ class adler_score_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_construct_data
+     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
      */
@@ -129,8 +130,9 @@ class adler_score_test extends adler_testcase {
         // reset
         helpers_mock::reset_data();
         adler_score_mock::reset_data();
-        adler_score_helpers_mock::reset_data();
-        adler_score_helpers_mock::set_enable_mock('get_adler_score_record');
+        // Create mock for class adler_course_module_repository using Mockery
+        $adler_course_module_repository = Mockery::mock('overload:' . adler_course_module_repository::class);
+
 
         $module_format_correct = get_fast_modinfo($this->course->id)->get_cm($this->module->cmid);
 
@@ -141,10 +143,9 @@ class adler_score_test extends adler_testcase {
         helpers_mock::set_returns('course_is_adler_course', [$test['is_adler_course']]);
 
         if ($test['is_adler_cm']) {
-            adler_score_helpers_mock::set_returns('get_adler_score_record', [(object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]]);
+            $adler_course_module_repository->shouldReceive('get_adler_score_record_by_cmid')->andReturn((object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]);
         } else {
-            adler_score_helpers_mock::set_returns('get_adler_score_record', [null]);
-            adler_score_helpers_mock::set_exceptions('get_adler_score_record', [new moodle_exception('not_an_adler_cm', 'test')]);
+            $adler_course_module_repository->shouldReceive('get_adler_score_record_by_cmid')->andThrow(new moodle_exception('not_an_adler_cm', 'test'));
         }
 
         if ($test['set_user_object']) {

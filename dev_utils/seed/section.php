@@ -4,7 +4,7 @@
  */
 
 use core\uuid;
-use local_adler\adler_score_helpers;
+use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\section\db as section_db;
 
 define('CLI_SCRIPT', true);
@@ -46,6 +46,7 @@ if (!$options['course-id']) {
 
 function seed(int $course_id) {
     global $DB;
+    $adler_course_module_repository = new adler_course_module_repository();
 
     // get all sections for the course
     $sections = $DB->get_records('course_sections', array('course' => $course_id));
@@ -59,8 +60,8 @@ function seed(int $course_id) {
         $max_possible_score = 0;
         foreach ($cms_in_section as $cm) {
             try {
-                $adler_cm = adler_score_helpers::get_adler_score_record($cm->id);
-            } catch (\Throwable $e) {
+                $adler_cm = $adler_course_module_repository->get_adler_score_record_by_cmid($cm->id);
+            } catch (dml_exception $e) {
                 continue;
             }
             $max_possible_score += $adler_cm->score_max;

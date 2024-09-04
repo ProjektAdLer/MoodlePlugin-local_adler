@@ -7,7 +7,7 @@ use core\event\course_deleted;
 use core\event\course_module_deleted;
 use core\event\course_section_deleted;
 use dml_exception;
-use local_adler\local\exceptions\not_an_adler_cm_exception;
+use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\section\db as section_db;
 use local_logging\logger;
 
@@ -17,14 +17,16 @@ defined('MOODLE_INTERNAL') || die();
 class observer {
     protected static string $helpers = helpers::class;
     protected static string $section_db = section_db::class;
-    private static string $adler_score_helpers = adler_score_helpers::class;
 
     /**
      * Observer for the event course_module_deleted.
      *
      * @param course_module_deleted $event
+     * @throws dml_exception
      */
-    public static function course_module_deleted(course_module_deleted $event) {
+    public static function course_module_deleted(course_module_deleted $event): void {
+        $adler_course_module_repository = new adler_course_module_repository();
+        $logger = new logger('local_adler', 'observer');
         $cmid = $event->objectid;
 
         // check if is adler course
@@ -33,18 +35,18 @@ class observer {
         }
         // check if is adler cm
         try {
-            static::$adler_score_helpers::get_adler_score_record($cmid);
-        } catch (not_an_adler_cm_exception $e) {
+            $adler_course_module_repository->get_adler_score_record_by_cmid($cmid);
+        } catch (dml_exception $e) {
             return;
         }
 
         // delete adler cm
-        static::$adler_score_helpers::delete_adler_score_record($cmid);
+        $adler_course_module_repository->delete_adler_score_record_by_cmid($cmid);
 
-        (new logger('local_adler', 'observer'))->info('deleted adler cm for cmid ' . $cmid);
+        $logger->info('deleted adler cm for cmid ' . $cmid);
     }
 
-    public static function course_section_deleted(course_section_deleted $event) {
+    public static function course_section_deleted(course_section_deleted $event): void {
         $sectionid = $event->objectid;
 
         // check if is adler course
@@ -116,6 +118,8 @@ class observer {
      */
     public static function delete_non_existent_adler_cms(): array {
         global $DB;
+        $adler_course_module_repository = new adler_course_module_repository();
+
 
         $logger = new logger('local_adler', 'observer');
 
@@ -129,7 +133,7 @@ class observer {
         // if adler score cmid is not in $cmids, delete adler score
         foreach ($adler_scores as $adler_score) {
             if (!in_array($adler_score->cmid, $cmids)) {
-                static::$adler_score_helpers::delete_adler_score_record($adler_score->cmid);
+                $adler_course_module_repository->delete_adler_score_record_by_cmid($adler_score->cmid);
                 $deleted_cms[] = $adler_score->cmid;
                 $logger->info('deleted adler cm for cmid ' . $adler_score->cmid);
             }
