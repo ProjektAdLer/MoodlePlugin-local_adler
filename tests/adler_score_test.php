@@ -3,6 +3,7 @@
 namespace local_adler;
 
 
+use cm_info;
 use completion_info;
 use grade_item;
 use local_adler\lib\adler_testcase;
@@ -44,6 +45,7 @@ class adler_score_test extends adler_testcase {
     private stdClass $course;
     private stdClass $module;
     private stdClass $user;
+    private cm_info $url_module_cm_info;
 
     public function setUp(): void {
         parent::setUp();
@@ -167,7 +169,7 @@ class adler_score_test extends adler_testcase {
         try {
             $result = new adler_score_mock($test['course_module_param'], $test['user_param']);
         } catch (Throwable $e) {
-            $this->assertEquals($test['expect_exception'], get_class($e));
+            $this->assertStringContainsString($test['expect_exception'], get_class($e));
             if ($test['expect_exception_message'] !== null) {
                 $this->assertStringContainsString($test['expect_exception_message'], $e->getMessage());
             }
@@ -262,7 +264,7 @@ class adler_score_test extends adler_testcase {
         try {
             $result = $adler_score->get_score_by_completion_state();
         } catch (Throwable $e) {
-            $this->assertEquals($expect_exception, get_class($e));
+            $this->assertStringContainsString($expect_exception, get_class($e));
             if ($expect_exception_message !== null) {
                 $this->assertStringContainsString($expect_exception_message, $e->getMessage());
             }

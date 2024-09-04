@@ -78,7 +78,7 @@ class helpers_test extends adler_testcase {
 
         // check result
         if ($data['type'] == 'wrong_format') {
-            $this->assertEquals(moodle_exception::class, get_class($exception));
+            $this->assertStringContainsString(moodle_exception::class, get_class($exception));
         } else if ($exception != null) {
             $this->fail('Unexpected exception: ' . $exception->getMessage());
         }

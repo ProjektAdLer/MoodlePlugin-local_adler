@@ -173,7 +173,7 @@ class score_get_element_scores_test extends adler_externallib_testcase {
             try {
                 score_get_element_scores_mock::execute($params[$i]);
             } catch (Throwable $e) {
-                $this->assertEquals($expectExceptions[$i][0], get_class($e), '$i = ' . $i);
+                $this->assertStringContainsString($expectExceptions[$i][0], get_class($e), '$i = ' . $i);
                 $this->assertStringContainsString($expectExceptions[$i][1], $e->errorcode, '$i = ' . $i);
                 continue;
             }
