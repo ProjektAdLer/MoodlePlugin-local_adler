@@ -67,4 +67,35 @@ class adler_course_module_repository_test extends adler_testcase {
         // validate there are 0 records
         $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
     }
+
+    public function provide_record_for_cmid_exists_data(): array {
+        return [
+            'record exists' => [true],
+            'record does not exist' => [false]
+        ];
+    }
+
+    /**
+     * @dataProvider provide_record_for_cmid_exists_data
+     */
+    public function test_record_for_cmid_exists($record_exists) {
+        $adler_course_module_repository = new adler_course_module_repository();
+
+        // create course
+        $course = $this->getDataGenerator()->create_course();
+
+        // create cm
+        $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
+
+        // create adler score item
+        if ($record_exists) {
+            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm->cmid);
+        }
+
+        // call function
+        $result = $adler_course_module_repository->record_for_cmid_exists($cm->cmid);
+
+        // check result
+        $this->assertEquals($record_exists, $result);
+    }
 }
