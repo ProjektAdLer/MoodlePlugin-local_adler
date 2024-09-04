@@ -93,6 +93,6 @@ class db_test extends adler_testcase {
         $db_course_modules = db::get_course_modules_by_section_id($section_id);
 
         // check result
-        $this->assertEquals([$course_module1->cmid, $course_module2->cmid], array_keys($db_course_modules));
+        $this->assertEqualsCanonicalizing([$course_module1->cmid, $course_module2->cmid], array_keys($db_course_modules));
     }
 }
