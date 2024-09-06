@@ -19,7 +19,6 @@ use local_adler\helpers;
 use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
-use local_logging\logger;
 use moodle_exception;
 use restricted_context_exception;
 

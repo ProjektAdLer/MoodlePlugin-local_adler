@@ -6,7 +6,7 @@ namespace local_adler\local\backport;
 use cm_info;
 use core_completion\cm_completion_details as core_cm_completion_details;
 
-if (get_config('moodle', 'version') < 2023100900) {
+if (get_config('moodle', 'version') < 2023100900) {  // 2023100900 = Moodle 4.3.0
     class backport_cm_completion_details extends core_cm_completion_details {
         /**
          * Backport from Moodle 4.4 for Moodle versions below 4.3
@@ -52,12 +52,12 @@ if (get_config('moodle', 'version') < 2023100900) {
 
         /**
          * From Moodle 4.4 to make backports work, as otherwise the baseclass is returned by this method.
- *
+         *
          * Generates an instance of this class.
          *
          * @param cm_info $cminfo The course module info instance.
          * @param int $userid The user ID that we're fetching completion details for.
-         * @param bool $returndetails  Whether to return completion details or not.
+         * @param bool $returndetails Whether to return completion details or not.
          * @return core_cm_completion_details
          */
         public static function get_instance(cm_info $cminfo, int $userid, bool $returndetails = true): core_cm_completion_details {
@@ -67,6 +67,5 @@ if (get_config('moodle', 'version') < 2023100900) {
         }
     }
 } else {
-    class backport_cm_completion_details extends core_cm_completion_details {
-    }
+    class backport_cm_completion_details extends core_cm_completion_details {}
 }
