@@ -191,4 +191,33 @@ class backup_adler_plugin_test extends adler_testcase {
         // validate xml values
         $this->assertFalse(isset($xml->plugin_local_adler_course->score_max), 'score_max should not be in $xml->plugin_local_adler_course');
     }
+
+    /**
+     * # ANF-ID: [MVP1]
+     */
+    public function test_plugin_set_version_property() {
+        // Create score item with generator
+        $adler_course_object = $this
+            ->getDataGenerator()
+            ->get_plugin_generator('local_adler')
+            ->create_adler_course_object($this->course->id);
+
+        // Create a backup of the course.
+        $bc = new backup_controller(
+            backup::TYPE_1COURSE,
+            $this->module->course,
+            backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO,
+            backup::MODE_GENERAL,
+            2
+        );
+        $bc->execute_plan();
+        $bc->destroy();
+
+        // Get xml from backup.
+        $xml = $this->get_xml_from_backup($bc, 'course');
+
+        // Validate xml values
+        $this->assertMatchesRegularExpression('/^\d+\.\d+\.\d+$/', (string)$xml->plugin_local_adler_course->plugin_set_version, 'plugin_set_version should be a valid semantic version');
+    }
 }

@@ -245,7 +245,7 @@ class restore_adler_plugin_test extends adler_testcase {
         $paths = $method->invoke($plugin);
 
         // verify
-        $this->assertCount(1, $paths);
+        $this->assertCount(2, $paths);
         $this->assertEquals('adler_course', $paths[0]->get_name());
         $this->assertStringContainsString('adler_course', $paths[0]->get_path());
     }
