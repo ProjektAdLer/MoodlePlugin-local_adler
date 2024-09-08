@@ -7,7 +7,6 @@ use cm_info;
 use completion_info;
 use grade_item;
 use local_adler\lib\adler_testcase;
-use local_adler\lib\static_mock_utilities_trait;
 use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\exceptions\user_not_enrolled_exception;
 use Mockery;
@@ -18,28 +17,7 @@ use TypeError;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
-require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 require_once($CFG->libdir . '/completionlib.php');  # sometimes randomly required
-
-
-class helpers_mock extends helpers {
-    use static_mock_utilities_trait;
-
-    public static function course_is_adler_course($course_id): bool {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
-}
-
-class adler_score_mock extends adler_score {
-    use static_mock_utilities_trait;
-
-    protected static string $helpers = helpers_mock::class;
-
-    public function test_get_score_item() {
-        return $this->score_item;
-    }
-}
-
 
 class adler_score_test extends adler_testcase {
     private stdClass $course;
@@ -129,12 +107,11 @@ class adler_score_test extends adler_testcase {
      * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
      */
     public function test_construct($test) {
-        // reset
-        helpers_mock::reset_data();
-        adler_score_mock::reset_data();
         // Create mock for class adler_course_module_repository using Mockery
         $adler_course_module_repository = Mockery::mock('overload:' . adler_course_module_repository::class);
 
+        // Create mock for helpers using Mockery
+        $helpers_mock = Mockery::mock('alias:' . helpers::class);
 
         $module_format_correct = get_fast_modinfo($this->course->id)->get_cm($this->module->cmid);
 
@@ -142,7 +119,7 @@ class adler_score_test extends adler_testcase {
             $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id);
         }
 
-        helpers_mock::set_returns('course_is_adler_course', [$test['is_adler_course']]);
+        $helpers_mock->shouldReceive('course_is_adler_course')->andReturn($test['is_adler_course']);
 
         if ($test['is_adler_cm']) {
             $adler_course_module_repository->shouldReceive('get_adler_score_record_by_cmid')->andReturn((object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]);
@@ -164,10 +141,9 @@ class adler_score_test extends adler_testcase {
             $test['user_param'] = $this->user->id;
         }
 
-
         // call method
         try {
-            $result = new adler_score_mock($test['course_module_param'], $test['user_param']);
+            $result = new adler_score($test['course_module_param'], $test['user_param']);
         } catch (Throwable $e) {
             $this->assertStringContainsString($test['expect_exception'], get_class($e));
             if ($test['expect_exception_message'] !== null) {
@@ -311,7 +287,7 @@ class adler_score_test extends adler_testcase {
         ]);
         $grade_data_class = new stdClass();
         $grade_data_class->userid = $this->user->id;
-        $grade_data_class->rawgrade = $this->h5p_module->grade;
+        $grade_data_class->rawgrade = $grade_item->grademax;
         require_once($CFG->dirroot . '/mod/h5pactivity/lib.php');
         h5pactivity_grade_item_update($this->h5p_module, $grade_data_class);
 
