@@ -19,4 +19,32 @@ class moodle_core_repository extends base_repository {
     public function get_user_id_by_username(string $username): int|false {
         return (int)$this->db->get_field('user', 'id', array('username' => $username));
     }
+
+
+    /**
+     * @param string $module name of the module
+     * @param int $instance_id instance id of the module
+     * @throws dml_exception if the record does not exist
+     */
+    public function get_grade_item(string $module, int $instance_id): object {
+        return $this->db->get_record('grade_items', array('iteminstance' => $instance_id, 'itemmodule' => $module), '*', MUST_EXIST);
+    }
+
+    /**
+     * @param int $grade_item_id
+     * @param array $data
+     * @throws dml_exception if the record does not exist
+     */
+    public function update_grade_item_record(int $grade_item_id, array $data): void {
+        $this->db->update_record('grade_items', (object)array_merge($data, ['id' => $grade_item_id]));
+    }
+
+    /**
+     * @param int $cmid
+     * @param array $data
+     * @throws dml_exception if the record does not exist
+     */
+    public function update_course_module_record(int $cmid, array $data): void {
+        $this->db->update_record('course_modules', (object)array_merge($data, ['id' => $cmid]));
+    }
 }
