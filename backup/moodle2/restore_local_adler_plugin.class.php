@@ -1,6 +1,9 @@
 <?php
 
 use local_adler\local\course\db as course_db;
+use local_adler\local\exceptions\not_an_adler_course_exception;
+use local_adler\local\upgrade\upgrade_3_2_0_to_4_0_0_completionlib;
+use local_logging\logger;
 
 /**
  * Restoring logic for the local Adler plugin.
@@ -11,11 +14,14 @@ class restore_local_adler_plugin extends restore_local_plugin {
     protected $db;
 
     private $plugin_set_version;
+    private $log;
 
     public function __construct($name, $plugin, $restore) {
         global $DB;
         parent::__construct($name, $plugin, $restore);
         $this->db = $DB;
+        $this->log = new logger('local_adler', self::class);
+        $this->plugin_set_version = null;
     }
 
     protected function define_course_plugin_structure(): array {
@@ -26,10 +32,14 @@ class restore_local_adler_plugin extends restore_local_plugin {
     }
 
     public function process_plugin_set_version($data) {
-        if (isset($data['plugin_set_version']) && version_compare($data['plugin_set_version'], '4.0.0', '<')) {
-            throw new moodle_exception('invalid_plugin_set_version', 'local_adler', '', null, 'plugin_set_version is below 3.2.0');
+        $data = (object)$data;
+
+        if (property_exists($data, 'plugin_set_version') ) {
+            if (version_compare($data->plugin_set_version, '4.0.0', '<')) {
+                throw new moodle_exception('invalid_plugin_set_version', 'local_adler', '', null, 'plugin_set_version is below 3.2.0');
+            }
+            $this->plugin_set_version = $data->plugin_set_version;
         }
-        $this->plugin_set_version = $data['plugin_set_version'];
     }
 
     /**
@@ -101,8 +111,6 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @throws dml_exception
      */
     public function process_adler_module($data) {
-        global $DB;
-
         // Cast $data to object if it is an array
         // This is required because the object can sometimes randomly be an array
         $data = (object)$data;
@@ -121,12 +129,22 @@ class restore_local_adler_plugin extends restore_local_plugin {
         // The information whether availability is enabled or not is not (easily) available here -> not checking for it
 
         // Insert the record into the database
-        $DB->insert_record('local_adler_course_modules', $data);
+        $this->db->insert_record('local_adler_course_modules', $data);
     }
 
+    /**
+     * @throws moodle_exception
+     * @throws not_an_adler_course_exception
+     */
     public function after_restore_course() {
+        $this->log->info('Restoring course with plugin set version ' . $this->plugin_set_version);
         if (empty($this->plugin_set_version)) {
-            // TODO: run migration code
+            try {
+                (new upgrade_3_2_0_to_4_0_0_completionlib($this->task->get_courseid()))->execute();
+            } catch (not_an_adler_course_exception $e) {
+                $this->log->info('Course is not an Adler course, skipping adler completionlib change upgrade. This should not happen as this logic should not be called at all if there is no adler course information in the backup.');
+                return;
+            }
         }
     }
 }

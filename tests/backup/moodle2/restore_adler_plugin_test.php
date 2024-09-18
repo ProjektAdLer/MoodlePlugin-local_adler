@@ -3,6 +3,7 @@
 // -> no namespace for this test as backup/restore is not namespaced
 
 use local_adler\lib\adler_testcase;
+use local_adler\local\upgrade\upgrade_3_2_0_to_4_0_0_completionlib;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
@@ -388,5 +389,44 @@ class restore_adler_plugin_test extends adler_testcase {
 
         // call the method to test
         $restore_mock->process_adler_section($restore_data);
+    }
+
+    public function provide_test_call_upgrade_3_2_0_to_4_0_0_completionlib_data() {
+        return [
+            'legacy course' => ['version' => null],
+            'new course' => ['version' => '4.0.0'],
+            'invalid course' => ['version' => '1.1.0'],
+        ];
+    }
+
+    /**
+     * @dataProvider provide_test_call_upgrade_3_2_0_to_4_0_0_completionlib_data
+     */
+    public function test_call_upgrade_3_2_0_to_4_0_0_completionlib($version) {
+        // setup mock
+        $upgrade_mock = Mockery::spy('overload:' . upgrade_3_2_0_to_4_0_0_completionlib::class);
+        if ($version === null) {
+            $upgrade_mock->shouldReceive('execute')->once();
+        } else {
+            $upgrade_mock->shouldReceive('execute')->never();
+        }
+
+        if ($version === '1.1.0') {
+            $this->expectException(moodle_exception::class);
+            $this->expectExceptionMessage('invalid_plugin_set_version');
+        }
+
+        // setup data
+        list($data, $stub) = $this->setUpCourse();
+        if ($version !== null) {
+            $data->plugin_set_version = $version;
+        }
+
+        // create test object
+        $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
+
+        // call the method to test
+        $plugin->process_plugin_set_version($data);
+        $plugin->after_restore_course();
     }
 }
