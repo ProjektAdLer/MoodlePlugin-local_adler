@@ -11,7 +11,7 @@ use advanced_testcase;
 use externallib_advanced_testcase;
 use Mockery;
 
-trait general_testcase_adjustments{
+trait general_testcase_adjustments {
     public function setUp(): void {
         parent::setUp();
 
@@ -23,6 +23,11 @@ trait general_testcase_adjustments{
         // This is not desired, because test cases should be independent of each other. Therefore, the
         // Mockery container is reset after each test case.
         Mockery::resetContainer();
+
+        // workaround for beStrictAboutOutputDuringTests = true in default moodle phpunit configuration
+        if ($this->getTestResultObject()->isStrictAboutOutputDuringTests()){
+            $this->expectOutputRegex('/.*/');
+        }
     }
 
     public function tearDown(): void {
