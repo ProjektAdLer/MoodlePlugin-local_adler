@@ -27,8 +27,8 @@ function xmldb_local_adler_upgrade($oldversion): bool {
                 }
             }
         } catch (moodle_exception $e) {
-//            $success = false;
-            throw $e;
+            $success = false;
+//            throw $e;
         }
 
         // Logging the upgrade.
