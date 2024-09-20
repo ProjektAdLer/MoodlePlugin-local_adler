@@ -11,8 +11,6 @@ function xmldb_local_adler_upgrade($oldversion): bool {
 //    $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
     if ($oldversion < 2024090900) {
-        $success = true;
-        try {
             $courses = get_courses('all');
             foreach ($courses as $course) {
                 if ($course->id == 1) {
@@ -26,13 +24,9 @@ function xmldb_local_adler_upgrade($oldversion): bool {
                     // Do nothing
                 }
             }
-        } catch (moodle_exception $e) {
-//            $success = false;
-            throw $e;
-        }
 
         // Logging the upgrade.
-        upgrade_plugin_savepoint($success, 2024090900, 'local', 'adler');
+        upgrade_plugin_savepoint(true, 2024090900, 'local', 'adler');
 
     }
 
