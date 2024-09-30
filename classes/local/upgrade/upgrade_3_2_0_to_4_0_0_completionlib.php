@@ -82,16 +82,7 @@ class upgrade_3_2_0_to_4_0_0_completionlib {
      */
     public function upgrade_modules(): void {
         global $DB;
-        // get_fast_modinfo is not allowed during upgrade and there is no get_modinfo
-        // TODO: probably always follow this approach
-        // TODO: repo pattern
-        $cm_infos = $DB->get_records_sql(
-            'SELECT cm.*, m.name AS modname
-            FROM {course_modules} cm
-            JOIN {modules} m ON m.id = cm.module
-            WHERE cm.course = ?',
-            [$this->course_id]
-        );
+        $cm_infos = $this->moodle_core_repository->get_cms_with_module_name_by_course_id($this->course_id);
 
         $transaction = $DB->start_delegated_transaction();
         foreach ($cm_infos as $cm_info) {

@@ -106,4 +106,22 @@ class moodle_core_repository_test extends adler_testcase {
         $result = $DB->get_record('course_modules', ['id' => $course_module->cmid]);
         $this->assertEquals(2, $result->completion);
     }
+
+    public function test_get_cms_with_module_name_by_course_id() {
+        $moodle_core_repository = new moodle_core_repository();
+
+        // Create a course
+        $course = $this->getDataGenerator()->create_course();
+
+        // Create a course module
+        $course_module = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
+
+        // Call the function
+        $result = $moodle_core_repository->get_cms_with_module_name_by_course_id($course->id);
+
+        // Check the result
+        $this->assertCount(1, $result);
+        $this->assertEquals($course_module->id, reset($result)->instance);
+        $this->assertEquals('url', reset($result)->modname);
+    }
 }

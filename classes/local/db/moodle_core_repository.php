@@ -47,4 +47,14 @@ class moodle_core_repository extends base_repository {
     public function update_course_module_record(int $cmid, array $data): void {
         $this->db->update_record('course_modules', (object)array_merge($data, ['id' => $cmid]));
     }
+
+    public function get_cms_with_module_name_by_course_id(int $course_id): array {
+        return $this->db->get_records_sql(
+            'SELECT cm.*, m.name AS modname
+            FROM {course_modules} cm
+            JOIN {modules} m ON m.id = cm.module
+            WHERE cm.course = ?',
+            [$course_id]
+        );
+    }
 }
