@@ -30,6 +30,9 @@ class upgrade_test extends adler_testcase {
         $course2_mod1 = $this->create_legacy_module($course2->id);
         $course_3_mod1 = $this->create_legacy_module($course3->id);
 
+        // mock global function upgrade_plugin_savepoint, required by upgrade.php/xmldb_local_adler_upgrade
+        function upgrade_plugin_savepoint($v1, $v2, $v3, $v4) {}
+
         // call cud
         xmldb_local_adler_upgrade(2024090800);
 
