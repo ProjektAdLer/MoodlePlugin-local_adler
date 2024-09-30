@@ -9,7 +9,7 @@ protected function define_course_plugin_structure(): backup_plugin_element {
 
     // Define each element separated
     $pluginwrapper = new backup_nested_element($this->get_recommended_name(), null, [
-        'plugin_set_version',
+        'plugin_release_set_version',
     ]);
 
     // Moodle does not allow names in nested elements that are used in the root element, therefore "score" is not allowed
@@ -23,7 +23,7 @@ protected function define_course_plugin_structure(): backup_plugin_element {
 
     // Define sources
     // version number according to https://github.com/ProjektAdLer/moodle-docker/blob/main/plugin-releases.json
-    $pluginwrapper->set_source_array([['plugin_set_version' => '4.0.0']]);
+    $pluginwrapper->set_source_array([['plugin_release_set_version' => '4.0.0']]);
     $adler_course->set_source_table('local_adler_course', array('course_id' => backup::VAR_COURSEID));
     // Define id annotations
 

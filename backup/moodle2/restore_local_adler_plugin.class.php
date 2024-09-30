@@ -13,7 +13,7 @@ class restore_local_adler_plugin extends restore_local_plugin {
     // define_module_plugin_structure, define_grade_item_plugin_structure, define_question_plugin_structure
     protected $db;
 
-    private $plugin_set_version;
+    private $plugin_release_set_version;
     private $log;
 
     public function __construct($name, $plugin, $restore) {
@@ -21,24 +21,24 @@ class restore_local_adler_plugin extends restore_local_plugin {
         parent::__construct($name, $plugin, $restore);
         $this->db = $DB;
         $this->log = new logger('local_adler', self::class);
-        $this->plugin_set_version = null;
+        $this->plugin_release_set_version = null;
     }
 
     protected function define_course_plugin_structure(): array {
         return [
-            new restore_path_element('plugin_set_version', $this->get_pathfor('/')),
+            new restore_path_element('plugin_release_set_version', $this->get_pathfor('/')),
             new restore_path_element('adler_course', $this->get_pathfor('/adler_course'))
         ];
     }
 
-    public function process_plugin_set_version($data) {
+    public function process_plugin_release_set_version($data) {
         $data = (object)$data;
 
-        if (property_exists($data, 'plugin_set_version') ) {
-            if (version_compare($data->plugin_set_version, '4.0.0', '<')) {
-                throw new moodle_exception('invalid_plugin_set_version', 'local_adler', '', null, 'plugin_set_version is below 3.2.0');
+        if (property_exists($data, 'plugin_release_set_version') ) {
+            if (version_compare($data->plugin_release_set_version, '4.0.0', '<')) {
+                throw new moodle_exception('invalid_plugin_release_set_version', 'local_adler', '', null, 'plugin_release_set_version is below 3.2.0');
             }
-            $this->plugin_set_version = $data->plugin_set_version;
+            $this->plugin_release_set_version = $data->plugin_release_set_version;
         }
     }
 
@@ -137,8 +137,8 @@ class restore_local_adler_plugin extends restore_local_plugin {
      * @throws not_an_adler_course_exception
      */
     public function after_restore_course() {
-        $this->log->info('Restoring course with plugin set version ' . $this->plugin_set_version);
-        if (empty($this->plugin_set_version)) {
+        $this->log->info('Restoring course with plugin set version ' . $this->plugin_release_set_version);
+        if (empty($this->plugin_release_set_version)) {
             try {
                 (new upgrade_3_2_0_to_4_0_0_completionlib($this->task->get_courseid()))->execute();
             } catch (not_an_adler_course_exception $e) {

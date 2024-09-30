@@ -2,7 +2,6 @@
 
 namespace local_adler\local\upgrade;
 
-use cm_info;
 use dml_exception;
 use local_adler\helpers;
 use local_adler\local\db\moodle_core_repository;

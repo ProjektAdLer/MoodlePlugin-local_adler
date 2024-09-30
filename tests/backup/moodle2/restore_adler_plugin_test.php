@@ -247,8 +247,8 @@ class restore_adler_plugin_test extends adler_testcase {
 
         // verify
         $this->assertCount(2, $paths);
-        $this->assertEquals('adler_course', $paths[0]->get_name());
-        $this->assertStringContainsString('adler_course', $paths[0]->get_path());
+        $this->assertEquals('plugin_release_set_version', $paths[0]->get_name());
+        $this->assertEquals('adler_course', $paths[1]->get_name());
     }
 
     /**
@@ -401,6 +401,7 @@ class restore_adler_plugin_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_call_upgrade_3_2_0_to_4_0_0_completionlib_data
+     * @runInSeparateProcess
      */
     public function test_call_upgrade_3_2_0_to_4_0_0_completionlib($version) {
         // setup mock
@@ -413,20 +414,20 @@ class restore_adler_plugin_test extends adler_testcase {
 
         if ($version === '1.1.0') {
             $this->expectException(moodle_exception::class);
-            $this->expectExceptionMessage('invalid_plugin_set_version');
+            $this->expectExceptionMessage('invalid_plugin_release_set_version');
         }
 
         // setup data
         list($data, $stub) = $this->setUpCourse();
         if ($version !== null) {
-            $data->plugin_set_version = $version;
+            $data->plugin_release_set_version = $version;
         }
 
         // create test object
         $plugin = new restore_local_adler_plugin('local', 'adler', $stub);
 
         // call the method to test
-        $plugin->process_plugin_set_version($data);
+        $plugin->process_plugin_release_set_version($data);
         $plugin->after_restore_course();
     }
 }

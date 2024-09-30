@@ -195,7 +195,7 @@ class backup_adler_plugin_test extends adler_testcase {
     /**
      * # ANF-ID: [MVP1]
      */
-    public function test_plugin_set_version_property() {
+    public function test_plugin_release_set_version_property() {
         // Create score item with generator
         $adler_course_object = $this
             ->getDataGenerator()
@@ -218,6 +218,6 @@ class backup_adler_plugin_test extends adler_testcase {
         $xml = $this->get_xml_from_backup($bc, 'course');
 
         // Validate xml values
-        $this->assertMatchesRegularExpression('/^\d+\.\d+\.\d+$/', (string)$xml->plugin_local_adler_course->plugin_set_version, 'plugin_set_version should be a valid semantic version');
+        $this->assertMatchesRegularExpression('/^\d+\.\d+\.\d+$/', (string)$xml->plugin_local_adler_course->plugin_release_set_version, 'plugin_release_set_version should be a valid semantic version');
     }
 }
