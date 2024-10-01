@@ -18,8 +18,8 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * @runTestsInSeparateProcesses
  */
 class upload_course_test extends adler_externallib_testcase {
-    public function generate_mbz(bool $is_adler_course): string {
-        global $CFG;
+    public function generate_mbz(bool $is_adler_course, bool|null $enable_self_enrolment = null): string {
+        global $CFG, $DB;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
         // generate course
@@ -27,6 +27,13 @@ class upload_course_test extends adler_externallib_testcase {
         // adler course
         if ($is_adler_course) {
             $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_object($course->id);
+        }
+
+        // self enrolment
+        if ($enable_self_enrolment !== null) {
+            $self_enrol_plugin = enrol_get_plugin('self');
+            $self_enrol_instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'self']);
+            $self_enrol_plugin->update_status($self_enrol_instance, $enable_self_enrolment ? ENROL_INSTANCE_ENABLED: ENROL_INSTANCE_DISABLED);
         }
 
         // create backup (mbz)
@@ -38,6 +45,7 @@ class upload_course_test extends adler_externallib_testcase {
             backup::MODE_GENERAL,
             2
         );
+        $bc->get_plan()->get_setting('users')->set_value('0');
         $bc->execute_plan();
         $bc->destroy();
 
@@ -47,6 +55,46 @@ class upload_course_test extends adler_externallib_testcase {
         $filepath = $CFG->dataroot . '/filedir/' . substr($filepath, 0, 2) . '/' . substr($filepath, 2, 2) . '/' . $filepath;
 
         return $filepath;
+    }
+
+    public function provide_enrolment_option_test_data() {
+        return [
+            'self enrolment active' => [
+                'enable_self_enrolment' => true
+            ],
+            'self enrolment inactive' => [
+                'enable_self_enrolment' => false
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provide_enrolment_option_test_data
+     */
+    public function test_execute_enrolment_option($enable_self_enrolment) {
+        global $DB;
+
+        $test_course_filepath = $this->generate_mbz(true, $enable_self_enrolment);
+
+        $_FILES['mbz'] = [
+            'name' => 'test.mbz',
+            'type' => 'application/zip',
+            'tmp_name' => $test_course_filepath,
+            'error' => UPLOAD_ERR_OK,
+            'size' => 123,
+        ];
+
+        // create user, required for restore
+        $user = $this->getDataGenerator()->create_user();
+        $role_id = $DB->get_record('role', array('shortname' => 'manager'))->id;
+        role_assign($role_id, $user->id, 1);
+        $this->setUser($user->id);
+
+        $result = upload_course::execute(null, false);
+
+        $self_enrol_instance = $DB->get_record('enrol', ['courseid' => $result['data']['course_id'], 'enrol' => 'self'], '*', MUST_EXIST);
+
+        $this->assertEquals($enable_self_enrolment ? ENROL_INSTANCE_ENABLED : ENROL_INSTANCE_DISABLED, $self_enrol_instance->status);
     }
 
     public function provide_test_execute_data() {

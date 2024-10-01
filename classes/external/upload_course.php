@@ -128,7 +128,7 @@ class upload_course extends external_api {
             $foldername,
             $course_id,
             backup::INTERACTIVE_NO,
-            backup::MODE_GENERAL,
+            backup::MODE_GENERAL,  // MODE_IMPORT: Does not include files and does not process enrolments. WTF why is this called MODE_IMPORT, it should be called MODE_NOT_FOR_IMPORT...
             $USER->id,
             backup::TARGET_NEW_COURSE
         );
