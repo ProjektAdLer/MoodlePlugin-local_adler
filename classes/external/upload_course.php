@@ -133,8 +133,7 @@ class upload_course extends external_api {
             backup::TARGET_NEW_COURSE
         );
 
-        // do restore: set required enrolment setting
-        // TODO: is correctly stored in mbz (status 0 means active). So this is not required, instead configure it to apply enrolment settings
+        // do restore: Configure to restore enrollment settings (taken from course/externallib.php: "enrolments" (int) Include enrolment methods (default to 1 - restore only with users)).
         $plan = $controller->get_plan();
         $plan->get_tasks()[0]->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
 
