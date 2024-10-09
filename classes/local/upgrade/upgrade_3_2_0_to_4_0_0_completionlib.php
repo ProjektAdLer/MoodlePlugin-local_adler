@@ -97,14 +97,14 @@ class upgrade_3_2_0_to_4_0_0_completionlib {
      * @throws dml_exception
      */
     public function upgrade_h5p_module(stdClass $cm_info): void {
-        $grade_item = $this->moodle_core_repository->get_grade_item('h5pactivity', $cm_info->instance);
-        if ($grade_item) {
+        try {
+            $grade_item = $this->moodle_core_repository->get_grade_item('h5pactivity', $cm_info->instance);
             $this->logger->info('Setting completion for h5p cm ' . $cm_info->id . ' to "passing grade"');
             $this->set_completion_to_auto($cm_info, false);
             $this->moodle_core_repository->update_grade_item_record($grade_item->id, [
                 'gradepass' => $grade_item->grademax
             ]);
-        } else {
+        } catch (dml_exception $e) {
             $this->logger->error('No grade item found for h5p cm ' . $cm_info->id);
         }
     }
