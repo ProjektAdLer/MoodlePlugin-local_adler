@@ -80,6 +80,27 @@ class upgrade_3_2_0_to_4_0_0_completionlib_test extends adler_testcase {
         $this->assertEquals(0, $cm->completionview);
     }
 
+    public function test_h5p_element_without_grade() {
+        // create course
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+        // make course an adler course
+        $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_object($course->id);
+
+        // create module
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+        $module = $this->create_legacy_module('h5pactivity', $course->id, true);
+
+
+        $cud = new upgrade_3_2_0_to_4_0_0_completionlib($course->id);
+        $cud->execute();
+
+        $cm = get_fast_modinfo($course->id)->get_cm($module->cmid);
+        $this->assertEquals(COMPLETION_TRACKING_AUTOMATIC, $cm->completion);
+        $this->assertEquals(0, $cm->completionpassgrade);
+        $this->assertEquals(1, $cm->completionview);
+    }
+
     public function test_execute_not_adler_course() {
         $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
 
@@ -90,14 +111,24 @@ class upgrade_3_2_0_to_4_0_0_completionlib_test extends adler_testcase {
     }
 
 
-
-    private function create_legacy_module(string $module_type, int $course_id) {
-        return $this->getDataGenerator()->get_plugin_generator('mod_' . $module_type)->create_instance([
+    /**
+     * @param string $module_type
+     * @param int $course_id
+     * @param bool $grade_none This disables the creation of an entry in the grade_items table
+     * @return stdClass
+     * @throws coding_exception
+     */
+    private function create_legacy_module(string $module_type, int $course_id, bool $grade_none = false): stdClass {
+        $module_data = [
             'course' => $course_id,
             'completion' => COMPLETION_TRACKING_MANUAL,
             'completeionview' => 0,
             'completionpassgrade' => 0
-        ]);
+        ];
+        if ($grade_none) {
+            $module_data['grade'] = 0;
+        }
+        return $this->getDataGenerator()->get_plugin_generator('mod_' . $module_type)->create_instance($module_data);
     }
 
     public function test_with_user_attempt() {
