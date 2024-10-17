@@ -57,4 +57,11 @@ class moodle_core_repository extends base_repository {
             [$course_id]
         );
     }
+
+    /**
+     * @throws dml_exception
+     */
+    public function get_course_from_course_id($course_id) {
+        return $this->db->get_record('course', array('id' => $course_id), '*', MUST_EXIST);
+    }
 }

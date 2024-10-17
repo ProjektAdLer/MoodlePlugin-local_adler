@@ -352,20 +352,16 @@ class restore_adler_plugin_test extends adler_testcase {
             ->disableOriginalConstructor()
             ->onlyMethods([])
             ->getMock();
-        $db_mock = $this
-            ->getMockBuilder(moodle_database::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['insert_record'])
-            ->getMockForAbstractClass();
+        $repository_mock = Mockery::mock(adler_sections_repository::class);
         $task_mock = $this->getMockBuilder(restore_section_task::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['get_sectionid'])
             ->getMockForAbstractClass();
 
-        $db_mock->method('insert_record')
-            ->will($this->returnCallback(function($table, $data) use ($restore_data) {
-                // verify database call
-                $this->assertEquals('local_adler_sections', $table);
+        $repository_mock->shouldReceive('create_adler_section')
+            ->once()
+            ->withArgs(function($data) use ($restore_data) {
+                // verify repository call
                 $this->assertEquals(1, $data->section_id);
                 $this->assertEquals($restore_data->required_points_to_complete, $data->required_points_to_complete);
                 if (property_exists($restore_data, 'timecreated')) {
@@ -373,19 +369,20 @@ class restore_adler_plugin_test extends adler_testcase {
                 } else {
                     $this->assertTrue($data->timecreated > 0 && $data->timecreated <= time());
                 }
-            }));
+                return true;
+            });
+
         $task_mock->method('get_sectionid')
             ->willReturn(1);
 
-        // make define_section_plugin_structure() public
+        // set the repository and task properties
         $class = new ReflectionClass($restore_mock);
-        $property = $class->getProperty('db');
+        $property = $class->getProperty('adler_sections_repository');
         $property->setAccessible(true);
-        $property->setValue($restore_mock, $db_mock);
+        $property->setValue($restore_mock, $repository_mock);
         $property = $class->getProperty('task');
         $property->setAccessible(true);
         $property->setValue($restore_mock, $task_mock);
-
 
         // call the method to test
         $restore_mock->process_adler_section($restore_data);

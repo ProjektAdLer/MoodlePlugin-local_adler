@@ -124,4 +124,19 @@ class moodle_core_repository_test extends adler_testcase {
         $this->assertEquals($course_module->id, reset($result)->instance);
         $this->assertEquals('url', reset($result)->modname);
     }
+
+    public function test_get_course_from_course_id() {
+    $moodle_core_repository = new moodle_core_repository();
+
+    // Create a course
+    $course = $this->getDataGenerator()->create_course();
+
+    // Call the method
+    $result = $moodle_core_repository->get_course_from_course_id($course->id);
+
+    // Check the result
+    $this->assertEquals($course->id, $result->id);
+    $this->assertEquals($course->fullname, $result->fullname);
+    $this->assertEquals($course->shortname, $result->shortname);
+}
 }

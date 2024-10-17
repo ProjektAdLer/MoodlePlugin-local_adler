@@ -1,6 +1,6 @@
 <?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
-namespace local_adler;
+namespace local\db;
 
 global $CFG;
 
@@ -10,7 +10,7 @@ use local_adler\local\db\adler_course_module_repository;
 
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
-class adler_course_module_repository_test extends adler_testcase {
+class adler_sections_repository_test extends adler_testcase {
     public function test_create_adler_cm() {
         global $DB;
         $adler_course_module_repository = new adler_course_module_repository();

@@ -7,6 +7,13 @@ use stdClass;
 
 class adler_course_module_repository extends base_repository {
     /**
+     * @throws dml_exception
+     */
+    public function create_adler_cm(object $adler_cm): int {
+        return $this->db->insert_record('local_adler_course_modules', $adler_cm);
+    }
+
+    /**
      * Check if a record for the given cmid exists. This is equivalent to
      * checking if a course module is an adler course module.
      *
