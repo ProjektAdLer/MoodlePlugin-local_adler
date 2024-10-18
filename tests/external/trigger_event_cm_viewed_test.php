@@ -5,6 +5,7 @@ namespace local_adler\external;
 defined('MOODLE_INTERNAL') || die();
 
 
+use core_completion\cm_completion_details;
 use local_adler\lib\adler_externallib_testcase;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
