@@ -5,6 +5,7 @@ namespace local_adler;
 
 use cm_info;
 use context_course;
+use core_completion\cm_completion_details;
 use dml_exception;
 use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
