@@ -2,6 +2,7 @@
 
 global $CFG;
 
+use core_completion\cm_completion_details;
 use local_adler\lib\adler_testcase;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use local_adler\local\upgrade\upgrade_3_2_0_to_4_0_0_completionlib;
