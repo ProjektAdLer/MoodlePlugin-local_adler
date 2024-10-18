@@ -2,14 +2,11 @@
 
 namespace local_adler\external;
 
-global $CFG;
-require_once($CFG->dirroot . '/lib/externallib.php');
-
 use coding_exception;
 use context;
-use external_api;
-use external_function_parameters;
-use external_value;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
 use invalid_parameter_exception;
 use local_adler\adler_score_helpers;
 use local_logging\logger;

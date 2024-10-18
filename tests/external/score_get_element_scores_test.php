@@ -18,7 +18,6 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 /**
- * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class score_get_element_scores_test extends adler_externallib_testcase {

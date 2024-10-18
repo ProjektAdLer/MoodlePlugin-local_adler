@@ -6,13 +6,10 @@ global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
-use external_api;
+use core_external\external_api;
 use invalid_parameter_exception;
 use local_adler\lib\adler_externallib_testcase;
 
-/**
- * @runTestsInSeparateProcesses
- */
 class lib_test extends adler_externallib_testcase {
     /**
      * @param $class_to_test string|null Exactly this function is required in different API classes because they require a proxy function to this function. Therefore, this test is also valid for those API classes. This parameter allows exactly this. Pass the class name via classname::class.

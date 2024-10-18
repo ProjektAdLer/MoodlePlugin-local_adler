@@ -13,9 +13,6 @@ global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
-/**
- * @runTestsInSeparateProcesses
- */
 class score_get_course_scores_test extends adler_externallib_testcase {
     public function provide_test_execute_data() {
         return [
@@ -30,6 +27,7 @@ class score_get_course_scores_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
+     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP7]
      */

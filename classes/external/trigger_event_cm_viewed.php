@@ -1,18 +1,15 @@
 <?php
 namespace local_adler\external;
 
-global $CFG;
-require_once($CFG->dirroot . '/lib/externallib.php');
-
 use coding_exception;
 use completion_info;
 use context_course;
 use context_module;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
 use dml_exception;
 use dml_transaction_exception;
-use external_api;
-use external_function_parameters;
-use external_value;
 use invalid_parameter_exception;
 use local_adler\adler_score;
 use local_adler\helpers;

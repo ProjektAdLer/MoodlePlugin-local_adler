@@ -17,9 +17,6 @@ global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
-/**
- * @runTestsInSeparateProcesses
- */
 class get_element_ids_by_uuids_test extends adler_externallib_testcase {
     public function provide_test_execute_data() {
         return [
@@ -104,6 +101,7 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
+     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP6]
      */

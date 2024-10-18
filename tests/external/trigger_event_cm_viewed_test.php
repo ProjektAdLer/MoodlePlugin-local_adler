@@ -18,9 +18,6 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
 
-/**
- * @runTestsInSeparateProcesses
- */
 class trigger_event_cm_viewed_test extends adler_externallib_testcase {
     private stdClass $user;
     private stdClass $course;

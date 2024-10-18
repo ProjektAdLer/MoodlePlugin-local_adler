@@ -2,18 +2,14 @@
 
 namespace local_adler\external;
 
-global $CFG;
-require_once($CFG->dirroot . '/lib/externallib.php');
-
 use context_course;
 use context_module;
-use core_external\restricted_context_exception;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use dml_exception;
-use external_api;
-use external_function_parameters;
-use external_multiple_structure;
-use external_value;
-use external_single_structure;
 use invalid_parameter_exception;
 use local_adler\local\section\db as section_db;
 use local_adler\local\course_module\db as cm_db;
@@ -87,7 +83,6 @@ class get_element_ids_by_uuids extends external_api {
      * @param array $elements [int $course_id, string $element_type, array $uuids]
      * @throws invalid_parameter_exception
      * @throws dml_exception
-     * @throws restricted_context_exception
      */
     public static function execute(array $elements): array {
         // Parameter validation

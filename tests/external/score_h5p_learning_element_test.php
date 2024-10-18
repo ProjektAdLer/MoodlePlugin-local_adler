@@ -20,7 +20,6 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 /**
- * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
 class score_h5p_learning_element_test extends adler_externallib_testcase {
@@ -118,6 +117,7 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
+     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP9]
      */
