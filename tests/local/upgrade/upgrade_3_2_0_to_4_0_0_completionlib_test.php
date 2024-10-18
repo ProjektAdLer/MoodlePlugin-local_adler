@@ -3,7 +3,6 @@
 global $CFG;
 
 use local_adler\lib\adler_testcase;
-use local_adler\local\backport\backport_cm_completion_details;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use local_adler\local\upgrade\upgrade_3_2_0_to_4_0_0_completionlib;
 
@@ -146,7 +145,7 @@ class upgrade_3_2_0_to_4_0_0_completionlib_test extends adler_testcase {
         $completion = new completion_info($course);
         $completion->update_state(get_fast_modinfo($course)->get_cm($module->cmid), COMPLETION_COMPLETE, $user->id);
         // verify element is completed for user
-        $h5p_completion_state = backport_cm_completion_details::get_instance(
+        $h5p_completion_state = cm_completion_details::get_instance(
             get_fast_modinfo($course)->get_cm($module->cmid),
             $user->id
         );
@@ -162,7 +161,7 @@ class upgrade_3_2_0_to_4_0_0_completionlib_test extends adler_testcase {
         $this->assertEquals(0, $cm->completionview);
 
         // verify element is still completed
-        $h5p_completion_state = backport_cm_completion_details::get_instance(  // has to be recreated to reflect completion state change
+        $h5p_completion_state = cm_completion_details::get_instance(  // has to be recreated to reflect completion state change
             get_fast_modinfo($course)->get_cm($module->cmid),
             $user->id
         );
@@ -171,7 +170,7 @@ class upgrade_3_2_0_to_4_0_0_completionlib_test extends adler_testcase {
         // create attempt
         $this->create_h5p_attempt($module, $course->id, $user->id);
         // verify element is still completed
-        $h5p_completion_state = backport_cm_completion_details::get_instance(  // has to be recreated to reflect completion state change
+        $h5p_completion_state = cm_completion_details::get_instance(  // has to be recreated to reflect completion state change
             get_fast_modinfo($course)->get_cm($module->cmid),
             $user->id
         );
