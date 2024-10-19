@@ -2,11 +2,8 @@
 
 namespace local_adler;
 
-use dml_exception;
-use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_logging\logger;
 use moodle_exception;
-use stdClass;
 
 
 class adler_score_helpers {

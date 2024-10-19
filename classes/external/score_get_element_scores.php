@@ -9,14 +9,12 @@ use core_external\external_multiple_structure;
 use core_external\external_value;
 use dml_missing_record_exception;
 use invalid_parameter_exception;
-use local_adler\adler_score;
 use local_adler\adler_score_helpers;
 use moodle_exception;
 use require_login_exception;
 use restricted_context_exception;
 
 class score_get_element_scores extends external_api {
-    protected static string $adler_score = adler_score::class;
     protected static string $adler_score_helpers = adler_score_helpers::class;
     protected static string $context_module = context_module::class;
 

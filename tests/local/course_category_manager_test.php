@@ -63,7 +63,7 @@ class course_category_manager_test extends adler_testcase {
         $this->mockRepo->shouldReceive('get_user_id_by_username')->andReturn(1); // return a valid user ID
         $this->mockRepo->shouldReceive('get_role_id_by_shortname')->andReturn(1); // return a valid role ID
 
-        $mockPath = Mockery::mock('overload:local_adler\local\course_category_path');
+        $mockPath = Mockery::mock('overload:' . course_category_path::class);
         $mockPath->shouldReceive('exists')->andReturn(true);
 
         // Act and Assert

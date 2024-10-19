@@ -76,7 +76,7 @@ class observer {
      * @param course_deleted $event
      * @throws dml_exception
      */
-    public static function course_deleted(course_deleted $event) {
+    public static function course_deleted(course_deleted $event): void {
         $courseid = $event->objectid;
 
         // check if is adler course

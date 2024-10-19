@@ -4,6 +4,7 @@ namespace local_adler\local;
 
 global $CFG;
 
+use core_course_category;
 use invalid_parameter_exception;
 use local_adler\lib\adler_testcase;
 use Mockery;
@@ -93,10 +94,11 @@ class course_category_path_test extends adler_testcase {
     }
 
     /**
+     * @runInSeparateProcess
      * # ANF-ID: [MVP20, MVP21]
      */
     private function setup_make_categories_list_mock() {
-        $mock = Mockery::mock('alias:core_course_category');
+        $mock = Mockery::mock('alias:' . core_course_category::class);
         $mock->shouldReceive('make_categories_list')->andReturn([
             1 => 'category1 / category2',
             2 => 'category3 / category4',
@@ -236,7 +238,7 @@ class course_category_path_test extends adler_testcase {
      *  # ANF-ID: [MVP20, MVP21]
      */
     public function test_create_with_one_segment(): void {
-        $mock = Mockery::mock('alias:core_course_category');
+        $mock = Mockery::mock('alias:' . core_course_category::class);
         $mock->shouldReceive('make_categories_list')->andReturn([]);
         $mock->shouldReceive('create')->andReturn((object) ['id' => 1]);
 
@@ -252,7 +254,7 @@ class course_category_path_test extends adler_testcase {
      * # ANF-ID: [MVP20, MVP21]
      */
     public function test_create_with_two_segments_first_exists(): void {
-        $mock = Mockery::mock('alias:core_course_category');
+        $mock = Mockery::mock('alias:' . core_course_category::class);
         $mock->shouldReceive('make_categories_list')->andReturn([42 => 'segment1']);
         $mock->shouldReceive('create')->andReturn((object) ['id' => 1]);
 
@@ -268,7 +270,7 @@ class course_category_path_test extends adler_testcase {
      * # ANF-ID: [MVP20, MVP21]
      */
     public function test_create_with_two_segments_none_exists(): void {
-        $mock = Mockery::mock('alias:core_course_category');
+        $mock = Mockery::mock('alias:' . core_course_category::class);
         $mock->shouldReceive('make_categories_list')->andReturn([]);
         $mock->shouldReceive('create')->andReturn((object) ['id' => 1]);
 
