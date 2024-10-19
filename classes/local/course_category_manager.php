@@ -44,7 +44,7 @@ class course_category_manager {
 
         // get role id and check if role is assignable to a course category
         $role_id = $moodle_core_repository->get_role_id_by_shortname($role);
-        if (!in_array(CONTEXT_COURSECAT, moodle_core::get_role_contextlevels($role_id))) {
+        if (!in_array(CONTEXT_COURSECAT, di::get(moodle_core::class)->get_role_contextlevels($role_id))) {
             throw new invalid_parameter_exception('role_not_assignable_to_course_category');
         }
 
@@ -65,9 +65,9 @@ class course_category_manager {
         $logger = new logger('local_adler', 'course_category_manager');
 
         $user_id = $moodle_core_repository->get_user_id_by_username($username);
-        $context = moodle_core::context_coursecat_instance($category_id);
+        $context = di::get(moodle_core::class)->context_coursecat_instance($category_id);
 
         $logger->info("Assigning user with ID {$user_id} to role with ID {$role_id} in category with ID {$category_id}");
-        moodle_core::role_assign($role_id, $user_id, $context->id);
+        di::get(moodle_core::class)->role_assign($role_id, $user_id, $context->id);
     }
 }

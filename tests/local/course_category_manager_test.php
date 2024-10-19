@@ -14,19 +14,17 @@ use moodle_exception;
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
-/**
- * @runTestsInSeparateProcesses
- */
 class course_category_manager_test extends adler_testcase {
     private $mockRepo;
     private $moodle_core_mock;
 
     public function setUp(): void {
         $this->mockRepo = Mockery::mock(moodle_core_repository::class);
-        $this->moodle_core_mock = Mockery::mock('alias:' . moodle_core::class);
+        $this->moodle_core_mock = Mockery::mock(moodle_core::class);
 
-        // inject the mock repository
+        // inject the mocks
         di::set(moodle_core_repository::class, $this->mockRepo);
+        di::set(moodle_core::class, $this->moodle_core_mock);
     }
 
     /**
@@ -57,6 +55,7 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
+     * @runInSeparateProcess
      * # ANF-ID: [MVP20, MVP21]
      */
     public function test_category_already_exists() {
@@ -75,6 +74,7 @@ class course_category_manager_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_valid_username_role_and_category_path_data
+     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP20, MVP21]
      */
@@ -116,6 +116,7 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
+     * @runInSeparateProcess
      * # ANF-ID: [MVP20, MVP21]
      */
     public function test_with_role_that_cannot_be_assigned_to_course_category() {

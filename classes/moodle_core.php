@@ -12,17 +12,17 @@ class moodle_core {
     /**
      * @throws coding_exception
      */
-    public static function role_assign(...$args): int {
+    public function role_assign(...$args): int {
         return role_assign(...$args);
     }
 
     /** alias for context_coursecat::instance() */
-    public static function context_coursecat_instance(...$args): object {
+    public function context_coursecat_instance(...$args): object {
         return context_coursecat::instance(...$args);
     }
 
     /** alias for get_role_contextlevels() */
-    public static function get_role_contextlevels(...$args): array {
+    public function get_role_contextlevels(...$args): array {
         return get_role_contextlevels(...$args);
     }
 }
