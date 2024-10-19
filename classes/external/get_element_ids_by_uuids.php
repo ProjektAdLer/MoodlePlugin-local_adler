@@ -2,27 +2,21 @@
 
 namespace local_adler\external;
 
-use context_course;
-use context_module;
 use core\di;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
+use core_external\restricted_context_exception;
 use dml_exception;
 use invalid_parameter_exception;
 use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\db\adler_sections_repository;
-use local_adler\local\db\moodle_core_repository;
-use local_adler\local\section\db as section_db;
-use local_adler\local\course_module\db as cm_db;
+use local_adler\moodle_core;
 use local_logging\logger;
 
 class get_element_ids_by_uuids extends external_api {
-    private static string $context_course = context_course::class;
-    private static string $context_module = context_module::class;
-
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             array(
@@ -88,6 +82,7 @@ class get_element_ids_by_uuids extends external_api {
      * @param array $elements [int $course_id, string $element_type, array $uuids]
      * @throws invalid_parameter_exception
      * @throws dml_exception
+     * @throws restricted_context_exception
      */
     public static function execute(array $elements): array {
         $logger = new logger('local_adler', 'get_element_ids_by_uuids');
@@ -103,40 +98,13 @@ class get_element_ids_by_uuids extends external_api {
             $element_type = $element['element_type'];
             $uuid = $element['uuid'];
 
-            $moodle_id = null;
-            $context_id = null;
-            switch ($element_type) {
-                case 'section':
-                    try {
-                        $adler_section = di::get(adler_sections_repository::class)->get_adler_section_by_uuid($uuid, $course_id);
-                    } catch (dml_exception $e) {
-                        throw new invalid_parameter_exception('section not found, $uuid: ' . $uuid . ', $course_id: ' . $course_id);
-                    }
-                    $moodle_id = $adler_section->section_id;
+            $course_context = di::get(moodle_core::class)->context_course_instance($course_id);
+            // course is the most restrictive context to test for. A user should be able to get the uuid <-> moodle id
+            // mapping for elements he did not yet unlock.
+            self::validate_context($course_context);
 
-                    $moodle_section = di::get(moodle_core_repository::class)->get_moodle_section($moodle_id);
-                    $context = static::$context_course::instance($moodle_section->course);
-//                    static::validate_context($context);  // TODO: check if user is enrolled (maybe validate context on course)
+            list($moodle_id, $context_id) = static::get_moodle_and_context_id($element_type, $uuid, $course_id, $logger);
 
-                    // There is no context id for sections
-                    break;
-                case 'cm':
-                    try {
-                        $cm = di::get(adler_course_module_repository::class)->get_adler_course_module_by_uuid($uuid, $course_id);
-                    } catch (dml_exception $e) {
-                        $logger->debug($e->getMessage());
-                        throw new invalid_parameter_exception('course module not found, $uuid: ' . $uuid . ', $course_id: ' . $course_id);
-                    }
-                    $moodle_id = $cm->cmid;
-
-                    $context = static::$context_module::instance($moodle_id);
-//                    static::validate_context($context); // TODO: check if user is enrolled
-
-                    $context_id = $context->id;
-                    break;
-                default:
-                    throw new invalid_parameter_exception('invalid element type ' . $element_type);
-            }
             $data[] = [
                 'course_id' => $course_id,
                 'element_type' => $element_type,
@@ -148,5 +116,44 @@ class get_element_ids_by_uuids extends external_api {
         }
 
         return ['data' => $data];
+    }
+
+    /**
+     * @param string $element_type
+     * @param string $uuid
+     * @param int $course_id
+     * @param logger $logger
+     * @return array
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     */
+    protected static function get_moodle_and_context_id(string $element_type, string $uuid, int $course_id, logger $logger): array {
+        switch ($element_type) {
+            case 'section':
+                try {
+                    $adler_section = di::get(adler_sections_repository::class)->get_adler_section_by_uuid($uuid, $course_id);
+                } catch (dml_exception $e) {
+                    throw new invalid_parameter_exception('section not found, $uuid: ' . $uuid . ', $course_id: ' . $course_id);
+                }
+                $moodle_id = $adler_section->section_id;
+                // There is no context id for sections
+                $context_id = null;
+                break;
+            case 'cm':
+                try {
+                    $cm = di::get(adler_course_module_repository::class)->get_adler_course_module_by_uuid($uuid, $course_id);
+                } catch (dml_exception $e) {
+                    $logger->debug($e->getMessage());
+                    throw new invalid_parameter_exception('course module not found, $uuid: ' . $uuid . ', $course_id: ' . $course_id);
+                }
+                $moodle_id = $cm->cmid;
+
+                $context = di::get(moodle_core::class)->context_module_instance($moodle_id);
+                $context_id = $context->id;
+                break;
+            default:
+                throw new invalid_parameter_exception('invalid element type ' . $element_type);
+        }
+        return array($moodle_id, $context_id);
     }
 }

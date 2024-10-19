@@ -11,9 +11,11 @@ use invalid_parameter_exception;
 use local_adler\lib\adler_externallib_testcase;
 use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\db\adler_sections_repository;
-use local_adler\local\db\moodle_core_repository;
+use local_adler\moodle_core;
+use local_logging\logger;
 use Mockery;
 use ReflectionClass;
+use require_login_exception;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
@@ -22,155 +24,184 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 class get_element_ids_by_uuids_test extends adler_externallib_testcase {
     public function provide_test_execute_data() {
         return [
-            'cm' => [
-                'element' => [
-                    [
-                        'element_type' => 'cm',
-                        'uuid' => '6464ecd9-6a88-4dd3-bc82-5e5c6b107075',
-                        'course_id' => '46',
-                    ]
-                ],
-                'adler_element_exists' => true,
-                'expected_result' => [
-                    [
-                        "course_id" => "46",
-                        "element_type" => "cm",
-                        "uuid" => "6464ecd9-6a88-4dd3-bc82-5e5c6b107075",
-                        "moodle_id" => 351,
-                        "context_id" => 411
-                    ]
-                ],
-                'expected_exception' => null,
+            'user enrolled in course' => [
+                'user_enrolled' => true
             ],
-            'section' => [
-                'element' => [
-                    [
-                        'element_type' => 'section',
-                        'uuid' => '6464ece5-2cf4-4cbc-9f08-3d106b107075',
-                        'course_id' => '46',
-                    ]
-                ],
-                'adler_element_exists' => true,
-                'expected_result' => [
-                    [
-                        "course_id" => "46",
-                        "element_type" => "section",
-                        "uuid" => "6464ece5-2cf4-4cbc-9f08-3d106b107075",
-                        "moodle_id" => 16,
-                        "context_id" => null
-                    ]
-                ],
-                'expected_exception' => null,
-            ],
-            'invalid element_type' => [
-                'element' => [
-                    [
-                        'element_type' => 'invalid',
-                        'uuid' => '6464ece5-2cf4-4cbc-9f08-3d106b107075',
-                        'course_id' => '46',
-                    ]
-                ],
-                'adler_element_exists' => true,
-                'expected_result' => null,
-                'expected_exception' => invalid_parameter_exception::class,
-            ],
-            'cm adler element does not exist' => [
-                'element' => [
-                    [
-                        'element_type' => 'cm',
-                        'uuid' => '6464ecd9-6a88-4dd3-bc82-5e5c6b107075',
-                        'course_id' => '46',
-                    ]
-                ],
-                'adler_element_exists' => false,
-                'expected_result' => null,
-                'expected_exception' => invalid_parameter_exception::class,
-            ],
-            'section adler element does not exist' => [
-                'element' => [
-                    [
-                        'element_type' => 'section',
-                        'uuid' => '6464ece5-2cf4-4cbc-9f08-3d106b107075',
-                        'course_id' => '46',
-                    ]
-                ],
-                'adler_element_exists' => false,
-                'expected_result' => null,
-                'expected_exception' => invalid_parameter_exception::class,
-            ],
+            'user not enrolled in course' => [
+                'user_enrolled' => false
+            ]
         ];
     }
 
     /**
      * @dataProvider provide_test_execute_data
-     *
-     * # ANF-ID: [MVP6]
      */
-    public function test_execute($element, $adler_element_exists, $expected_result, $expected_exception) {
-        $course = $this->getDataGenerator()->create_course();
+    public function test_execute(bool $user_enrolled) {
+        $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
 
-        // mock repos
-        $adler_course_module_repository_mock = Mockery::mock(adler_course_module_repository::class);
-        $adler_section_repository_mock = Mockery::mock(adler_sections_repository::class);
-        $moodle_core_repository_mock = Mockery::mock(moodle_core_repository::class);
+        // create course
+        $course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
+        $adler_generator->create_adler_course_object($course->id);
 
-        if ($element[0]['element_type'] == 'section') {
-            if ($adler_element_exists) {
-                $adler_section_repository_mock->shouldReceive('get_adler_section_by_uuid')->andReturn((object)['section_id' => 16]);
-            } else {
-                $adler_section_repository_mock->shouldReceive('get_adler_section_by_uuid')->andThrow(new dml_exception(''));
-            }
-            $adler_section_repository_mock->shouldReceive('get_adler_section_by_uuid')->andReturn((object)['section_id' => 16]);
-            $moodle_core_repository_mock->shouldReceive('get_moodle_section')->with(16)->andReturn((object)['course' => 42]);
-
-            // mock context_course
-            $context_course_mock = Mockery::mock(context_course::class);
-            $context_course_mock->shouldReceive('instance')->andReturn('instance');
-
-            $reflected_class = new ReflectionClass(get_element_ids_by_uuids::class);
-            $property = $reflected_class->getProperty('context_course');
-            $property->setAccessible(true);
-            $property->setValue(null, $context_course_mock->mockery_getName());
-
-            // mock validate_context
-            $get_element_ids_by_uuids_mock = Mockery::mock(get_element_ids_by_uuids::class)->makePartial();
-            $get_element_ids_by_uuids_mock->shouldReceive('validate_context')->andReturn(1);
-        } else {
-            if ($adler_element_exists) {
-                $adler_course_module_repository_mock->shouldReceive('get_adler_course_module_by_uuid')->andReturn((object)['cmid' => 351]);
-            } else {
-                $adler_course_module_repository_mock->shouldReceive('get_adler_course_module_by_uuid')->andThrow(new dml_exception(''));
-            }
-
-            // mock context_module
-            $context_module_mock = Mockery::mock(context_module::class);
-            $context_module_mock->shouldReceive('instance')->andReturn((object)['id' => 411]);
-
-            $reflected_class = new ReflectionClass(get_element_ids_by_uuids::class);
-            $property = $reflected_class->getProperty('context_module');
-            $property->setAccessible(true);
-            $property->setValue(null, $context_module_mock->mockery_getName());
-
-            // mock validate_context
-            $get_element_ids_by_uuids_mock = Mockery::mock(get_element_ids_by_uuids::class)->makePartial();
-            $get_element_ids_by_uuids_mock->shouldReceive('validate_context')->andReturn(2);
+        // create and enroll user
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+        if ($user_enrolled) {
+            $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        // inject mock
-        di::set(adler_course_module_repository::class, $adler_course_module_repository_mock);
-        di::set(adler_sections_repository::class, $adler_section_repository_mock);
-        di::set(moodle_core_repository::class, $moodle_core_repository_mock);
+        // create resource module
+        $resource_module = $this->getDataGenerator()->create_module('resource', [
+            'course' => $course->id,
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+            'completionpassgrade' => 0
+        ]);
+        $resource_adler_cm = $adler_generator->create_adler_course_module($resource_module->cmid);
 
-        if ($expected_exception !== null) {
-            $this->expectException($expected_exception);
+        // mock get_element_ids_by_uuids
+        $get_element_ids_by_uuids_mock = Mockery::mock(get_element_ids_by_uuids::class)
+            ->shouldAllowMockingProtectedMethods()
+            ->makePartial();
+
+        $get_element_ids_by_uuids_mock->shouldReceive('get_moodle_and_context_id')->andReturn([32,33]);
+
+        if (!$user_enrolled) {
+            $this->expectException(require_login_exception::class);
         }
 
-        $res = $get_element_ids_by_uuids_mock::execute($element);
+        $result = $get_element_ids_by_uuids_mock::execute([
+            [
+                'course_id' => $course->id,
+                'element_type' => 'cm',
+                'uuid' => $resource_adler_cm->uuid
+            ]
+        ]);
 
-        $this->assertEquals(['data' => $expected_result], $res);
-
+        $this->assertEquals(['data' => [
+            [
+                "course_id" => $course->id,
+                "element_type" => "cm",
+                "uuid" => $resource_adler_cm->uuid,
+                "moodle_id" => 32,
+                "context_id" => 33
+            ]
+        ]], $result);
     }
 
+    public function provide_test_get_moodle_and_context_id_data(): array {
+        return [
+            'test_section_element' => [
+                'element_type' => 'section',
+                'uuid' => 'section-uuid',
+                'course_id' => 1,
+                'expected_moodle_id' => 101,
+                'expected_context_id' => null,
+                'repository_method' => 'get_adler_section_by_uuid',
+                'repository_class' => adler_sections_repository::class,
+                'repository_return' => (object)['section_id' => 101],
+                'expect_exception' => false,
+            ],
+            'test_course_module_element' => [
+                'element_type' => 'cm',
+                'uuid' => 'cm-uuid',
+                'course_id' => 1,
+                'expected_moodle_id' => 202,
+                'expected_context_id' => 303,
+                'repository_method' => 'get_adler_course_module_by_uuid',
+                'repository_class' => adler_course_module_repository::class,
+                'repository_return' => (object)['cmid' => 202],
+                'expect_exception' => false,
+            ],
+            'test_invalid_element_type' => [
+                'element_type' => 'invalid',
+                'uuid' => 'invalid-uuid',
+                'course_id' => 1,
+                'expected_moodle_id' => null,
+                'expected_context_id' => null,
+                'repository_method' => null,
+                'repository_class' => null,
+                'repository_return' => null,
+                'expect_exception' => true,
+            ],
+            'test_section_not_found_exception' => [
+                'element_type' => 'section',
+                'uuid' => 'invalid-section-uuid',
+                'course_id' => 1,
+                'expected_moodle_id' => null,
+                'expected_context_id' => null,
+                'repository_method' => 'get_adler_section_by_uuid',
+                'repository_class' => adler_sections_repository::class,
+                'repository_return' => null,
+                'expect_exception' => true,
+            ],
+            'test_course_module_not_found_exception' => [
+                'element_type' => 'cm',
+                'uuid' => 'invalid-cm-uuid',
+                'course_id' => 1,
+                'expected_moodle_id' => null,
+                'expected_context_id' => null,
+                'repository_method' => 'get_adler_course_module_by_uuid',
+                'repository_class' => adler_course_module_repository::class,
+                'repository_return' => null,
+                'expect_exception' => true,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provide_test_get_moodle_and_context_id_data
+     */
+    public function test_get_moodle_and_context_id(
+        string $element_type,
+        string $uuid,
+        int $course_id,
+        ?int $expected_moodle_id,
+        ?int $expected_context_id,
+        ?string $repository_method,
+        ?string $repository_class,
+        ?object $repository_return,
+        bool $expect_exception
+    ): void {
+        $logger = Mockery::mock(logger::class)->shouldIgnoreMissing();
+
+        if ($repository_class && $repository_method) {
+            $repository_mock = Mockery::mock($repository_class);
+            if ($expect_exception) {
+                $repository_mock->shouldReceive($repository_method)
+                    ->with($uuid, $course_id)
+                    ->andThrow(new dml_exception(''));
+            } else {
+                $repository_mock->shouldReceive($repository_method)
+                    ->with($uuid, $course_id)
+                    ->andReturn($repository_return);
+            }
+            di::set($repository_class, $repository_mock);
+        }
+
+        if ($element_type === 'cm' && !$expect_exception) {
+            $moodle_core_mock = Mockery::mock(moodle_core::class);
+            $moodle_core_mock->shouldReceive('context_module_instance')
+                ->with($expected_moodle_id)
+                ->andReturn((object)['id' => $expected_context_id]);
+            di::set(moodle_core::class, $moodle_core_mock);
+        }
+
+        if ($expect_exception) {
+            $this->expectException(invalid_parameter_exception::class);
+        }
+
+        $reflected_class = new ReflectionClass(get_element_ids_by_uuids::class);
+        $method = $reflected_class->getMethod('get_moodle_and_context_id');
+        $method->setAccessible(true);
+        // call method
+        list($moodle_id, $context_id) = $method->invoke(null, $element_type, $uuid, $course_id, $logger);
+
+        if (!$expect_exception) {
+            $this->assertEquals($expected_moodle_id, $moodle_id);
+            $this->assertEquals($expected_context_id, $context_id);
+        }
+    }
 
     public function provide_test_execute_returns_data() {
         return [
