@@ -1,10 +1,24 @@
 <?php
+
 namespace local_adler\local\db;
 
 
 use dml_exception;
 
 class adler_course_repository extends base_repository {
+    /** Check if course is adler course
+     * @param int $course_id moodle course id
+     * @return bool true if course is adler course
+     */
+    public function course_is_adler_course(int $course_id): bool {
+        try {
+            $this->get_adler_course_by_moodle_course_id($course_id);
+        } catch (dml_exception $e) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * @throws dml_exception
      */

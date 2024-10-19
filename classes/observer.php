@@ -18,8 +18,6 @@ defined('MOODLE_INTERNAL') || die();
 
 
 class observer {
-    protected static string $helpers = helpers::class;
-
     /**
      * Observer for the event course_module_deleted.
      *
@@ -32,7 +30,7 @@ class observer {
         $cmid = $event->objectid;
 
         // check if is adler course
-        if (!static::$helpers::course_is_adler_course($event->courseid)) {
+        if (!di::get(adler_course_repository::class)->course_is_adler_course($event->courseid)) {
             return;
         }
         // check if is adler cm
@@ -55,7 +53,7 @@ class observer {
         $sectionid = $event->objectid;
 
         // check if is adler course
-        if (!static::$helpers::course_is_adler_course($event->courseid)) {
+        if (!di::get(adler_course_repository::class)->course_is_adler_course($event->courseid)) {
             return;
         }
 
@@ -82,7 +80,7 @@ class observer {
         $courseid = $event->objectid;
 
         // check if is adler course
-        if (!static::$helpers::course_is_adler_course($courseid)) {
+        if (!di::get(adler_course_repository::class)->course_is_adler_course($courseid)) {
             return;
         }
 

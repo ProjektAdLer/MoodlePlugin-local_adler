@@ -9,6 +9,7 @@ use core\di;
 use core_completion\cm_completion_details;
 use dml_exception;
 use local_adler\local\db\adler_course_module_repository;
+use local_adler\local\db\adler_course_repository;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\user_not_enrolled_exception;
 use local_logging\logger;
@@ -24,7 +25,6 @@ class adler_score {
     private int $user_id;
     protected stdClass $score_item;
     private adler_course_module_repository $adler_course_module_repository;
-    protected static string $helpers = helpers::class;
     protected static string $adler_score_helpers = adler_score_helpers::class;
 
     /**
@@ -47,7 +47,7 @@ class adler_score {
         }
 
         // validate course is adler course
-        if (!static::$helpers::course_is_adler_course($this->course_module->course)) {
+        if (!di::get(adler_course_repository::class)->course_is_adler_course($this->course_module->course)) {
             throw new moodle_exception('not_an_adler_course', 'local_adler');
         }
 

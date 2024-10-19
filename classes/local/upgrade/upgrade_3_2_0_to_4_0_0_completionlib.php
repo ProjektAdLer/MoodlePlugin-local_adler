@@ -4,7 +4,7 @@ namespace local_adler\local\upgrade;
 
 use core\di;
 use dml_exception;
-use local_adler\helpers;
+use local_adler\local\db\adler_course_repository;
 use local_adler\local\db\moodle_core_repository;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use local_logging\logger;
@@ -47,7 +47,7 @@ class upgrade_3_2_0_to_4_0_0_completionlib {
      */
     public function execute(): void {
         // Check if the course is an Adler course
-        if (!helpers::course_is_adler_course($this->course_id)) {
+        if (!di::get(adler_course_repository::class)->course_is_adler_course($this->course_id)) {
             throw new not_an_adler_course_exception();
         }
 

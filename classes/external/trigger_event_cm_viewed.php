@@ -13,8 +13,8 @@ use dml_exception;
 use dml_transaction_exception;
 use invalid_parameter_exception;
 use local_adler\adler_score;
-use local_adler\helpers;
 use local_adler\local\db\adler_course_module_repository;
+use local_adler\local\db\adler_course_repository;
 use local_adler\local\db\moodle_core_repository;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
@@ -58,7 +58,7 @@ class trigger_event_cm_viewed extends external_api {
         $course = di::get(moodle_core_repository::class)->get_course_from_course_id($course_id);
 
         // validate course is adler course
-        if (!helpers::course_is_adler_course($course->id)) {
+        if (!di::get(adler_course_repository::class)->course_is_adler_course($course->id)) {
             throw new not_an_adler_course_exception();
         }
         // validate course module is adler course module

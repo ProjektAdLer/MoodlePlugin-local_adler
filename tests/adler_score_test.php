@@ -9,6 +9,7 @@ use core\di;
 use grade_item;
 use local_adler\lib\adler_testcase;
 use local_adler\local\db\adler_course_module_repository;
+use local_adler\local\db\adler_course_repository;
 use local_adler\local\exceptions\user_not_enrolled_exception;
 use Mockery;
 use moodle_exception;
@@ -104,7 +105,6 @@ class adler_score_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_construct_data
-     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
      */
@@ -116,7 +116,7 @@ class adler_score_test extends adler_testcase {
         di::set(adler_course_module_repository::class, $adler_course_module_repository);
 
         // Create mock for helpers using Mockery
-        $helpers_mock = Mockery::mock('alias:' . helpers::class);
+        $adler_course_repository_mock = Mockery::mock(adler_course_repository::class);
 
         $module_format_correct = get_fast_modinfo($this->course->id)->get_cm($this->module->cmid);
 
@@ -124,7 +124,7 @@ class adler_score_test extends adler_testcase {
             $this->getDataGenerator()->enrol_user($this->user->id, $this->course->id);
         }
 
-        $helpers_mock->shouldReceive('course_is_adler_course')->andReturn($test['is_adler_course']);
+        $adler_course_repository_mock->shouldReceive('course_is_adler_course')->andReturn($test['is_adler_course']);
 
         if ($test['is_adler_cm']) {
             $adler_course_module_repository->shouldReceive('get_adler_course_module_by_cmid')->andReturn((object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]);
@@ -145,6 +145,9 @@ class adler_score_test extends adler_testcase {
         if ($test['user_param'] === 'id') {
             $test['user_param'] = (int) $this->user->id;
         }
+
+        // inject the mock into the container
+        di::set(adler_course_repository::class, $adler_course_repository_mock);
 
         // call method
         try {
