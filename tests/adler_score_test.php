@@ -5,12 +5,14 @@ namespace local_adler;
 
 use cm_info;
 use completion_info;
+use core\di;
 use grade_item;
 use local_adler\lib\adler_testcase;
 use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\exceptions\user_not_enrolled_exception;
 use Mockery;
 use moodle_exception;
+use ReflectionClass;
 use stdClass;
 use Throwable;
 use TypeError;
@@ -108,7 +110,10 @@ class adler_score_test extends adler_testcase {
      */
     public function test_construct($test) {
         // Create mock for class adler_course_module_repository using Mockery
-        $adler_course_module_repository = Mockery::mock('overload:' . adler_course_module_repository::class);
+        $adler_course_module_repository = Mockery::mock(adler_course_module_repository::class);
+
+        // inject the mock into the container
+        di::set(adler_course_module_repository::class, $adler_course_module_repository);
 
         // Create mock for helpers using Mockery
         $helpers_mock = Mockery::mock('alias:' . helpers::class);
@@ -122,9 +127,9 @@ class adler_score_test extends adler_testcase {
         $helpers_mock->shouldReceive('course_is_adler_course')->andReturn($test['is_adler_course']);
 
         if ($test['is_adler_cm']) {
-            $adler_course_module_repository->shouldReceive('get_adler_score_record_by_cmid')->andReturn((object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]);
+            $adler_course_module_repository->shouldReceive('get_adler_course_module_by_cmid')->andReturn((object)['id' => 1, 'moduleid' => $module_format_correct->id, 'score' => 17]);
         } else {
-            $adler_course_module_repository->shouldReceive('get_adler_score_record_by_cmid')->andThrow(new moodle_exception('not_an_adler_cm', 'test'));
+            $adler_course_module_repository->shouldReceive('get_adler_course_module_by_cmid')->andThrow(new moodle_exception('not_an_adler_cm', 'test'));
         }
 
         if ($test['set_user_object']) {
@@ -138,13 +143,16 @@ class adler_score_test extends adler_testcase {
         }
 
         if ($test['user_param'] === 'id') {
-            $test['user_param'] = $this->user->id;
+            $test['user_param'] = (int) $this->user->id;
         }
 
         // call method
         try {
             $result = new adler_score($test['course_module_param'], $test['user_param']);
         } catch (Throwable $e) {
+            if ($test['expect_exception'] === false) {
+                $this->fail('Unexpected exception: ' . get_class($e) . ' - ' . $e->getMessage());
+            }
             $this->assertStringContainsString($test['expect_exception'], get_class($e));
             if ($test['expect_exception_message'] !== null) {
                 $this->assertStringContainsString($test['expect_exception_message'], $e->getMessage());
@@ -156,8 +164,15 @@ class adler_score_test extends adler_testcase {
         }
 
         // No exception thrown and no exception expected -> check result
+        // Reflect the adler_score object
+        $reflection = new ReflectionClass(adler_score::class);
+
+        // Make the score_item attribute accessible
+        $scoreItemProperty = $reflection->getProperty('score_item');
+        $scoreItemProperty->setAccessible(true);
+
         // test score
-        $this->assertEquals(17, $result->test_get_score_item()->score);
+        $this->assertEquals(17, $scoreItemProperty->getValue($result)->score);
     }
 
     public function provide_test_get_primitive_score_data() {

@@ -2,12 +2,13 @@
 
 namespace local_adler;
 
+use core\di;
 use dml_exception;
 use invalid_parameter_exception;
 use local_adler\local\course_category_manager;
+use local_adler\local\db\moodle_core_repository;
 use local_adler\local\exceptions\not_an_adler_section_exception;
 use local_adler\local\section\section;
-use local_adler\local\section\db as section_db;
 use moodle_exception;
 
 class plugin_interface {
@@ -29,7 +30,7 @@ class plugin_interface {
      * @throws dml_exception
      */
     public static function get_section_name(int $section_id): string {
-        return section_db::get_moodle_section($section_id)->name;
+        return di::get(moodle_core_repository::class)->get_moodle_section($section_id)->name;
     }
 
     /** Create a new course category and grant the user permission to create adler courses in it.

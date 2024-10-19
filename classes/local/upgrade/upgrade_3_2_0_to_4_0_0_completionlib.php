@@ -2,11 +2,13 @@
 
 namespace local_adler\local\upgrade;
 
+use core\di;
 use dml_exception;
 use local_adler\helpers;
 use local_adler\local\db\moodle_core_repository;
 use local_adler\local\exceptions\not_an_adler_course_exception;
 use local_logging\logger;
+use moodle_database;
 use moodle_exception;
 use stdClass;
 
@@ -36,7 +38,7 @@ class upgrade_3_2_0_to_4_0_0_completionlib {
             $this->called_during_upgrade = false;
         }
         $this->course_id = $course_id;
-        $this->moodle_core_repository = new moodle_core_repository();
+        $this->moodle_core_repository = di::get(moodle_core_repository::class);
     }
 
     /**
@@ -84,10 +86,9 @@ class upgrade_3_2_0_to_4_0_0_completionlib {
      * @throws moodle_exception
      */
     public function upgrade_modules(): void {
-        global $DB;
         $cm_infos = $this->moodle_core_repository->get_cms_with_module_name_by_course_id($this->course_id);
 
-        $transaction = $DB->start_delegated_transaction();
+        $transaction = di::get(moodle_database::class)->start_delegated_transaction();
         foreach ($cm_infos as $cm_info) {
             $this->upgrade_module($cm_info);
         }

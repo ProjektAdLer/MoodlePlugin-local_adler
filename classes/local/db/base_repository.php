@@ -2,15 +2,10 @@
 
 namespace local_adler\local\db;
 
-abstract class base_repository {
-    protected $db;
+use moodle_database;
 
-    public function __construct($db = null) {
-        if (is_null($db)) {
-            global $DB;
-            $this->db = $DB;
-        } else {
-            $this->db = $db;
-        }
-    }
+abstract class base_repository {
+    public function __construct(
+        protected readonly moodle_database $db
+    ) {}
 }

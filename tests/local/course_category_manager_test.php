@@ -3,6 +3,7 @@
 namespace local_adler\local;
 
 use context_coursecat;
+use core\di;
 use invalid_parameter_exception;
 use local_adler\lib\adler_testcase;
 use local_adler\local\db\moodle_core_repository;
@@ -21,8 +22,11 @@ class course_category_manager_test extends adler_testcase {
     private $moodle_core_mock;
 
     public function setUp(): void {
-        $this->mockRepo = Mockery::mock('overload:' . moodle_core_repository::class);
+        $this->mockRepo = Mockery::mock(moodle_core_repository::class);
         $this->moodle_core_mock = Mockery::mock('alias:' . moodle_core::class);
+
+        // inject the mock repository
+        di::set(moodle_core_repository::class, $this->mockRepo);
     }
 
     /**

@@ -1,6 +1,8 @@
 <?php
 
-use local_adler\local\section\db as section_db;
+use core\di;
+use local_adler\local\db\adler_sections_repository;
+use local_adler\local\db\moodle_core_repository;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -13,11 +15,11 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_local_adler_uninstall(): bool {
     // get all adler section records
-    $adler_sections = section_db::get_adler_sections();
+    $adler_sections = di::get(adler_sections_repository::class)->get_all_adler_sections();
 
     // get all sections for $adler_sections
     $sections = array_map(function($adler_section) {
-        return section_db::get_moodle_section($adler_section->section_id);
+        return di::get(moodle_core_repository::class)->get_moodle_section($adler_section->section_id);
     }, $adler_sections);
 
     // update availability condition
@@ -30,7 +32,7 @@ function xmldb_local_adler_uninstall(): bool {
         // update availability condition
         $section->availability = $updated_availability;
         // update section
-        section_db::update_moodle_section($section);
+        di::get(moodle_core_repository::class)->update_moodle_section($section);
     }
 
     return true;

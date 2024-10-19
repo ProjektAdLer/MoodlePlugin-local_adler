@@ -3,9 +3,14 @@
 namespace local_adler\local\section;
 
 
+use core\di;
+use dml_exception;
+use local_adler\local\db\adler_sections_repository;
+use Mockery;
 use completion_info;
 use local_adler\adler_score_helpers;
 use local_adler\lib\adler_testcase;
+use local_adler\local\db\moodle_core_repository;
 use local_adler\local\exceptions\not_an_adler_section_exception;
 use ReflectionClass;
 
@@ -26,7 +31,7 @@ class section_test extends adler_testcase {
                 'exception' => null
             ],
             'invalid section' => [
-                'section_response' => false,
+                'section_response' => new dml_exception('error', 'Error message'),
                 'exception' => not_an_adler_section_exception::class
             ]
         ];
@@ -38,59 +43,51 @@ class section_test extends adler_testcase {
      * # ANF-ID: [MVP12]
      */
     public function test_construct($section_response, $exception) {
-        $return_map = [
-            [db::class, 'get_adler_section', 1, $section_response]
-        ];
-
-        $section_mock = $this->getMockBuilder(section::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['callStatic'])
-            ->getMock();
-        $section_mock->method('callStatic')
-            ->will($this->returnValueMap($return_map));
+        // Mock the adler_sections_repository
+        $adler_sections_repository = Mockery::mock(adler_sections_repository::class);
+        if ($section_response instanceof dml_exception) {
+            $adler_sections_repository->shouldReceive('get_adler_section')->andThrow($section_response);
+        } else {
+            $adler_sections_repository->shouldReceive('get_adler_section')->andReturn($section_response);
+        }
+        di::set(adler_sections_repository::class, $adler_sections_repository);
 
         if ($exception) {
             $this->expectException($exception);
         }
 
-        $section_mock->__construct(1);
+        // Create the section object
+        $section = new section(1);
 
-        // get section property
+        // Get section property
         if (!$exception) {
-            $reflection = new ReflectionClass($section_mock);
+            $reflection = new ReflectionClass($section);
             $property = $reflection->getProperty('section');
             $property->setAccessible(true);
-            $this->assertEquals($section_response, $property->getValue($section_mock));
+            $this->assertEquals($section_response, $property->getValue($section));
         }
     }
 
     public function provide_test_is_completed_data() {
         return [
             'completed' => [
-                'modules' => [
-                    1 => 50,
-                    2 => 50,
-                    3 => 50
-                ],
+                'modules_list' => [1, 2, 3],
+                'scores_list' => [50,50,50],
                 'expected' => true
             ],
             'not completed' => [
-                'modules' => [
-                    1 => 0,
-                    2 => 0
-                ],
+                'modules_list' => [1, 2],
+                'scores_list' => [0, 0],
                 'expected' => false
             ],
             'edge case completed' => [
-                'modules' => [
-                    1 => 100
-                ],
+                'modules_list' => [1],
+                'scores_list' => [100],
                 'expected' => true
             ],
             'edge case not completed' => [
-                'modules' => [
-                    1 => 99.9
-                ],
+                'modules_list' => [1],
+                'scores_list' => [99.9],
                 'expected' => false
             ],
         ];
@@ -98,41 +95,41 @@ class section_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_is_completed_data
+     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP12]
      */
-    public function test_is_completed($modules, $expected) {
-        // mock static function calls
-        $return_map = [
-            [db::class, 'get_course_modules_by_section_id', 1,
-                array_map(function ($id) {
-                    return (object)['id' => $id];
-                }, array_keys($modules))
-            ],
-            [adler_score_helpers::class, 'get_achieved_scores', array_keys($modules), 1, array_values($modules)]
-        ];
+    public function test_is_completed($modules_list, $scores_list, $expected) {
+        $section_id = 1;
+        $user_id = 1;
 
-        $section_mock = $this->getMockBuilder(section::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['callStatic'])
-            ->getMock();
-        $section_mock->method('callStatic')
-            ->will($this->returnValueMap($return_map));
+        // Mock the adler_sections_repository
+        $adler_sections_repository = $this->createMock(adler_sections_repository::class);
+        $adler_sections_repository->method('get_adler_section')->willReturn((object)[
+            'section_id' => $section_id,
+            'required_points_to_complete' => 100
+        ]);
+        di::set(adler_sections_repository::class, $adler_sections_repository);
 
+        // Mock the moodle_core_repository
+        $moodle_core_repository = $this->createMock(moodle_core_repository::class);
+        $moodle_core_repository->method('get_course_modules_by_section_id')->willReturn(array_map(function($id) {
+            return (object)['id' => $id];
+        }, $modules_list));
+        di::set(moodle_core_repository::class, $moodle_core_repository);
 
-        // set section and section_id properties
-        $reflection = new ReflectionClass($section_mock);
-        $property = $reflection->getProperty('section_id');
-        $property->setAccessible(true);
-        $property->setValue($section_mock, 1);
+        // Mock the adler_score_helpers
+        $adler_score_helpers_mock = Mockery::mock('overload:' . adler_score_helpers::class);
+        $adler_score_helpers_mock
+            ->shouldReceive('get_achieved_scores')
+            ->with($modules_list, $user_id)
+            ->andReturn($scores_list);
 
-        $property = $reflection->getProperty('section');
-        $property->setAccessible(true);
-        $property->setValue($section_mock, (object)['required_points_to_complete' => 100]);
+        // Create the section object
+        $section = new section($section_id);
 
-
-        // call function
-        $this->assertEquals($expected, $section_mock->is_completed(1));
+        // Call the method and check the result
+        $this->assertEquals($expected, $section->is_completed($user_id));
     }
 
     public function provide_test_is_completed_integration_data() {

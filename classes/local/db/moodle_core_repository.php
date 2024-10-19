@@ -4,6 +4,7 @@ namespace local_adler\local\db;
 
 
 use dml_exception;
+use stdClass;
 
 class moodle_core_repository extends base_repository {
     /**
@@ -61,7 +62,54 @@ class moodle_core_repository extends base_repository {
     /**
      * @throws dml_exception
      */
-    public function get_course_from_course_id($course_id) {
+    public function get_course_from_course_id($course_id): stdClass {
         return $this->db->get_record('course', array('id' => $course_id), '*', MUST_EXIST);
+    }
+
+    /**
+     * Get all moodle-cms for given section id. I am not aware of any moodle core function that
+     * allows accessing course_modules by only the section_id.
+     * @param int $section_id moodle course id
+     * @return array moodle-sections for given course
+     * @throws dml_exception
+     */
+    public function get_course_modules_by_section_id(int $section_id): array {
+        return $this->db->get_records('course_modules', ['section' => $section_id]);
+    }
+
+    /**
+     * @throws dml_exception
+     */
+    public function get_all_moodle_course_modules(): array {
+        return $this->db->get_records('course_modules');
+    }
+
+
+    /**
+     * Get moodle section by section id
+     * @param int $section_id moodle section id
+     * @return stdClass moodle section for given section id
+     * @throws dml_exception
+     */
+    public function get_moodle_section(int $section_id): stdClass {
+        return $this->db->get_record('course_sections', ['id' => $section_id], '*', MUST_EXIST);
+    }
+
+    /**
+     * @throws dml_exception
+     */
+    public function get_all_moodle_sections(): array {
+        return $this->db->get_records('course_sections');
+    }
+
+    /**
+     * Update moodle section with given section object
+     * @param stdClass $section moodle section object
+     * @return stdClass updated moodle section object
+     * @throws dml_exception
+     */
+    public function update_moodle_section(stdClass $section): stdClass {
+        $this->db->update_record('course_sections', $section);
+        return $this->db->get_record('course_sections', ['id' => $section->id], '*', MUST_EXIST);
     }
 }

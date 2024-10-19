@@ -4,6 +4,7 @@ namespace local_adler;
 
 global $CFG;
 
+use core\di;
 use dml_exception;
 use local_adler\lib\adler_testcase;
 use local_adler\local\db\moodle_core_repository;
@@ -12,7 +13,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class moodle_core_repository_test extends adler_testcase {
     public function test_get_role_id_by_shortname() {
-        $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
         // call function
         $result = $moodle_core_repository->get_role_id_by_shortname('student');
@@ -28,7 +29,7 @@ class moodle_core_repository_test extends adler_testcase {
     }
 
     public function test_get_user_id_by_username() {
-        $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
         // call function
         $result = $moodle_core_repository->get_user_id_by_username('admin');
@@ -54,7 +55,7 @@ class moodle_core_repository_test extends adler_testcase {
      * @dataProvider provide_true_false_data
      */
     public function test_get_grade_item($exists) {
-        $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
         if ($exists) {
             // create grade_item
@@ -77,7 +78,7 @@ class moodle_core_repository_test extends adler_testcase {
 
     public function test_update_grade_item_record() {
         global $DB;
-        $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
         // create grade_item
         $course = $this->getDataGenerator()->create_course();
@@ -93,7 +94,7 @@ class moodle_core_repository_test extends adler_testcase {
 
     public function test_update_course_module_record() {
         global $DB;
-        $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
         // create course_module
         $course = $this->getDataGenerator()->create_course();
@@ -108,7 +109,7 @@ class moodle_core_repository_test extends adler_testcase {
     }
 
     public function test_get_cms_with_module_name_by_course_id() {
-        $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
         // Create a course
         $course = $this->getDataGenerator()->create_course();
@@ -126,17 +127,121 @@ class moodle_core_repository_test extends adler_testcase {
     }
 
     public function test_get_course_from_course_id() {
-    $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
-    // Create a course
-    $course = $this->getDataGenerator()->create_course();
+        // Create a course
+        $course = $this->getDataGenerator()->create_course();
 
-    // Call the method
-    $result = $moodle_core_repository->get_course_from_course_id($course->id);
+        // Call the method
+        $result = $moodle_core_repository->get_course_from_course_id($course->id);
 
-    // Check the result
-    $this->assertEquals($course->id, $result->id);
-    $this->assertEquals($course->fullname, $result->fullname);
-    $this->assertEquals($course->shortname, $result->shortname);
-}
+        // Check the result
+        $this->assertEquals($course->id, $result->id);
+        $this->assertEquals($course->fullname, $result->fullname);
+        $this->assertEquals($course->shortname, $result->shortname);
+    }
+
+    /**
+     * # ANF-ID: [MVP12]
+     */
+    public function test_get_course_modules_by_section_id() {
+        // create course
+        $course = $this->getDataGenerator()->create_course();
+
+        // create course module
+        $course_module1 = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $course_module2 = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+
+        // get section id
+        $section_id = get_fast_modinfo($course->id)->get_cm($course_module2->cmid)->section;
+
+        // create some other course with module (should not be included in result)
+        $course2 = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->create_module('assign', ['course' => $course2->id]);
+
+        // call function
+        $db_course_modules = di::get(moodle_core_repository::class)->get_course_modules_by_section_id($section_id);
+
+        // check result
+        $this->assertEqualsCanonicalizing([$course_module1->cmid, $course_module2->cmid], array_keys($db_course_modules));
+    }
+
+    public function test_get_all_moodle_course_modules() {
+        $moodle_core_repository = di::get(moodle_core_repository::class);
+
+        // Create a course
+        $course = $this->getDataGenerator()->create_course();
+
+        // Create multiple course modules
+        $course_module1 = $this->getDataGenerator()->create_module('assign', ['course' => $course->id]);
+        $course_module2 = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+
+        // Call the method
+        $result = $moodle_core_repository->get_all_moodle_course_modules();
+
+        // Check the result
+        $this->assertArrayHasKey($course_module1->cmid, $result);
+        $this->assertArrayHasKey($course_module2->cmid, $result);
+        $this->assertEquals($course_module1->cmid, $result[$course_module1->cmid]->id);
+        $this->assertEquals($course_module2->cmid, $result[$course_module2->cmid]->id);
+    }
+
+    public function test_get_moodle_section() {
+        $moodle_core_repository = di::get(moodle_core_repository::class);
+
+        // Create a course
+        $course = $this->getDataGenerator()->create_course();
+
+        // Create a section
+        $section = $this->getDataGenerator()->create_course_section(['course' => $course->id, 'section' => 1]);
+
+        // Call the method
+        $result = $moodle_core_repository->get_moodle_section($section->id);
+
+        // Check the result
+        $this->assertEquals($section->id, $result->id);
+        $this->assertEquals($section->course, $result->course);
+    }
+
+    public function test_get_all_moodle_sections() {
+        $moodle_core_repository = di::get(moodle_core_repository::class);
+
+        // Create a course
+        $course = $this->getDataGenerator()->create_course();
+
+        // Create multiple sections
+        $section1 = $this->getDataGenerator()->create_course_section(['course' => $course->id, 'section' => 1]);
+        $section2 = $this->getDataGenerator()->create_course_section(['course' => $course->id, 'section' => 2]);
+
+        // Call the method
+        $result = $moodle_core_repository->get_all_moodle_sections();
+
+        // Check the result
+        $this->assertArrayHasKey($section1->id, $result);
+        $this->assertArrayHasKey($section2->id, $result);
+        $this->assertEquals($section1->id, $result[$section1->id]->id);
+        $this->assertEquals($section2->id, $result[$section2->id]->id);
+    }
+
+    public function test_update_moodle_section() {
+        global $DB;
+        $moodle_core_repository = di::get(moodle_core_repository::class);
+
+        // Create a course
+        $course = $this->getDataGenerator()->create_course();
+
+        // Create a section
+        $section = $this->getDataGenerator()->create_course_section(['course' => $course->id, 'section' => 1]);
+        $section = $DB->get_record('course_sections', ['id' => $section->id]);
+
+        // Update the section
+        $section->name = 'Updated Section Name';
+        $moodle_core_repository->update_moodle_section($section);
+
+        // Retrieve the updated section
+        $updated_section = $DB->get_record('course_sections', ['id' => $section->id]);
+
+        // Check the result
+        $this->assertEquals('Updated Section Name', $updated_section->name);
+    }
 }

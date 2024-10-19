@@ -3,6 +3,7 @@
 namespace local_adler\local;
 
 use coding_exception;
+use core\di;
 use dml_exception;
 use invalid_parameter_exception;
 use local_adler\local\db\moodle_core_repository;
@@ -20,8 +21,8 @@ class course_category_manager {
      * @throws moodle_exception
      * @throws invalid_parameter_exception
      */
-    public static function create_category_user_can_create_courses_in(string $username, string $role, string|null $category_path = Null) {
-        $moodle_core_repository = new moodle_core_repository();
+    public static function create_category_user_can_create_courses_in(string $username, string $role, string|null $category_path = Null): int {
+        $moodle_core_repository = di::get(moodle_core_repository::class);
 
         // handle category path (default value and parsing)
         if ($category_path === Null || strlen($category_path) === 0) {
@@ -60,7 +61,7 @@ class course_category_manager {
      * @throws dml_exception
      */
     private static function assign_user_to_role_in_category(string $username, int $role_id, int $category_id): void {
-        $moodle_core_repository = new moodle_core_repository();
+        $moodle_core_repository = di::get(moodle_core_repository::class);
         $logger = new logger('local_adler', 'course_category_manager');
 
         $user_id = $moodle_core_repository->get_user_id_by_username($username);

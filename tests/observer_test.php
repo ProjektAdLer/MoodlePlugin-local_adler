@@ -13,7 +13,6 @@ global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class observer_test extends adler_testcase {
-
     public function test_course_content_deleted() {
         global $DB;
 

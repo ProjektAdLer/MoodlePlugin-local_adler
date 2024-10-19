@@ -5,13 +5,15 @@ namespace local_adler\external;
 
 use context_course;
 use context_module;
+use core\di;
 use dml_exception;
 use invalid_parameter_exception;
 use local_adler\lib\adler_externallib_testcase;
+use local_adler\local\db\adler_course_module_repository;
+use local_adler\local\db\adler_sections_repository;
+use local_adler\local\db\moodle_core_repository;
 use Mockery;
 use ReflectionClass;
-use local_adler\local\section\db as section_db;
-use local_adler\local\course_module\db as cm_db;
 
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
@@ -101,26 +103,25 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
-     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP6]
      */
     public function test_execute($element, $adler_element_exists, $expected_result, $expected_exception) {
         $course = $this->getDataGenerator()->create_course();
 
-        // mock section db
-        $section_db_mock = Mockery::mock('overload:' . section_db::class);
-        // mock cm_db
-        $cm_db_mock = Mockery::mock('overload:' . cm_db::class);
+        // mock repos
+        $adler_course_module_repository_mock = Mockery::mock(adler_course_module_repository::class);
+        $adler_section_repository_mock = Mockery::mock(adler_sections_repository::class);
+        $moodle_core_repository_mock = Mockery::mock(moodle_core_repository::class);
 
         if ($element[0]['element_type'] == 'section') {
             if ($adler_element_exists) {
-                $section_db_mock->shouldReceive('get_adler_section_by_uuid')->andReturn((object)['section_id' => 16]);
+                $adler_section_repository_mock->shouldReceive('get_adler_section_by_uuid')->andReturn((object)['section_id' => 16]);
             } else {
-                $section_db_mock->shouldReceive('get_adler_section_by_uuid')->andThrow(new dml_exception(''));
+                $adler_section_repository_mock->shouldReceive('get_adler_section_by_uuid')->andThrow(new dml_exception(''));
             }
-            $section_db_mock->shouldReceive('get_adler_section_by_uuid')->andReturn((object)['section_id' => 16]);
-            $section_db_mock->shouldReceive('get_moodle_section')->with(16)->andReturn((object)['course' => 42]);
+            $adler_section_repository_mock->shouldReceive('get_adler_section_by_uuid')->andReturn((object)['section_id' => 16]);
+            $moodle_core_repository_mock->shouldReceive('get_moodle_section')->with(16)->andReturn((object)['course' => 42]);
 
             // mock context_course
             $context_course_mock = Mockery::mock(context_course::class);
@@ -136,9 +137,9 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
             $get_element_ids_by_uuids_mock->shouldReceive('validate_context')->andReturn(1);
         } else {
             if ($adler_element_exists) {
-                $cm_db_mock->shouldReceive('get_adler_course_module_by_uuid')->andReturn((object)['cmid' => 351]);
+                $adler_course_module_repository_mock->shouldReceive('get_adler_course_module_by_uuid')->andReturn((object)['cmid' => 351]);
             } else {
-                $cm_db_mock->shouldReceive('get_adler_course_module_by_uuid')->andThrow(new dml_exception(''));
+                $adler_course_module_repository_mock->shouldReceive('get_adler_course_module_by_uuid')->andThrow(new dml_exception(''));
             }
 
             // mock context_module
@@ -154,6 +155,11 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
             $get_element_ids_by_uuids_mock = Mockery::mock(get_element_ids_by_uuids::class)->makePartial();
             $get_element_ids_by_uuids_mock->shouldReceive('validate_context')->andReturn(2);
         }
+
+        // inject mock
+        di::set(adler_course_module_repository::class, $adler_course_module_repository_mock);
+        di::set(adler_sections_repository::class, $adler_section_repository_mock);
+        di::set(moodle_core_repository::class, $moodle_core_repository_mock);
 
         if ($expected_exception !== null) {
             $this->expectException($expected_exception);

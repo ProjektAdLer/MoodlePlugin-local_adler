@@ -5,6 +5,7 @@ namespace local_adler;
 
 use cm_info;
 use context_course;
+use core\di;
 use core_completion\cm_completion_details;
 use dml_exception;
 use local_adler\local\db\adler_course_module_repository;
@@ -35,7 +36,7 @@ class adler_score {
     public function __construct(cm_info $course_module, int $user_id = null) {
         global $USER;
         $this->logger = new logger('local_adler', 'adler_score');
-        $this->adler_course_module_repository = new adler_course_module_repository();
+        $this->adler_course_module_repository = di::get(adler_course_module_repository::class);
         $this->course_module = $course_module;
         $this->user_id = $user_id ?? $USER->id;
 

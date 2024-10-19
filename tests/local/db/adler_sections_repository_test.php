@@ -4,126 +4,124 @@ namespace local\db;
 
 global $CFG;
 
+use component_generator_base;
+use core\di;
 use dml_exception;
 use local_adler\lib\adler_testcase;
-use local_adler\local\db\adler_course_module_repository;
+use local_adler\local\db\adler_sections_repository;
+use local_adler\local\db\moodle_core_repository;
+use local_adler\local\section\db;
+use Mockery;
+use moodle_database;
 
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class adler_sections_repository_test extends adler_testcase {
-    public function test_create_adler_cm() {
-        global $DB;
-        $adler_course_module_repository = new adler_course_module_repository();
+    private component_generator_base $adler_generator;
 
-        // create course
-        $course = $this->getDataGenerator()->create_course();
-
-        // create cm
-        $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
-
-        // create adler_cm object
-        $adler_cm = (object)[
-            'cmid' => $cm->cmid,
-            'score_max' => 100,
-        ];
-
-        // call function
-        $id = $adler_course_module_repository->create_adler_cm($adler_cm);
-
-        // query db for the returned id
-        $record = $DB->get_record('local_adler_course_modules', ['id' => $id]);
-
-        // validate record was created
-        $this->assertNotEmpty($record);
-        $this->assertEquals($adler_cm->cmid, $record->cmid);
-        $this->assertEquals($adler_cm->score_max, $record->score_max);
+    public function setUp(): void {
+        parent::setUp();
+        $this->adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
     }
 
-    /**
-     * # ANF-ID: [MVP12, MVP10, MVP9, MVP8, MVP7]
-     */
-    public function test_get_adler_score_record() {
-        $adler_course_module_repository = new adler_course_module_repository();
-
-        // create course
-        $course = $this->getDataGenerator()->create_course();
-
-        // create cm
-        $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
-
-        // create adler score item
-        $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm->cmid);
-
-        // call function
-        $result = $adler_course_module_repository->get_adler_course_module_by_cmid($cm->cmid);
-
-        // check result
-        $this->assertEquals($adler_score_item->id, $result->id);
-        $this->assertEquals($adler_score_item->cmid, $result->cmid);
-        $this->assertEquals($adler_score_item->score_max, $result->score_max);
-
-
-        // error case
-        $this->expectException(dml_exception::class);
-
-        // create cm
-        $cm = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
-
-        // call function
-        $adler_course_module_repository->get_adler_course_module_by_cmid($cm->cmid);
-    }
-
-    public function test_delete_adler_course_module_record() {
-        global $DB;
-        $adler_course_module_repository = new adler_course_module_repository();
-
-        // create course
-        $course = $this->getDataGenerator()->create_course();
-
-        // create cm
-        $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
-
-        // create adler score item
-        $adler_score_item = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm->cmid);
-
-        // validate there is 1 record
-        $this->assertEquals(1, $DB->count_records('local_adler_course_modules'));
-
-        // call function
-        $adler_course_module_repository->delete_adler_score_record_by_cmid($cm->cmid);
-
-        // validate there are 0 records
-        $this->assertEquals(0, $DB->count_records('local_adler_course_modules'));
-    }
-
-    public function provide_record_for_cmid_exists_data(): array {
+    public function provide_test_get_adler_section_by_uuid_data() {
         return [
-            'record exists' => [true],
-            'record does not exist' => [false]
+            'success' => [
+                'success' => true,
+            ],
+            'exception' => [
+                'success' => false,
+            ]
         ];
     }
 
     /**
-     * @dataProvider provide_record_for_cmid_exists_data
+     * @dataProvider provide_test_get_adler_section_by_uuid_data
+     *
+     * # ANF-ID: [MVP6]
      */
-    public function test_record_for_cmid_exists($record_exists) {
-        $adler_course_module_repository = new adler_course_module_repository();
+    public function test_get_adler_section_by_uuid($success) {
+        // create adler_section entry
+        $adler_section = $this->adler_generator->create_adler_section_object(1);
 
-        // create course
-        $course = $this->getDataGenerator()->create_course();
+        // mock section db
+        $db_mock = Mockery::mock(moodle_core_repository::class)->makePartial();
+        if ($success) {
+            $db_mock->shouldReceive('get_moodle_section')->andReturn((object)['course' => 1]);
+        } else {
+            $db_mock->shouldReceive('get_moodle_section')->andReturn((object)['course' => 2]);
 
-        // create cm
-        $cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
-
-        // create adler score item
-        if ($record_exists) {
-            $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm->cmid);
+            $this->expectException(dml_exception::class);
         }
 
+        // inject mock
+        di::set(moodle_core_repository::class, $db_mock);
+
         // call function
-        $result = $adler_course_module_repository->record_for_cmid_exists($cm->cmid);
+        $db_adler_section = di::get(adler_sections_repository::class)->get_adler_section_by_uuid($adler_section->uuid, 1);
 
         // check result
-        $this->assertEquals($record_exists, $result);
+        $this->assertEquals($adler_section, $db_adler_section);
+    }
+
+    /**
+     * # ANF-ID: [MVP6, MVP12]
+     */
+    public function test_get_adler_section() {
+        // create adler_section entry
+        $adler_section = $this->adler_generator->create_adler_section_object(1);
+
+        $db_adler_section = di::get(adler_sections_repository::class)->get_adler_section(1);
+
+        $this->assertEquals($adler_section, $db_adler_section);
+    }
+
+    public function test_get_all_adler_sections() {
+        $adler_sections_repository = di::get(adler_sections_repository::class);
+
+        // create section objects
+        $section1 = $this->adler_generator->create_adler_section_object(1);
+        $section2 = $this->adler_generator->create_adler_section_object(2);
+
+        // retrieve records using the method
+        $retrieved_sections = $adler_sections_repository->get_all_adler_sections();
+
+        // validate retrieved records
+        $this->assertCount(2, $retrieved_sections);
+        $this->assertEquals(1, array_values($retrieved_sections)[0]->section_id);
+        $this->assertEquals(2, array_values($retrieved_sections)[1]->section_id);
+    }
+
+    public function test_delete_adler_section_by_section_id() {
+        $adler_sections_repository = di::get(adler_sections_repository::class);
+
+        // create section object
+        $section = $this->adler_generator->create_adler_section_object(1);
+
+        // ensure record exists
+        $record = di::get(moodle_database::class)->get_record('local_adler_sections', ['section_id' => 1]);
+        $this->assertNotEmpty($record);
+
+        // delete record
+        $adler_sections_repository->delete_adler_section_by_section_id(1);
+
+        // ensure record no longer exists
+        $record = di::get(moodle_database::class)->get_record('local_adler_sections', ['section_id' => 1]);
+        $this->assertEmpty($record);
+    }
+
+    public function test_create_adler_section() {
+        $adler_sections_repository = di::get(adler_sections_repository::class);
+
+        // create section object
+        $section = $this->adler_generator->create_adler_section_object(1, [], false);
+
+        // insert record
+        $id = $adler_sections_repository->create_adler_section($section);
+
+        // ensure record exists
+        $record = di::get(moodle_database::class)->get_record('local_adler_sections', ['id' => $id]);
+        $this->assertNotEmpty($record);
+        $this->assertEquals('1', $record->section_id);
     }
 }

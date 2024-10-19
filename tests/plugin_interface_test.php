@@ -7,9 +7,10 @@ global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
+use core\di;
 use local_adler\lib\adler_testcase;
+use local_adler\local\db\moodle_core_repository;
 use local_adler\local\section\section;
-use local_adler\local\section\db as section_db;
 use Mockery;
 
 
@@ -39,15 +40,17 @@ class plugin_interface_test extends adler_testcase {
     }
 
     /**
-     * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
     public function test_get_section_name() {
-        $section_db_mock = Mockery::mock('overload:'. section_db::class);
+        $section_db_mock = Mockery::mock(moodle_core_repository::class);
         $section_db_mock->shouldReceive('get_moodle_section')
             ->once()
             ->with(7)
             ->andReturn((object) ['name' => 'test_section_name']);
+
+        // inject mock
+        di::set(moodle_core_repository::class, $section_db_mock);
 
         $result = plugin_interface::get_section_name(7);
 

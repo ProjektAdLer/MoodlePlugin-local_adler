@@ -1,5 +1,6 @@
 <?php
 
+use core\di;
 use local_adler\local\db\adler_course_module_repository;
 use local_adler\local\db\adler_course_repository;
 use local_adler\local\db\adler_sections_repository;
@@ -22,9 +23,9 @@ class restore_local_adler_plugin extends restore_local_plugin {
     public function __construct($name, $plugin, $restore) {
         parent::__construct($name, $plugin, $restore);
         $this->log = new logger('local_adler', self::class);
-        $this->adler_course_repository = new adler_course_repository();
-        $this->adler_sections_repository = new adler_sections_repository();
-        $this->adler_course_module_repository = new adler_course_module_repository();
+        $this->adler_course_repository = di::get(adler_course_repository::class);
+        $this->adler_sections_repository = di::get(adler_sections_repository::class);
+        $this->adler_course_module_repository = di::get(adler_course_module_repository::class);
         $this->plugin_release_set_version = null;
     }
 

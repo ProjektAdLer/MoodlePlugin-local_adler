@@ -1,31 +1,25 @@
 <?php
+
 namespace local_adler;
 
+use core\di;
 use dml_exception;
+use local_adler\local\db\adler_course_repository;
 use moodle_exception;
 
 class helpers {
-    /** Delete adler course record (local_adler_course).
-     * @throws dml_exception
-     */
-    public static function delete_adler_course_record($course_id) {
-        global $DB;
-        $DB->delete_records('local_adler_course', array('course_id' => $course_id));
-    }
-
     /** Check if course is adler course
      * @param int $course_id moodle course id
      * @return bool true if course is adler course
      */
     public static function course_is_adler_course(int $course_id): bool {
-        global $DB;
         try {
-            $course = $DB->get_record('local_adler_course', array('course_id' => $course_id), '*', MUST_EXIST);
-        } catch (moodle_exception $e) {
+            di::get(adler_course_repository::class)->get_adler_course_by_moodle_course_id($course_id);
+        } catch (dml_exception $e) {
             return false;
         }
 
-        return $course !== false;
+        return true;
     }
 
     private const PRIMITIVE_LEARNING_ELEMENTS  = array(
@@ -50,11 +44,11 @@ class helpers {
     /**
      * @throws moodle_exception
      */
-    public static function is_primitive_learning_element($course_module):bool {
+    public static function is_primitive_learning_element($course_module): bool {
         // validate course_module format
         if (!isset($course_module->modname)) {
             throw new moodle_exception('course_module_format_not_valid', 'local_adler');
         }
-        return in_array($course_module->modname, self::PRIMITIVE_LEARNING_ELEMENTS );
+        return in_array($course_module->modname, self::PRIMITIVE_LEARNING_ELEMENTS);
     }
 }

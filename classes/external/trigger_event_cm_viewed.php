@@ -5,6 +5,7 @@ use coding_exception;
 use completion_info;
 use context_course;
 use context_module;
+use core\di;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
@@ -40,9 +41,6 @@ class trigger_event_cm_viewed extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function execute($module_id): array {
-        $adler_course_module_repository = new adler_course_module_repository();
-        $moodle_core_repository = new moodle_core_repository();
-
         // Parameter validation
         $params = self::validate_parameters(self::execute_parameters(), array(
             'module_id' => $module_id,
@@ -57,14 +55,14 @@ class trigger_event_cm_viewed extends external_api {
         }
         $course_module_cm_info = get_fast_modinfo($course_module->course)->get_cm($course_module->id);
         $course_id = $course_module->course;
-        $course = $moodle_core_repository->get_course_from_course_id($course_id);
+        $course = di::get(moodle_core_repository::class)->get_course_from_course_id($course_id);
 
         // validate course is adler course
         if (!helpers::course_is_adler_course($course->id)) {
             throw new not_an_adler_course_exception();
         }
         // validate course module is adler course module
-        if (!$adler_course_module_repository->record_for_cmid_exists($course_module->id)) {
+        if (!di::get(adler_course_module_repository::class)->record_for_cmid_exists($course_module->id)) {
             throw new not_an_adler_cm_exception();
         }
 

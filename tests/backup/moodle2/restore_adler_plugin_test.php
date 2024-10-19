@@ -3,6 +3,7 @@
 // -> no namespace for this test as backup/restore is not namespaced
 
 use local_adler\lib\adler_testcase;
+use local_adler\local\db\adler_sections_repository;
 use local_adler\local\upgrade\upgrade_3_2_0_to_4_0_0_completionlib;
 
 global $CFG;
