@@ -8,7 +8,6 @@ use local_adler\lib\adler_testcase;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use Mockery;
 use moodle_exception;
-use Throwable;
 
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
@@ -105,32 +104,29 @@ class adler_score_helpers_test extends adler_testcase {
     public function test_get_achieved_scores($data) {
         // create 3 adler_score objects and mock get_score_by_completion_state
         for ($i = 0; $i < 3; $i++) {
-            $adler_score_objects[] = $this->getMockBuilder(adler_score_helpers_adler_score_mock::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $adler_score_objects[$i]->method('get_score_by_completion_state')->willReturn((float)$i * 2);
+            if ($data['exception'] === moodle_exception::class && $data['exception_at_index'] === $i) {
+                $adler_score_objects[] = Mockery::mock(adler_score::class)
+                    ->shouldReceive('get_score_by_completion_state')
+                    ->andThrow(new $data['exception']($data['exception_msg']))
+                    ->getMock();
+            } else {
+                $adler_score_objects[] = Mockery::mock(adler_score::class)
+                    ->shouldReceive('get_score_by_completion_state')
+                    ->andReturn((float)$i * 2)
+                    ->getMock();
+            }
         }
         $adler_score_objects[] = false;
 
-        // setup exception
-        if ($data['exception'] !== null) {
-            $adler_score_objects[$data['exception_at_index']]->method('get_score_by_completion_state')->willThrowException(
-                new $data['exception']($data['exception_msg'])
-            );
+        if ($data['expected_exception'] !== false) {
+            $this->expectException($data['expected_exception']);
+            if ($data['exception_msg'] !== null) {
+                $this->expectExceptionMessage($data['exception_msg']);
+            }
         }
 
         // call function
-        try {
-            $result = adler_score_helpers::get_achieved_scores(null, null, $adler_score_objects);
-        } catch (Throwable $e) {
-            if ($data['expected_exception'] !== false) {
-                $this->assertInstanceOf($data['expected_exception'], $e);
-                if ($data['exception_msg'] !== null)
-                    $this->assertStringContainsString($data['exception_msg'], $e->getMessage());
-                return;
-            }
-            $this->fail('Unexpected exception: ' . $e->getMessage());
-        }
+        $result = adler_score_helpers::get_achieved_scores(null, null, $adler_score_objects);
 
         // check result
         $this->assertEquals($data['expected_result'], $result);
@@ -145,10 +141,10 @@ class adler_score_helpers_test extends adler_testcase {
         $user_id = 1;
         // create 3 adler_score objects and mock get_score_by_completion_state
         for ($i = 0; $i < 3; $i++) {
-            $adler_score_objects[] = $this->getMockBuilder(adler_score_helpers_adler_score_mock::class)
-                ->disableOriginalConstructor()
+            $adler_score_objects[] = Mockery::mock(adler_score::class)
+                ->shouldReceive('get_score_by_completion_state')
+                ->andReturn((float)$i * 2)
                 ->getMock();
-            $adler_score_objects[$i]->method('get_score_by_completion_state')->willReturn((float)$i * 2);
         }
         $expected_result = [0, 2, 4];
 
