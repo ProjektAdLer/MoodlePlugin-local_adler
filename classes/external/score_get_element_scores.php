@@ -2,7 +2,7 @@
 
 namespace local_adler\external;
 
-use context_module;
+use core\di;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
@@ -10,13 +10,12 @@ use core_external\external_value;
 use dml_missing_record_exception;
 use invalid_parameter_exception;
 use local_adler\adler_score_helpers;
+use local_adler\moodle_core;
 use moodle_exception;
 use require_login_exception;
 use restricted_context_exception;
 
 class score_get_element_scores extends external_api {
-    protected static string $adler_score_helpers = adler_score_helpers::class;
-    protected static string $context_module = context_module::class;
 
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
@@ -46,7 +45,7 @@ class score_get_element_scores extends external_api {
         $failed_items = array();
         foreach ($module_ids as $module_id) {
             try {
-                $context = static::$context_module::instance($module_id);
+                $context = di::get(moodle_core::class)->context_module_instance($module_id);
             } catch (dml_missing_record_exception $e) {
                 // module does not exist
                 $failed_items[] = $module_id;
@@ -70,7 +69,7 @@ class score_get_element_scores extends external_api {
         }
 
         // get scores
-        $scores = static::$adler_score_helpers::get_achieved_scores($module_ids);
+        $scores = di::get(adler_score_helpers::class)::get_achieved_scores($module_ids);
 
         // convert format return
         return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
