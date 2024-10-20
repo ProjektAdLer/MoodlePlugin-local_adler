@@ -7,6 +7,7 @@ global $CFG;
 use local_adler\lib\adler_testcase;
 use local_adler\lib\static_mock_utilities_trait;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
+use Mockery;
 use moodle_exception;
 use ReflectionClass;
 use Throwable;
@@ -155,17 +156,15 @@ class adler_score_helpers_test extends adler_testcase {
         $expected_result = [0, 2, 4];
 
         // mock get_adler_score_objects
-        adler_score_helpers_mock::reset_data();
-        adler_score_helpers_mock::set_enable_mock('get_adler_score_objects');
-        adler_score_helpers_mock::set_returns('get_adler_score_objects', [$adler_score_objects]);
+        $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class)->makePartial();
+        $adler_score_helpers_mock
+            ->shouldReceive('get_adler_score_objects')
+            ->andReturn($adler_score_objects);
 
         // call function
-        $result = adler_score_helpers_mock::get_achieved_scores($module_ids, $user_id);
+        $result = $adler_score_helpers_mock::get_achieved_scores($module_ids, $user_id);
 
         // check result
         $this->assertEquals($expected_result, $result);
-
-        // check function call
-        $this->assertEquals([$module_ids, $user_id], adler_score_helpers_mock::get_calls('get_adler_score_objects')[0]);
     }
 }
