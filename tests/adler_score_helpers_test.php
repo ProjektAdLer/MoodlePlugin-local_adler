@@ -13,7 +13,6 @@ use ReflectionClass;
 use Throwable;
 
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
-require_once($CFG->dirroot . '/local/adler/tests/mocks.php');
 
 class adler_score_helpers_adler_score_mock extends adler_score {
     use static_mock_utilities_trait;
