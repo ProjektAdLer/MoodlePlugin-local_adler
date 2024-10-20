@@ -25,7 +25,6 @@ class adler_score {
     private int $user_id;
     protected stdClass $score_item;
     private adler_course_module_repository $adler_course_module_repository;
-    protected static string $adler_score_helpers = adler_score_helpers::class;
 
     /**
      * @param cm_info $course_module can be retrieved through get_fast_modinfo($course_id)->get_cm($cm_id), see {@link cm_info}

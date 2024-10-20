@@ -3,8 +3,6 @@
 namespace local_adler\external;
 
 
-use context_course;
-use context_module;
 use core\di;
 use dml_exception;
 use invalid_parameter_exception;

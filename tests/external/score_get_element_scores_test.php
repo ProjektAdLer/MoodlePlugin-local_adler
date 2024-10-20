@@ -59,14 +59,12 @@ class score_get_element_scores_test extends adler_externallib_testcase {
     public function execute_exceptions_provider() {
         return [
             'missing_record_exception' => [
-                [1], // module_ids
-                dml_missing_record_exception::class,
-                'invalidmoduleids'
+                'module_ids' => [1],
+                'exception' => dml_missing_record_exception::class,
             ],
             'require_login_exception' => [
-                [2], // module_ids
-                require_login_exception::class,
-                'invalidmoduleids'
+                'module_ids' => [2],
+                'exception' => require_login_exception::class,
             ],
         ];
     }
@@ -75,17 +73,17 @@ class score_get_element_scores_test extends adler_externallib_testcase {
      * @dataProvider execute_exceptions_provider
      * # ANF-ID: [MVP8]
      */
-    public function test_execute_exceptions($module_ids, $expected_exception, $expected_errorcode) {
+    public function test_execute_exceptions($module_ids, $exception) {
         // Mocking the necessary methods
         $score_get_element_scores_mock = Mockery::mock(score_get_element_scores::class)->makePartial();
 
         $moodle_core_mock = Mockery::mock(moodle_core::class);
         di::set(moodle_core::class, $moodle_core_mock);
 
-        if ($expected_exception === dml_missing_record_exception::class) {
+        if ($exception === dml_missing_record_exception::class) {
             $moodle_core_mock->shouldReceive('context_module_instance')
                 ->andThrow(dml_missing_record_exception::class);
-        } elseif ($expected_exception === require_login_exception::class) {
+        } elseif ($exception === require_login_exception::class) {
             $moodle_core_mock->shouldReceive('context_module_instance')
                 ->andReturn((object)[]);
             $score_get_element_scores_mock->shouldReceive('validate_context')

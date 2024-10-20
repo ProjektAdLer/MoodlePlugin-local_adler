@@ -6,14 +6,6 @@ use local_adler\lib\adler_testcase;
 global $CFG;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
-/**
- * PHPunit test for class backup_local_adler_plugin
- * This class can't be tested with regular phpunit tests because the class defines an internal data structure of moodle
- * with the help of moodle helper functions.
- * The structure of this object is not under control of this plugin and might be different in different moodle versions.
- * The only way to reliably recreate this object would be using the same code as the original class.
- * Therefore, this test is implemented as an integration test.
- */
 class backup_adler_plugin_test extends adler_testcase {
     private stdClass $course;
     private stdClass $module;

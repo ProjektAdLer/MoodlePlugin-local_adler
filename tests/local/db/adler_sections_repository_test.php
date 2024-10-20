@@ -10,7 +10,6 @@ use dml_exception;
 use local_adler\lib\adler_testcase;
 use local_adler\local\db\adler_sections_repository;
 use local_adler\local\db\moodle_core_repository;
-use local_adler\local\section\db;
 use Mockery;
 use moodle_database;
 
