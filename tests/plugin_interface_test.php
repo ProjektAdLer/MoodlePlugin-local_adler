@@ -9,6 +9,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 use core\di;
 use local_adler\lib\adler_testcase;
+use local_adler\local\course_category_manager;
 use local_adler\local\db\moodle_core_repository;
 use local_adler\local\section\section;
 use Mockery;
@@ -52,4 +53,20 @@ class plugin_interface_test extends adler_testcase {
 
         $this->assertEquals('test_section_name', $result);
     }
+
+    public function test_create_category_user_can_create_courses_in() {
+        // Mock the course_category_manager
+        $courseCategoryManagerMock = Mockery::mock(course_category_manager::class);
+        $courseCategoryManagerMock
+            ->shouldReceive('create_category_user_can_create_courses_in')
+            ->andReturn(123); // Assuming 123 is the ID of the created category
+
+        // Set the mock in the DI container
+        di::set(course_category_manager::class, $courseCategoryManagerMock);
+
+        // Call the method and assert the result
+        $result = plugin_interface::create_category_user_can_create_courses_in('testuser', 'testrole', 'test/category/path');
+        $this->assertEquals(123, $result);
+    }
+
 }

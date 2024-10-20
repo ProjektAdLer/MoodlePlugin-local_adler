@@ -46,6 +46,6 @@ class plugin_interface {
      * @throws invalid_parameter_exception
      */
     public static function create_category_user_can_create_courses_in(string $username, string $role, string|null $category_path = Null): int {
-        return course_category_manager::create_category_user_can_create_courses_in($username, $role, $category_path);
+        return di::get(course_category_manager::class)::create_category_user_can_create_courses_in($username, $role, $category_path);
     }
 }
