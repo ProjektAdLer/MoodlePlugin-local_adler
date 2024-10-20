@@ -7,8 +7,6 @@ use moodle_exception;
 
 
 class adler_score_helpers {
-    protected static string $adler_score_class = adler_score::class;
-
     /** Get adler-scores for given array of course_module ids.
      * Similar to get_achieved_scores, but returns adler_score objects.
      * @param $module_ids array course_module ids
@@ -23,8 +21,8 @@ class adler_score_helpers {
             $course_module = get_coursemodule_from_id(null, $module_id, 0, false, MUST_EXIST);
             $course_module = get_fast_modinfo($course_module->course)->get_cm($course_module->id);
             try {
-                $adler_scores[$module_id] = new static::$adler_score_class($course_module, $user_id);
-            } catch (moodle_exception $e) {  // exception is actually thrown, linting just does not detect it because class is referenced via string
+                $adler_scores[$module_id] = new adler_score($course_module, $user_id);
+            } catch (moodle_exception $e) {
                 if ($e->errorcode === 'not_an_adler_cm') {
                     $logger->info('Is adler course, but adler scoring is not enabled for cm with id ' . $module_id);
                     $adler_scores[$module_id] = false;

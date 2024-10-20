@@ -5,45 +5,20 @@ namespace local_adler;
 global $CFG;
 
 use local_adler\lib\adler_testcase;
-use local_adler\lib\static_mock_utilities_trait;
 use local_adler\local\exceptions\not_an_adler_cm_exception;
 use Mockery;
 use moodle_exception;
-use ReflectionClass;
 use Throwable;
 
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
-class adler_score_helpers_adler_score_mock extends adler_score {
-    use static_mock_utilities_trait;
-
-    public function __construct(object $course_module, int $user_id = null) {
-        return static::mock_this_function(__FUNCTION__, func_get_args());
-    }
-}
-
 
 class adler_score_helpers_test extends adler_testcase {
-    public function tearDown(): void {
-        parent::tearDown();
-
-        $reflected_class = new ReflectionClass(adler_score_helpers::class);
-        $param_adler_score_class = $reflected_class->getProperty('adler_score_class');
-        $param_adler_score_class->setAccessible(true);
-        $param_adler_score_class->setValue(adler_score::class);
-    }
-
     /**
+     * @runInSeparateProcess
      * # ANF-ID: [MVP9, MVP8, MVP7]
      */
     public function test_get_adler_score_objects() {
-        // setup
-        // set param $adler_score_class
-        $reflected_class = new ReflectionClass(adler_score_helpers::class);
-        $param_adler_score_class = $reflected_class->getProperty('adler_score_class');
-        $param_adler_score_class->setAccessible(true);
-        $param_adler_score_class->setValue(adler_score_helpers_adler_score_mock::class);
-
         // create course
         $course = $this->getDataGenerator()->create_course();
         // create 3 cms as array
@@ -51,8 +26,17 @@ class adler_score_helpers_test extends adler_testcase {
             $cmids[] = $this->getDataGenerator()->create_module('url', ['course' => $course->id])->cmid;
         }
 
-        adler_score_helpers_adler_score_mock::reset_data();
-        adler_score_helpers_adler_score_mock::set_exceptions('__construct', [null, null, new not_an_adler_cm_exception()]);
+        $adler_score_helpers_adler_score_mock = Mockery::mock('overload:' . adler_score::class);
+        $adler_score_helpers_adler_score_mock
+            ->shouldReceive('__construct')
+            ->andReturnUsing(function () {
+                static $callCount = 0;
+                $callCount++;
+                if ($callCount === 3) {
+                    throw new not_an_adler_cm_exception();
+                }
+                return (object)[];
+            });
 
         // call function
         $result = adler_score_helpers::get_adler_score_objects($cmids);
@@ -60,17 +44,31 @@ class adler_score_helpers_test extends adler_testcase {
         // check result
         $this->assertEquals(3, count($result));
         // check types of result
-        $this->assertTrue($result[$cmids[0]] instanceof adler_score_helpers_adler_score_mock);
-        $this->assertTrue($result[$cmids[1]] instanceof adler_score_helpers_adler_score_mock);
+        $this->assertTrue($result[$cmids[0]] instanceof adler_score);
+        $this->assertTrue($result[$cmids[1]] instanceof adler_score);
         $this->assertTrue($result[$cmids[2]] === false);
+    }
 
-        // other exception
-        adler_score_helpers_adler_score_mock::reset_data();
-        adler_score_helpers_adler_score_mock::set_exceptions('__construct', [new moodle_exception('blub')]);
+    /**
+     * @runInSeparateProcess
+     * # ANF-ID: [MVP9, MVP8, MVP7]
+     */
+    public function test_get_adler_score_objects_with_moodle_exception() {
+        // create course
+        $course = $this->getDataGenerator()->create_course();
+        // create cm
+        $cmid = $this->getDataGenerator()->create_module('url', ['course' => $course->id])->cmid;
 
+        $adler_score_helpers_adler_score_mock = Mockery::mock('overload:' . adler_score::class);
+        $adler_score_helpers_adler_score_mock
+            ->shouldReceive('__construct')
+            ->andThrow(new moodle_exception('blub'));
+
+        // call function and expect exception
         $this->expectException(moodle_exception::class);
+        $this->expectExceptionMessage('blub');
 
-        adler_score_helpers::get_adler_score_objects([$cmids[0]]);
+        adler_score_helpers::get_adler_score_objects([$cmid]);
     }
 
     public function provide_test_get_achieved_scores_data(): array {
