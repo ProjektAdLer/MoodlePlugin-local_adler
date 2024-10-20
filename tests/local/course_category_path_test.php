@@ -93,10 +93,6 @@ class course_category_path_test extends adler_testcase {
         $this->assertEquals(2, $path->count());
     }
 
-    /**
-     * @runInSeparateProcess
-     * # ANF-ID: [MVP20, MVP21]
-     */
     private function setup_make_categories_list_mock() {
         $mock = Mockery::mock('alias:' . core_course_category::class);
         $mock->shouldReceive('make_categories_list')->andReturn([

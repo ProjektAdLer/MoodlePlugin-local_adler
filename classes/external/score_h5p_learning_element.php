@@ -4,6 +4,7 @@ namespace local_adler\external;
 
 use coding_exception;
 use context;
+use core\di;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
@@ -79,7 +80,7 @@ class score_h5p_learning_element extends external_api {
         // first check if the modules support adler scoring
         // if one cm is not part of an adler course or is not an adler cm an exception is thrown
         $module_ids = static::get_module_ids_from_xapi($xapi);
-        $adler_scores = adler_score_helpers::get_adler_score_objects($module_ids);
+        $adler_scores = di::get(adler_score_helpers::class)::get_adler_score_objects($module_ids);
 
         // proxy xapi payload to core xapi library
         $result = static::call_external_function('core_xapi_statement_post', array(
@@ -93,13 +94,13 @@ class score_h5p_learning_element extends external_api {
 
         // get adler score
         try {
-            $scores = adler_score_helpers::get_achieved_scores(null, null, $adler_scores);
+            $scores = di::get(adler_score_helpers::class)::get_achieved_scores(null, null, $adler_scores);
         } catch (moodle_exception $e) {
             $logger->error('Failed to get adler scores, but xapi statements are already processed');
             throw new moodle_exception('failed_to_get_adler_score', 'local_adler', '', $e->getMessage());
         }
 
         // convert $scores to return format
-        return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
+        return ['data' => di::get(lib::class)::convert_adler_score_array_format_to_response_structure($scores)];
     }
 }

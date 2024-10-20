@@ -2,6 +2,7 @@
 
 global $CFG;
 
+use core\di;
 use local_adler\lib\adler_testcase;
 use local_adler\local\course_category_manager;
 use local_adler\local\exceptions\exit_exception;
@@ -9,9 +10,55 @@ use local_adler\local\exceptions\exit_exception;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class create_course_cat_and_assign_user_role_test extends adler_testcase {
+    public function provide_test_create_course_cat_and_assign_user_role_data() {
+        return [
+            'valid_username_and_role_with_category_path' => [
+                'username' => 'valid_username',
+                'role' => 'valid_role',
+                'category_path' => 'valid_category_path',
+                'expected_parameters' => ['valid_username', 'valid_role', 'valid_category_path'],
+                'expected_exit_code' => 0,
+            ],
+            'valid_username_and_role_with_whitespace_trimmed' => [
+                'username' => ' valid_username ',
+                'role' => ' valid_role ',
+                'category_path' => ' valid_category_path ',
+                'expected_parameters' => ['valid_username', 'valid_role', 'valid_category_path'],
+                'expected_exit_code' => 0,
+            ],
+            'valid_username_and_role_without_category_path' => [
+                'username' => 'valid_username',
+                'role' => 'valid_role',
+                'category_path' => null,
+                'expected_parameters' => ['valid_username', 'valid_role', null],
+                'expected_exit_code' => 0,
+            ],
+            'missing_username' => [
+                'username' => null,
+                'role' => 'valid_role',
+                'category_path' => 'valid_category_path',
+                'expected_parameters' => [],
+                'expected_exit_code' => 1,
+            ],
+            'empty_username' => [
+                'username' => '',
+                'role' => 'valid_role',
+                'category_path' => 'valid_category_path',
+                'expected_parameters' => [],
+                'expected_exit_code' => 1,
+            ],
+            'missing_role' => [
+                'username' => 'valid_username',
+                'role' => null,
+                'category_path' => 'valid_category_path',
+                'expected_parameters' => [],
+                'expected_exit_code' => 1,
+            ],
+        ];
+    }
+
     /**
      * @dataProvider provide_test_create_course_cat_and_assign_user_role_data
-     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP20, MVP21]
      */
@@ -19,11 +66,8 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
         global $CFG;
 
         // Arrange
-        $mock = Mockery::mock('overload:' . course_category_manager::class);
-        $mock->shouldReceive('create_category_user_can_create_courses_in')
-            ->once()
-            ->with(...$expected_parameters)
-            ->andReturn(42);
+        $mock = Mockery::mock(course_category_manager::class);
+        di::set(course_category_manager::class, $mock);
 
         $_SERVER['argv'] = [
             'create_course_cat_and_assign_user_role.php',
@@ -33,7 +77,12 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
         ];
 
 
-        if ($expected_exit_code !== 0) {
+        if ($expected_exit_code == 0) {
+            $mock->shouldReceive('create_category_user_can_create_courses_in')
+                ->once()
+                ->with(...$expected_parameters)
+                ->andReturn(42);
+        } else {
             $this->expectExceptionCode($expected_exit_code);
         }
 
@@ -41,47 +90,28 @@ class create_course_cat_and_assign_user_role_test extends adler_testcase {
         require $CFG->dirroot . '/local/adler/cli/create_course_cat_and_assign_user_role.php';
     }
 
-    public function provide_test_create_course_cat_and_assign_user_role_data() {
-        return [
-            [
-                'username' => 'valid_username',
-                'role' => 'valid_role',
-                'category_path' => 'valid_category_path',
-                'expected_parameters' => ['valid_username', 'valid_role', 'valid_category_path'],
-                'expected_exit_code' => 0,
-            ], [
-                'username' => ' valid_username ',
-                'role' => ' valid_role ',
-                'category_path' => ' valid_category_path ',
-                'expected_parameters' => ['valid_username', 'valid_role', 'valid_category_path'],
-                'expected_exit_code' => 0,
-            ], [
-                'username' => 'valid_username',
-                'role' => 'valid_role',
-                'category_path' => null,
-                'expected_parameters' => ['valid_username', 'valid_role', null],
-                'expected_exit_code' => 0,
-            ], [
-                'username' => null,
-                'role' => 'valid_role',
-                'category_path' => 'valid_category_path',
-                'expected_parameters' => [],
-                'expected_exit_code' => 1,
-            ], [
-                'username' => '',
-                'role' => 'valid_role',
-                'category_path' => 'valid_category_path',
-                'expected_parameters' => [],
-                'expected_exit_code' => 1,
-            ], [
-                'username' => 'valid_username',
-                'role' => null,
-                'category_path' => 'valid_category_path',
-                'expected_parameters' => [],
-                'expected_exit_code' => 1,
-            ],
+    public function test_create_course_cat_and_assign_user_role_create_exception() {
+        global $CFG;
 
+        // Arrange
+        $mock = Mockery::mock(course_category_manager::class);
+        di::set(course_category_manager::class, $mock);
+
+        $_SERVER['argv'] = [
+            'create_course_cat_and_assign_user_role.php',
+            '--username=blub',
+            '--role=blub',
+            '--category_path=blub',
         ];
+
+
+        $mock->shouldReceive('create_category_user_can_create_courses_in')
+            ->once()
+            ->andThrow(moodle_exception::class);
+        $this->expectExceptionCode(1);
+
+        // Act
+        require $CFG->dirroot . '/local/adler/cli/create_course_cat_and_assign_user_role.php';
     }
 
     /**

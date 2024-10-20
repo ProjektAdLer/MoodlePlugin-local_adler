@@ -17,7 +17,6 @@ use Mockery;
 class plugin_interface_test extends adler_testcase {
     /**
      * @runInSeparateProcess
-     * @preserveGlobalState disabled
      *
      * # ANF-ID: [MVP12, MVP13]
      */
@@ -39,9 +38,6 @@ class plugin_interface_test extends adler_testcase {
         $this->assertFalse($result);
     }
 
-    /**
-     * @preserveGlobalState disabled
-     */
     public function test_get_section_name() {
         $section_db_mock = Mockery::mock(moodle_core_repository::class);
         $section_db_mock->shouldReceive('get_moodle_section')

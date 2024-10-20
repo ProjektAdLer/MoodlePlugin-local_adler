@@ -2,6 +2,7 @@
 namespace local_adler\external;
 
 use context_course;
+use core\di;
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
@@ -47,7 +48,7 @@ class score_get_course_scores extends external_api {
         }
 
         // get scores
-        $scores = adler_score_helpers::get_achieved_scores($module_ids);
+        $scores = di::get(adler_score_helpers::class)::get_achieved_scores($module_ids);
 
         // convert format return
         return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];

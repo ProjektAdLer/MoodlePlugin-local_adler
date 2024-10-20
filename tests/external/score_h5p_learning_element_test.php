@@ -4,6 +4,7 @@ namespace local_adler\external;
 
 
 use context_module;
+use core\di;
 use local_adler\adler_score_helpers;
 use local_adler\lib\adler_externallib_testcase;
 use Mockery;
@@ -117,7 +118,6 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
-     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP9]
      */
@@ -129,13 +129,13 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
         $score_h5p_learning_element_mock->shouldReceive('get_module_ids_from_xapi')->andReturn([42]);
 
 
-        $adler_score_helpers_mock = Mockery::mock('overload:' . adler_score_helpers::class);
+        $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
         if ($exception_get_adler_score_objects) {
             $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')->andThrow(moodle_exception::class);
             // should not proceed to xapi event if get_adler_score_objects throws an exception
             $score_h5p_learning_element_mock->shouldNotReceive('call_external_function');
         } else {
-            $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')->andReturn(42);
+            $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')->andReturn([42]);
 
             if ($core_xapi_statement_post_error == null) {
                 $score_h5p_learning_element_mock->shouldReceive('call_external_function')->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)->andReturn(['error'=>false]);
@@ -150,9 +150,11 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
         } else {
             $adler_score_helpers_mock->shouldReceive('get_achieved_scores')->andReturn($get_achieved_scores_response);
         }
+        di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
-        $lib_mock = Mockery::mock('overload:' . lib::class);
+        $lib_mock = Mockery::mock(lib::class);
         $lib_mock->shouldReceive('convert_adler_score_array_format_to_response_structure')->with($get_achieved_scores_response)->andReturn([42]);
+        di::set(lib::class, $lib_mock);
 
 
         $result = $score_h5p_learning_element_mock::execute($xapi);

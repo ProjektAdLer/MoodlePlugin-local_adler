@@ -4,6 +4,7 @@ namespace local_adler\external;
 
 
 use context_module;
+use core\di;
 use local_adler\adler_score_helpers;
 use local_adler\lib\adler_externallib_testcase;
 use Mockery;
@@ -27,7 +28,6 @@ class score_get_course_scores_test extends adler_externallib_testcase {
 
     /**
      * @dataProvider provide_test_execute_data
-     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP7]
      */
@@ -59,9 +59,10 @@ class score_get_course_scores_test extends adler_externallib_testcase {
             $expected_result[] = ['moduleid' => $module->id, 'score' => $i * 2];
         }
         // adler score mock
-        $adler_score_helpers_mock = Mockery::mock('overload:' . adler_score_helpers::class);
+        $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
         $adler_score_helpers_mock->shouldReceive('get_achieved_scores')
             ->andReturn($adler_score_helpers_mock_get_achieved_scores_return);
+        di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
 
         $result = $score_get_course_scores_mock->execute($course->id);

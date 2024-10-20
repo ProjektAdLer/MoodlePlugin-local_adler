@@ -1,5 +1,6 @@
 <?php
 
+use core\di;
 use local_adler\local\course_category_manager;
 use local_adler\local\exceptions\exit_exception;
 
@@ -61,7 +62,7 @@ if (!empty($options['help'])) {
 
 
     try {
-        $category_id = course_category_manager::create_category_user_can_create_courses_in($username, $role, $category_path);
+        $category_id = di::get(course_category_manager::class)::create_category_user_can_create_courses_in($username, $role, $category_path);
     } catch (moodle_exception $e) {
         cli_writeln($e->getMessage());
         throw new exit_exception(1);

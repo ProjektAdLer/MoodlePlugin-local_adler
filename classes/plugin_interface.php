@@ -17,6 +17,8 @@ class plugin_interface {
      * @param int $section_id moodle section id
      * @param int $user_id moodle user id
      * @return bool true if section is completed, false otherwise
+     * @throws dml_exception
+     * @throws moodle_exception
      * @throws not_an_adler_section_exception
      */
     public static function is_section_completed(int $section_id, int $user_id): bool {

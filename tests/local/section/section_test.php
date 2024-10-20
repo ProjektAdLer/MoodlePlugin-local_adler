@@ -95,7 +95,6 @@ class section_test extends adler_testcase {
 
     /**
      * @dataProvider provide_test_is_completed_data
-     * @runInSeparateProcess
      *
      * # ANF-ID: [MVP12]
      */
@@ -119,11 +118,12 @@ class section_test extends adler_testcase {
         di::set(moodle_core_repository::class, $moodle_core_repository);
 
         // Mock the adler_score_helpers
-        $adler_score_helpers_mock = Mockery::mock('overload:' . adler_score_helpers::class);
+        $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
         $adler_score_helpers_mock
             ->shouldReceive('get_achieved_scores')
             ->with($modules_list, $user_id)
             ->andReturn($scores_list);
+        di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
         // Create the section object
         $section = new section($section_id);
