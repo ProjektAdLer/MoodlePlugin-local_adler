@@ -41,7 +41,7 @@ class adler_sections_repository_test extends adler_testcase {
      */
     public function test_get_adler_section_by_uuid($success) {
         // create adler_section entry
-        $adler_section = $this->adler_generator->create_adler_section_object(1);
+        $adler_section = $this->adler_generator->create_adler_section(1);
 
         // mock section db
         $db_mock = Mockery::mock(moodle_core_repository::class)->makePartial();
@@ -68,7 +68,7 @@ class adler_sections_repository_test extends adler_testcase {
      */
     public function test_get_adler_section() {
         // create adler_section entry
-        $adler_section = $this->adler_generator->create_adler_section_object(1);
+        $adler_section = $this->adler_generator->create_adler_section(1);
 
         $db_adler_section = di::get(adler_sections_repository::class)->get_adler_section(1);
 
@@ -79,8 +79,8 @@ class adler_sections_repository_test extends adler_testcase {
         $adler_sections_repository = di::get(adler_sections_repository::class);
 
         // create section objects
-        $section1 = $this->adler_generator->create_adler_section_object(1);
-        $section2 = $this->adler_generator->create_adler_section_object(2);
+        $section1 = $this->adler_generator->create_adler_section(1);
+        $section2 = $this->adler_generator->create_adler_section(2);
 
         // retrieve records using the method
         $retrieved_sections = $adler_sections_repository->get_all_adler_sections();
@@ -95,7 +95,7 @@ class adler_sections_repository_test extends adler_testcase {
         $adler_sections_repository = di::get(adler_sections_repository::class);
 
         // create section object
-        $section = $this->adler_generator->create_adler_section_object(1);
+        $section = $this->adler_generator->create_adler_section(1);
 
         // ensure record exists
         $record = di::get(moodle_database::class)->get_record('local_adler_sections', ['section_id' => 1]);
@@ -113,7 +113,7 @@ class adler_sections_repository_test extends adler_testcase {
         $adler_sections_repository = di::get(adler_sections_repository::class);
 
         // create section object
-        $section = $this->adler_generator->create_adler_section_object(1, [], false);
+        $section = $this->adler_generator->create_adler_section(1, [], false);
 
         // insert record
         $id = $adler_sections_repository->create_adler_section($section);

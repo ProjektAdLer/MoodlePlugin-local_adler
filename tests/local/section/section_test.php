@@ -160,7 +160,7 @@ class section_test extends adler_testcase {
         // create adler entries for course, section and module
         $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
         $adler_generator->create_adler_course_object($course->id);
-        $adler_generator->create_adler_section_object($section_id);
+        $adler_generator->create_adler_section($section_id);
         $adler_generator->create_adler_course_module($module->cmid, ['score_max' => $cm_score]);
 
         // create user

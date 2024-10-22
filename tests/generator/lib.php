@@ -59,7 +59,7 @@ class local_adler_generator extends component_generator_base {
         return $create_adler_course_item;
     }
 
-    public function create_adler_section_object(int $section_id, array $params = array(), bool $insert = true) {
+    public function create_adler_section(int $section_id, array $params = array(), bool $insert = true) {
         global $DB;
         $default_params = [
             'section_id' => $section_id,

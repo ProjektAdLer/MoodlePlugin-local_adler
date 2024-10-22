@@ -22,7 +22,7 @@ class uninstall_test extends adler_testcase {
         // create adler sections
         $sections = array_values($DB->get_records('course_sections', ['course' => $course->id]));
         for ($i = 0; $i < count($sections); $i++) {
-            $adler_generator->create_adler_section_object($sections[$i]->id);
+            $adler_generator->create_adler_section($sections[$i]->id);
             if ($i > 0) {
                 $adler_generator->create_adler_condition($sections[$i]->id, [(int)$sections[$i - 1]->id]);
             }

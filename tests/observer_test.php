@@ -44,12 +44,12 @@ class observer_test extends adler_testcase {
         // create some adler section records in course
         $sections = array_values($DB->get_records('course_sections', ['course' => $course->id]));
         for ($i = 1; $i < count($sections); $i++) {
-            $adler_sections_keep[] = $adler_generator->create_adler_section_object($sections[$i]->id);
+            $adler_sections_keep[] = $adler_generator->create_adler_section($sections[$i]->id);
         }
 
         // create some adler condition records without moodle sections
         for ($i = 0; $i < 10; $i++) {
-            $adler_sections_tb_deleted[] = $adler_generator->create_adler_section_object($sections[count($sections) - 1]->id + 10 + $i);
+            $adler_sections_tb_deleted[] = $adler_generator->create_adler_section($sections[count($sections) - 1]->id + 10 + $i);
         }
 
 
@@ -143,7 +143,7 @@ class observer_test extends adler_testcase {
 
         if ($data['case'] == 'default' || $data['case'] == 'no_adler_course') {
             // make first section adler section
-            $adler_generator->create_adler_section_object($sections[0]->id);
+            $adler_generator->create_adler_section($sections[0]->id);
         }
 
         // create mock course_section_deleted
