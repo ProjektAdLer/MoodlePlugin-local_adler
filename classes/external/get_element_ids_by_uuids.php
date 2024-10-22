@@ -141,7 +141,7 @@ class get_element_ids_by_uuids extends external_api {
                 break;
             case 'cm':
                 try {
-                    $cm = di::get(adler_course_module_repository::class)->get_adler_course_module_by_uuid($uuid, $course_id);
+                    $cm = di::get(adler_course_module_repository::class)->get_adler_course_module($uuid, $course_id);
                 } catch (dml_exception $e) {
                     $logger->debug($e->getMessage());
                     throw new invalid_parameter_exception('course module not found, $uuid: ' . $uuid . ', $course_id: ' . $course_id);

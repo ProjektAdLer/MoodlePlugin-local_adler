@@ -106,7 +106,7 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
                 'course_id' => 1,
                 'expected_moodle_id' => 202,
                 'expected_context_id' => 303,
-                'repository_method' => 'get_adler_course_module_by_uuid',
+                'repository_method' => 'get_adler_course_module',
                 'repository_class' => adler_course_module_repository::class,
                 'repository_return' => (object)['cmid' => 202],
                 'expect_exception' => false,
@@ -139,7 +139,7 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
                 'course_id' => 1,
                 'expected_moodle_id' => null,
                 'expected_context_id' => null,
-                'repository_method' => 'get_adler_course_module_by_uuid',
+                'repository_method' => 'get_adler_course_module',
                 'repository_class' => adler_course_module_repository::class,
                 'repository_return' => null,
                 'expect_exception' => true,
@@ -235,5 +235,47 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
         $result = get_element_ids_by_uuids::validate_parameters(get_element_ids_by_uuids::execute_returns(), $data);
 
         $this->assertEquals($data, $result);
+    }
+
+    public function test_execute_integrationtest() {
+        // Create a user and a course
+        $user = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        // Create adler adaptivity section and course module
+        $section_uuid = 'section-uuid-123';
+        $cm_uuid = 'cm-uuid-456';
+        // create url module
+        $url_cm = $this->getDataGenerator()->create_module('url', ['course' => $course->id]);
+        $url_adler_cm = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($url_cm->cmid, ['uuid' => $cm_uuid]);
+        // create adler section
+        $section_id = get_fast_modinfo($course->id)->get_cm($url_cm->cmid)->section;
+        $adler_section = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_section($section_id, ['uuid' => $section_uuid]);
+
+        // Login as the user
+        $this->setUser($user);
+
+        // Prepare the input data
+        $elements = [
+            [
+                'course_id' => $course->id,
+                'element_type' => 'section',
+                'uuid' => $section_uuid,
+            ],
+            [
+                'course_id' => $course->id,
+                'element_type' => 'cm',
+                'uuid' => $cm_uuid,
+            ],
+        ];
+
+        // Call the execute method
+        $result = get_element_ids_by_uuids::execute($elements);
+
+        // Check the result
+        $this->assertCount(2, $result['data']);
+        $this->assertEquals($section_id, $result['data'][0]['moodle_id']);
+        $this->assertEquals($url_cm->cmid, $result['data'][1]['moodle_id']);
     }
 }
