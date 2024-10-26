@@ -38,9 +38,6 @@ class course_category_manager {
         if (!$moodle_core_repository->get_role_id_by_shortname($role)) {
             throw new moodle_exception('role_not_found', 'local_adler');
         }
-        if ($category_path->exists()) {
-            throw new moodle_exception('category_already_exists', 'local_adler');
-        }
 
         // get role id and check if role is assignable to a course category
         $role_id = $moodle_core_repository->get_role_id_by_shortname($role);

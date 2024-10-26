@@ -55,24 +55,6 @@ class course_category_manager_test extends adler_testcase {
     }
 
     /**
-     * @runInSeparateProcess
-     * # ANF-ID: [MVP20, MVP21]
-     */
-    public function test_category_already_exists() {
-        // Arrange
-        $this->mockRepo->shouldReceive('get_user_id_by_username')->andReturn(1); // return a valid user ID
-        $this->mockRepo->shouldReceive('get_role_id_by_shortname')->andReturn(1); // return a valid role ID
-
-        $mockPath = Mockery::mock('overload:' . course_category_path::class);
-        $mockPath->shouldReceive('exists')->andReturn(true);
-
-        // Act and Assert
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('category_already_exists');
-        course_category_manager::create_category_user_can_create_courses_in('valid_username', 'valid_role', 'existing_category_path');
-    }
-
-    /**
      * @dataProvider provide_test_valid_username_role_and_category_path_data
      * @runInSeparateProcess
      *
