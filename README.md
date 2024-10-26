@@ -46,20 +46,6 @@ Damit der mbz api endpunkt auch mit größeren Dateien funktioniert sind folgend
 3. Moodle upgrade ausführen
 
 
-### Kurs mit Testdaten seeden
-Für Testzwecke können bestehende normale Kurse mit dummy Daten gefüllt werden.
-Im Ordner `dev_utils` liegt dazu das Skript `seed.php`.
-
-Beispiel: \
-Für den Kurs mit der ID 142 werden Daten für folgende Elemente geseedet:
-- Kurs: Markierung als Adler Kurs
-- Section (Räume): availability conditions & required points to complete
-- course modules (Lernelemente): AdLer Scoring
-Befehl: `php local/adler/dev_utils/seed.php --course-id=142 -c -m -s`
-
-Nun kann dieser Kurs zum Testen genutzt werden.
-
-
 ## Dev Setup / Tests
 Dieses Plugin nutzt Mockery für Tests. 
 Die composer.json von Moodle enthält Mockery nicht, daher enthält das Plugin eine eigene composer.json.
