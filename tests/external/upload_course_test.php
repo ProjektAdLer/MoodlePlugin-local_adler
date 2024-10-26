@@ -15,7 +15,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 class upload_course_test extends adler_externallib_testcase {
-    public function generate_mbz(bool $is_adler_course, bool|null $enable_self_enrolment = null): string {
+    public function generate_mbz(bool $is_adler_course=true, bool|null $enable_self_enrolment = null): string {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
@@ -50,6 +50,9 @@ class upload_course_test extends adler_externallib_testcase {
         $file = reset($file);
         $filepath = $file->get_contenthash();
         $filepath = $CFG->dataroot . '/filedir/' . substr($filepath, 0, 2) . '/' . substr($filepath, 2, 2) . '/' . $filepath;
+
+        // delete temporary course
+        delete_course($course->id);
 
         return $filepath;
     }
@@ -94,10 +97,43 @@ class upload_course_test extends adler_externallib_testcase {
         $this->assertEquals($enable_self_enrolment ? ENROL_INSTANCE_ENABLED : ENROL_INSTANCE_DISABLED, $self_enrol_instance->status);
     }
 
+    public function test_execute_fail_after_empty_course_created() {
+        global $DB;
+
+        $test_course_filepath = $this->generate_mbz(false);
+
+        $_FILES['mbz'] = [
+            'name' => 'test.mbz',
+            'type' => 'application/zip',
+            'tmp_name' => $test_course_filepath,
+            'error' => UPLOAD_ERR_OK,
+            'size' => 123,
+        ];
+
+        // create user, required for restore
+        $user = $this->getDataGenerator()->create_user();
+        $role_id = $DB->get_record('role', array('shortname' => 'manager'))->id;
+        role_assign($role_id, $user->id, 1);
+        $this->setUser($user->id);
+
+        // verify there is only one course
+        $this->assertCount(1, $DB->get_records('course'), 'Initially there sould be only one course');
+
+        try {
+            upload_course::execute(null, false);
+        } catch (not_an_adler_course_exception $e) {
+            // verify there is still only one course
+            $this->assertCount(1, $DB->get_records('course'));
+            return;
+        }
+
+        $this->fail();
+    }
+
+
     public function provide_test_execute_data() {
         return [
             'success' => [
-                'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => false,
                 'valid_user' => true,
@@ -105,7 +141,6 @@ class upload_course_test extends adler_externallib_testcase {
                 'dry_run' => false,
             ],
             'fail_validation' => [
-                'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => true,
                 'valid_user' => true,
@@ -113,23 +148,13 @@ class upload_course_test extends adler_externallib_testcase {
                 'dry_run' => false,
             ],
             'mbz_upload_failed' => [
-                'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_NO_FILE,
                 'fail_validation' => false,
                 'valid_user' => true,
                 'specify_course_cat' => false,
                 'dry_run' => false,
             ],
-            'not_adler_course' => [
-                'is_adler_course' => false,
-                'upload_error' => UPLOAD_ERR_OK,
-                'fail_validation' => false,
-                'valid_user' => true,
-                'specify_course_cat' => false,
-                'dry_run' => false,
-            ],
             'user_not_allowed' => [
-                'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => false,
                 'valid_user' => false,
@@ -137,7 +162,6 @@ class upload_course_test extends adler_externallib_testcase {
                 'dry_run' => false,
             ],
             'specified_course_cat' => [
-                'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => false,
                 'valid_user' => true,
@@ -145,7 +169,6 @@ class upload_course_test extends adler_externallib_testcase {
                 'dry_run' => false,
             ],
             'dry_run' => [
-                'is_adler_course' => true,
                 'upload_error' => UPLOAD_ERR_OK,
                 'fail_validation' => false,
                 'valid_user' => true,
@@ -160,15 +183,11 @@ class upload_course_test extends adler_externallib_testcase {
      *
      * # ANF-ID: [MVP11]
      */
-    public function test_execute($is_adler_course, $upload_error, $fail_validation, $valid_user, $specify_course_cat, $dry_run) {
-        $test_course_filepath = $this->generate_mbz($is_adler_course);
+    public function test_execute($upload_error, $fail_validation, $valid_user, $specify_course_cat, $dry_run) {
+        $test_course_filepath = $this->generate_mbz();
 
         global $DB;
         $course_count_before = $DB->count_records('course');
-
-        if (!$is_adler_course) {
-            $this->expectException(not_an_adler_course_exception::class);
-        }
 
         if ($upload_error !== UPLOAD_ERR_OK) {
             $this->expectException(invalid_parameter_exception::class);

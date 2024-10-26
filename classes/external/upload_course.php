@@ -21,6 +21,7 @@ use required_capability_exception;
 use restore_controller;
 use restore_controller_exception;
 use restore_dbops;
+use Throwable;
 
 
 class upload_course extends external_api {
@@ -108,45 +109,48 @@ class upload_course extends external_api {
         // create course
         $course_id = restore_dbops::create_new_course('', '', $category_id);
 
-        // extract mbz
-        $foldername = restore_controller::get_tempdir_name($course_id, $USER->id);
-        $fp = get_file_packer('application/vnd.moodle.backup');
-        $tempdir = make_backup_temp_directory($foldername);
-        $fp->extract_to_pathname($savedfilepath, $tempdir);
+        try {
+            // extract mbz
+            $foldername = restore_controller::get_tempdir_name($course_id, $USER->id);
+            $fp = get_file_packer('application/vnd.moodle.backup');
+            $tempdir = make_backup_temp_directory($foldername);
+            $fp->extract_to_pathname($savedfilepath, $tempdir);
 
-        // validate course is adler course
-        $course_xml_path = $tempdir . '/course/course.xml';
-        $contents = file_get_contents($course_xml_path);
-        if (!property_exists(simplexml_load_string($contents), 'plugin_local_adler_course')
-            || !property_exists(simplexml_load_string($contents)->plugin_local_adler_course, 'adler_course')) {
-            throw new not_an_adler_course_exception();
+            // validate course is adler course
+            $course_xml_path = $tempdir . '/course/course.xml';
+            $contents = file_get_contents($course_xml_path);
+            if (!property_exists(simplexml_load_string($contents), 'plugin_local_adler_course')
+                || !property_exists(simplexml_load_string($contents)->plugin_local_adler_course, 'adler_course')) {
+                throw new not_an_adler_course_exception();
+            }
+
+            // do restore: create controller
+            $controller = new restore_controller(
+                $foldername,
+                $course_id,
+                backup::INTERACTIVE_NO,
+                backup::MODE_GENERAL,  // MODE_IMPORT: Does not include files and does not process enrolments. WTF why is this called MODE_IMPORT, it should be called MODE_NOT_FOR_IMPORT...
+                $USER->id,
+                backup::TARGET_NEW_COURSE
+            );
+
+            // do restore: Configure to restore enrollment settings (taken from course/externallib.php: "enrolments" (int) Include enrolment methods (default to 1 - restore only with users)).
+            $plan = $controller->get_plan();
+            $plan->get_tasks()[0]->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
+
+            // do restore: execute
+            $controller->execute_precheck();
+            $controller->execute_plan();
+            $controller->destroy();
+        } catch (Throwable $e) {
+            delete_course($course_id);
+            throw $e;
+        } finally {
+            // delete file $savedfilepath
+            unlink($savedfilepath);
+            // delete tempdir
+            fulldelete($tempdir);
         }
-
-        // do restore: create controller
-        $controller = new restore_controller(
-            $foldername,
-            $course_id,
-            backup::INTERACTIVE_NO,
-            backup::MODE_GENERAL,  // MODE_IMPORT: Does not include files and does not process enrolments. WTF why is this called MODE_IMPORT, it should be called MODE_NOT_FOR_IMPORT...
-            $USER->id,
-            backup::TARGET_NEW_COURSE
-        );
-
-        // do restore: Configure to restore enrollment settings (taken from course/externallib.php: "enrolments" (int) Include enrolment methods (default to 1 - restore only with users)).
-        $plan = $controller->get_plan();
-        $plan->get_tasks()[0]->get_setting('enrolments')->set_value(backup::ENROL_ALWAYS);
-
-        // do restore: execute
-        $controller->execute_precheck();
-        $controller->execute_plan();
-        $controller->destroy();
-
-
-        // delete file $savedfilepath
-        unlink($savedfilepath);
-        // delete tempdir
-        fulldelete($tempdir);
-
 
         // get course object
         $course = get_course($course_id);
