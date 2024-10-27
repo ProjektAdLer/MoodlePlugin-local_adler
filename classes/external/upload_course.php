@@ -8,6 +8,7 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 use backup;
 use context_coursecat;
+use core\di;
 use core_course_category;
 use core_external\external_api;
 use core_external\external_function_parameters;
@@ -16,6 +17,7 @@ use core_external\external_value;
 use dml_exception;
 use invalid_parameter_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
+use moodle_database;
 use moodle_exception;
 use required_capability_exception;
 use restore_controller;
@@ -106,6 +108,8 @@ class upload_course extends external_api {
         // move file "mbz" from $_FILES to $savedfilepath
         rename($_FILES['mbz']['tmp_name'], $savedfilepath);
 
+        $transaction = di::get(moodle_database::class)->start_delegated_transaction();
+
         // create course
         $course_id = restore_dbops::create_new_course('', '', $category_id);
 
@@ -143,7 +147,7 @@ class upload_course extends external_api {
             $controller->execute_plan();
             $controller->destroy();
         } catch (Throwable $e) {
-            delete_course($course_id);
+            $transaction->rollback($e);
             throw $e;
         } finally {
             // delete file $savedfilepath
@@ -151,6 +155,7 @@ class upload_course extends external_api {
             // delete tempdir
             fulldelete($tempdir);
         }
+        $transaction->allow_commit();
 
         // get course object
         $course = get_course($course_id);
