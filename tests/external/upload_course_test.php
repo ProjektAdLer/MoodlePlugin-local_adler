@@ -100,6 +100,14 @@ class upload_course_test extends adler_externallib_testcase {
     public function test_execute_fail_after_empty_course_created() {
         global $DB;
 
+        // From my understanding these checks are not possible for postgresql databases as they don't allow rolling back sub-transactions
+        // Overall the behaviour should still be correct, but as this code is executed as part of a higher level transaction
+        // the transaction is not yet rolled back and therefore the modifications are not yet undone
+        if ($DB->get_dbfamily() === 'postgres') {
+            $this->markTestSkipped('This test is not compatible with postgres');
+        }
+
+
         $test_course_filepath = $this->generate_mbz(false);
 
         $_FILES['mbz'] = [
