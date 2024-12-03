@@ -12,18 +12,10 @@ use moodle_database;
 use moodle_exception;
 use stdClass;
 
-class SimpleCLILogger {
-    public function __call($name, $arguments) {
-        $logLevels = ['info', 'warning', 'error'];
-        if (in_array($name, $logLevels) && isset($arguments[0])) {
-            cli_writeln(strtoupper($name) . ': ' . $arguments[0]);
-        }
-    }
-}
 
 class upgrade_3_2_0_to_4_0_0_completionlib {
     private int $course_id;
-    private logger|SimpleCLILogger $logger;
+    private logger|simple_cli_logger $logger;
     private moodle_core_repository $moodle_core_repository;
     private bool $called_during_upgrade;
 
@@ -31,7 +23,7 @@ class upgrade_3_2_0_to_4_0_0_completionlib {
         global $CFG;
         if (property_exists($CFG, 'upgraderunning') && $CFG->upgraderunning) {
             // not allowed to depend on other plugins during upgrade
-            $this->logger = new SimpleCLILogger();
+            $this->logger = new simple_cli_logger();
             $this->called_during_upgrade = true;
         } else {
             $this->logger = new logger('local_adler', self::class);
