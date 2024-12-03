@@ -44,11 +44,7 @@ class course_category_path implements Countable {
      * @return bool Returns true if the category path exists in moodle, false otherwise.
      */
     public function exists(): bool {
-        if ($this->get_category_id() === false) {
-            return false;
-        } else {
-            return true;
-        }
+        return $this->get_category_id() !== false;
     }
 
     /**
