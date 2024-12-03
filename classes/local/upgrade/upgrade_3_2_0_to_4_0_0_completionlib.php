@@ -134,8 +134,12 @@ class upgrade_3_2_0_to_4_0_0_completionlib {
         $this->moodle_core_repository->update_course_module_record($cm_info->id, [
             'completion' => 2,
             'completionpassgrade' => $view ? 0 : 1,
-            'completionview' => $view ? 1 : 0,
-            'completiongradeitemnumber' => 0
+            'completionview' => $view ? 1 : 0
         ]);
+        if (!$view) {
+            $this->moodle_core_repository->update_course_module_record($cm_info->id, [
+                'completiongradeitemnumber' => 0
+            ]);
+        }
     }
 }
