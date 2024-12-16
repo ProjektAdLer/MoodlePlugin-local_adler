@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/infection/infection/0.29.0/resources/schema.json",
+  "source": {
+    "directories": [
+      "local/adler/classes"
+    ]
+  },
+  "phpUnit": {
+    "configDir": ".",
+    "customPath": "./vendor/phpunit/phpunit/phpunit"
+  },
+  "initialTestsPhpOptions": "-dxdebug.mode=off -dpcov.enabled=1 -dpcov.directory=.",
+  "bootstrap": "vendor/autoloadmoodle.php",
+  "mutators": {
+    "@default": true,
+    "Plus": true,
+    "Minus": true,
+    "Multiplication": true,
+    "Division": true,
+//    "Concat": {
+//      ignore: [
+//        "local_logging\\logger"
+//      ]
+//    },
+    "global-ignoreSourceCodeByRegex": [
+      "\\$this->logger.*",
+      "\\$logger->.*"
+    ]
+  },
+}
