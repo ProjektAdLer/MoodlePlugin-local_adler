@@ -4,8 +4,6 @@ namespace local_adler;
 
 use core\di;
 use dml_exception;
-use invalid_parameter_exception;
-use local_adler\local\course_category_manager;
 use local_adler\local\db\moodle_core_repository;
 use local_adler\local\exceptions\not_an_adler_section_exception;
 use local_adler\local\section\section;
@@ -33,19 +31,5 @@ class plugin_interface {
      */
     public static function get_section_name(int $section_id): string {
         return di::get(moodle_core_repository::class)->get_moodle_section($section_id)->name;
-    }
-
-    /** Create a new course category and grant the user permission to create adler courses in it.
-     *
-     * @param string $username The username of the existing user.
-     * @param string $role shortname of the role to assign to the user.
-     * @param string|null $category_path The path of the category. If null or an empty string is passed, it initializes to "adler/{$username}".
-     * @return int The ID of the created category.
-     * @throws dml_exception
-     * @throws moodle_exception
-     * @throws invalid_parameter_exception
-     */
-    public static function create_category_user_can_create_courses_in(string $username, string $role, string|null $category_path = Null): int {
-        return di::get(course_category_manager::class)::create_category_user_can_create_courses_in($username, $role, $category_path);
     }
 }
