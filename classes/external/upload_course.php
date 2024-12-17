@@ -7,6 +7,7 @@ global $CFG;
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 use backup;
+use context_course;
 use context_coursecat;
 use core\di;
 use core_course_category;
@@ -17,6 +18,7 @@ use core_external\external_value;
 use dml_exception;
 use invalid_parameter_exception;
 use local_adler\local\exceptions\not_an_adler_course_exception;
+use local_adler\moodle_core;
 use moodle_database;
 use moodle_exception;
 use required_capability_exception;
@@ -146,6 +148,14 @@ class upload_course extends external_api {
             $controller->execute_precheck();
             $controller->execute_plan();
             $controller->destroy();
+
+            // unassign role teacher
+            $role_id = di::get(moodle_core::class)::get_role('editingteacher')->id;
+            role_unassign($role_id, $USER->id, context_course::instance($course_id)->id);
+
+            // assign role non editing teacher
+            $role_id = di::get(moodle_core::class)::get_role('teacher')->id;
+            role_assign($role_id, $USER->id, context_course::instance($course_id)->id);
         } catch (Throwable $e) {
             $transaction->rollback($e);
             throw $e;

@@ -5,6 +5,7 @@ namespace local_adler\external;
 
 use backup;
 use backup_controller;
+use context_course;
 use invalid_parameter_exception;
 use local_adler\lib\adler_externallib_testcase;
 use local_adler\local\exceptions\not_an_adler_course_exception;
@@ -229,7 +230,7 @@ class upload_course_test extends adler_externallib_testcase {
 
         // case dry_run
         $param_dry_run = $dry_run ? true : false;
-        upload_course::execute($param_course_cat, $param_dry_run);
+        $result = upload_course::execute($param_course_cat, $param_dry_run);
 
 
         $course_count_after = $DB->count_records('course');
@@ -238,6 +239,12 @@ class upload_course_test extends adler_externallib_testcase {
             $this->assertEquals($course_count_before, $course_count_after);
         } else {
             $this->assertEquals($course_count_before + 1, $course_count_after);
+            // check role of user to be noneditingteacher
+            $user_role = get_role_users(
+                $DB->get_record('role', ['shortname' => 'teacher'])->id,
+                context_course::instance($result['data']['course_id']),
+            );
+            $this->assertCount(1, $user_role);
         }
     }
 
