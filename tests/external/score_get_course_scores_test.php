@@ -8,6 +8,7 @@ use core\di;
 use local_adler\adler_score_helpers;
 use local_adler\lib\adler_externallib_testcase;
 use Mockery;
+use moodle_database;
 use ReflectionClass;
 
 global $CFG;
@@ -69,6 +70,74 @@ class score_get_course_scores_test extends adler_externallib_testcase {
 
         // validate return value
         $this->assertEqualsCanonicalizing($expected_result, $result['data']);
+    }
+
+    public function test_execute_integration() {
+        // upload user
+        $upload_user = $this->getDataGenerator()->create_user();
+        $this->setUser($upload_user);
+
+        //// course
+        $course = $this->getDataGenerator()->create_course(
+            ['numsections' => 2,'enablecompletion' => 1], // numsections starts at 0. so 0 means 1, 1 means 2, ...
+            ['createsections' => true]
+        );
+        $adler_course = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_object($course->id);
+        $sections = di::get(moodle_database::class)->get_records('course_sections', ['course' => $course->id]);
+        $sectionids = array_keys($sections);
+
+        // Erste Section: "Section 0" Mit Kursinfo
+        $cm_1_1 = $this->getDataGenerator()->create_module('label', ['course' => $course->id, 'section' => $sectionids[0]]);
+
+        // Zweite Section: Zwei Resources
+        $adler_section2 = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_section($sectionids[1], ['required_points_to_complete' => 2]);
+
+        $cm_2_1 = $this->getDataGenerator()->create_module('resource', [
+            'course' => $course->id,
+            'section' => $sectionids[1],
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+            'completionpassgrade' => 0
+        ]);
+        $cm_2_2 = $this->getDataGenerator()->create_module('resource', [
+            'course' => $course->id,
+            'section' => $sectionids[1],
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+            'completionpassgrade' => 0
+        ]);
+        $adler_cm_2_1 = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm_2_1->cmid, ['score_max' => 1]);
+        $adler_cm_2_2 = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm_2_2->cmid, ['score_max' => 1]);
+
+        // Dritte Section: externer Lerninhalt
+        $cm_3_1 = $this->getDataGenerator()->create_module('resource', [
+            'course' => $course->id,
+            'section' => $sectionids[2],
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+            'completionpassgrade' => 0
+        ]);
+
+
+        //// user
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+        $this->setUser($user);
+
+
+        //// attempt one resource
+        trigger_event_cm_viewed::execute((int)$cm_2_1->cmid);
+
+
+        //// test
+        $result = score_get_course_scores::execute($course->id);
+
+        $this->assertEqualsCanonicalizing([
+            ['module_id' => $cm_1_1->cmid],
+            ['module_id' => $cm_2_1->cmid, 'score' => 1],
+            ['module_id' => $cm_2_2->cmid, 'score' => 0],
+            ['module_id' => $cm_3_1->cmid],
+        ], $result['data']);
     }
 
     /**
