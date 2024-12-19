@@ -7,6 +7,7 @@ use context_module;
 use core\di;
 use local_adler\adler_score_helpers;
 use local_adler\lib\adler_externallib_testcase;
+use local_adler\moodle_core;
 use Mockery;
 use moodle_database;
 use ReflectionClass;
@@ -38,12 +39,8 @@ class score_get_course_scores_test extends adler_externallib_testcase {
 
         // mock context
         $context_mock = Mockery::mock(context_module::class);
-        $context_mock->shouldReceive('instance')->andReturn($context_mock);
-
-        $reflected_class = new ReflectionClass(score_get_course_scores::class);
-        $property = $reflected_class->getProperty('context_course');
-        $property->setAccessible(true);
-        $property->setValue(null, $context_mock->mockery_getName());
+        $moodle_core_mock = Mockery::mock(moodle_core::class);
+        $moodle_core_mock->shouldReceive('context_course_instance')->andReturn($context_mock);
 
         // mock validate_context
         $score_get_course_scores_mock = Mockery::mock(score_get_course_scores::class)->makePartial();
