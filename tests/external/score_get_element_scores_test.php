@@ -34,7 +34,11 @@ class score_get_element_scores_test extends adler_externallib_testcase {
         di::set(moodle_core::class, $moodle_core_mock);
 
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
-        $adler_score_helpers_mock->shouldReceive('get_achieved_scores')->andReturn([1 => 0, 2 => 5.0, 42 => 42.0]);
+        $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')->andReturn([
+            1 => ['score' => 0, 'completion_state' => true],
+            2 => ['score' => 5.0, 'completion_state' => true],
+            42 => ['score' => 42.0, 'completion_state' => true]
+        ]);
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
         $score_get_element_scores_mock = Mockery::mock(score_get_element_scores::class)->makePartial();
@@ -45,7 +49,7 @@ class score_get_element_scores_test extends adler_externallib_testcase {
         $result = $score_get_element_scores_mock::execute($module_ids);
 
         // check return value
-        $this->assertEqualsCanonicalizing([['moduleid' => 1, 'score' => 0.0], ['moduleid' => 2, 'score' => 5.0], ['moduleid' => 42, 'score' => 42.0]], $result['data']);
+        $this->assertEqualsCanonicalizing([['moduleid' => 1, 'score' => 0.0, 'completed' => true], ['moduleid' => 2, 'score' => 5.0, 'completed' => true], ['moduleid' => 42, 'score' => 42.0, 'completed' => true]], $result['data']);
 
         $this->assertEquals(3, count($result['data']));
         $this->assertEquals(1, $result['data'][0]['module_id']);
@@ -112,7 +116,7 @@ class score_get_element_scores_test extends adler_externallib_testcase {
         di::set(moodle_core::class, $moodle_core_mock);
 
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
-        $adler_score_helpers_mock->shouldReceive('get_achieved_scores')->andReturn([2 => 5.0]);
+        $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')->andReturn([2 => ['score' => 5.0, 'completion_state' => true]]);
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
         $score_get_element_scores_mock = Mockery::mock(score_get_element_scores::class)->makePartial();

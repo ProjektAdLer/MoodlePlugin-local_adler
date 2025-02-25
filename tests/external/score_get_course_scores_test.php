@@ -52,13 +52,15 @@ class score_get_course_scores_test extends adler_externallib_testcase {
         $expected_result = [];
         for ($i = 0; $i < $element_count; $i++) {
             $module = $this->getDataGenerator()->create_module('page', ['course' => $course->id]);
-            $moduels[] = $module;
-            $adler_score_helpers_mock_get_achieved_scores_return[$module->id] = $i * 2;
-            $expected_result[] = ['moduleid' => $module->id, 'score' => $i * 2];
+            $adler_score_helpers_mock_get_achieved_scores_return[$module->id] = [
+                'score' => $i * 2,
+                'completion_state' => true
+            ];
+            $expected_result[] = ['moduleid' => $module->id, 'score' => $i * 2, 'completion_state' => true];
         }
         // adler score mock
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
-        $adler_score_helpers_mock->shouldReceive('get_achieved_scores')
+        $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')
             ->andReturn($adler_score_helpers_mock_get_achieved_scores_return);
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
@@ -76,7 +78,7 @@ class score_get_course_scores_test extends adler_externallib_testcase {
 
         //// course
         $course = $this->getDataGenerator()->create_course(
-            ['numsections' => 2,'enablecompletion' => 1], // numsections starts at 0. so 0 means 1, 1 means 2, ...
+            ['numsections' => 2, 'enablecompletion' => 1], // numsections starts at 0. so 0 means 1, 1 means 2, ...
             ['createsections' => true]
         );
         $adler_course = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_object($course->id);
@@ -103,8 +105,16 @@ class score_get_course_scores_test extends adler_externallib_testcase {
             'completionview' => 1,
             'completionpassgrade' => 0
         ]);
+        $cm_2_3 = $this->getDataGenerator()->create_module('resource', [
+            'course' => $course->id,
+            'section' => $sectionids[1],
+            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+            'completionview' => 1,
+            'completionpassgrade' => 0
+        ]);
         $adler_cm_2_1 = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm_2_1->cmid, ['score_max' => 1]);
         $adler_cm_2_2 = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm_2_2->cmid, ['score_max' => 1]);
+        $adler_cm_2_3 = $this->getDataGenerator()->get_plugin_generator('local_adler')->create_adler_course_module($cm_2_3->cmid, ['score_max' => 0]);  // optional resource
 
         // Dritte Section: externer Lerninhalt
         $cm_3_1 = $this->getDataGenerator()->create_module('resource', [
@@ -124,15 +134,16 @@ class score_get_course_scores_test extends adler_externallib_testcase {
 
         //// attempt one resource
         trigger_event_cm_viewed::execute((int)$cm_2_1->cmid);
-
+        trigger_event_cm_viewed::execute((int)$cm_2_3->cmid);
 
         //// test
         $result = score_get_course_scores::execute($course->id);
 
         $this->assertEqualsCanonicalizing([
             ['module_id' => $cm_1_1->cmid],
-            ['module_id' => $cm_2_1->cmid, 'score' => 1],
-            ['module_id' => $cm_2_2->cmid, 'score' => 0],
+            ['module_id' => $cm_2_1->cmid, 'score' => 1, 'completed' => true],
+            ['module_id' => $cm_2_2->cmid, 'score' => 0, 'completed' => false],
+            ['module_id' => $cm_2_3->cmid, 'score' => 0, 'completed' => true],
             ['module_id' => $cm_3_1->cmid],
         ], $result['data']);
     }

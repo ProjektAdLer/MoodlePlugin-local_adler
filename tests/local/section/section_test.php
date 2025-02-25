@@ -72,22 +72,22 @@ class section_test extends adler_testcase {
         return [
             'completed' => [
                 'modules_list' => [1, 2, 3],
-                'scores_list' => [50,50,50],
+                'scores_list' => [['score' => 50, 'completion_state' => true], ['score' => 50, 'completion_state' => true], ['score' => 50, 'completion_state' => true]],
                 'expected' => true
             ],
             'not completed' => [
                 'modules_list' => [1, 2],
-                'scores_list' => [0, 0],
+                'scores_list' => [['score' => 0, 'completion_state' => false], ['score' => 0, 'completion_state' => false]],
                 'expected' => false
             ],
             'edge case completed' => [
                 'modules_list' => [1],
-                'scores_list' => [100],
+                'scores_list' => [['score' => 100, 'completion_state' => true]],
                 'expected' => true
             ],
             'edge case not completed' => [
                 'modules_list' => [1],
-                'scores_list' => [99.9],
+                'scores_list' => [['score' => 99.9, 'completion_state' => true]],
                 'expected' => false
             ],
         ];
@@ -120,7 +120,7 @@ class section_test extends adler_testcase {
         // Mock the adler_score_helpers
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
         $adler_score_helpers_mock
-            ->shouldReceive('get_achieved_scores')
+            ->shouldReceive('get_completion_state_and_achieved_scores')
             ->with($modules_list, $user_id)
             ->andReturn($scores_list);
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
@@ -161,7 +161,7 @@ class section_test extends adler_testcase {
         $adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
         $adler_generator->create_adler_course_object($course->id);
         $adler_generator->create_adler_section($section_id);
-        $adler_generator->create_adler_course_module($module->cmid, ['score_max' => $cm_score]);
+        $adler_generator->create_adler_course_module($module->cmid, ['score_max' => $cm_score]);  // section requires 100 points to complete, element with 0 will not complete it
 
         // create user
         $user = $this->getDataGenerator()->create_user();

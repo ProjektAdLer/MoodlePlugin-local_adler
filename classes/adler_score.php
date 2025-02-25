@@ -60,12 +60,10 @@ class adler_score {
     }
 
     /**
-     *  Calculates the achieved score for the course module based on its completion state.
-     *
-     * @return float
-     * @throws moodle_exception If completion is not enabled for the course module.
+     * @return bool True if the course module is completed, false otherwise
+     * @throws moodle_exception completion_not_enabled
      */
-    public function get_score_by_completion_state(): float {
+    public function get_completion_state(): bool {
         $cm_completion_details = cm_completion_details::get_instance(
             get_fast_modinfo($this->course_module->course)->get_cm($this->course_module->id),
             $this->user_id
@@ -76,6 +74,16 @@ class adler_score {
             throw new moodle_exception('completion_not_enabled', 'local_adler');
         }
 
-        return $cm_completion_details->is_overall_complete() ? $this->score_item->score_max : 0;
+        return $cm_completion_details->is_overall_complete();
+    }
+
+    /**
+     *  Calculates the achieved score for the course module based on its completion state.
+     *
+     * @return float
+     * @throws moodle_exception If completion is not enabled for the course module.
+     */
+    public function get_score_by_completion_state(): float {
+        return $this->get_completion_state() ? $this->score_item->score_max : 0;
     }
 }

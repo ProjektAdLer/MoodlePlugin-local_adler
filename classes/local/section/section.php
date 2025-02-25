@@ -44,7 +44,8 @@ class section {
         }, di::get(moodle_core_repository::class)->get_course_modules_by_section_id($this->section_id));
 
         // get sum of achieved scores for this user
-        $achieved_scores = di::get(adler_score_helpers::class)::get_achieved_scores($module_ids, $user_id);
+        $achieved_scores = di::get(adler_score_helpers::class)::get_completion_state_and_achieved_scores($module_ids, $user_id);
+        $achieved_scores = array_column($achieved_scores, 'score');
         $score_sum = array_sum($achieved_scores);
 
         return $score_sum >= $this->section->required_points_to_complete;

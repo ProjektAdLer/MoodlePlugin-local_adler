@@ -69,9 +69,9 @@ class score_get_element_scores extends external_api {
         }
 
         // get scores
-        $scores = di::get(adler_score_helpers::class)::get_achieved_scores($module_ids);
+        $results = di::get(adler_score_helpers::class)::get_completion_state_and_achieved_scores($module_ids);
 
         // convert format return
-        return ['data' => lib::convert_adler_score_array_format_to_response_structure($scores)];
+        return ['data' => lib::convert_adler_score_array_format_to_response_structure($results)];
     }
 }

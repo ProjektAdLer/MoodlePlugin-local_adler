@@ -94,13 +94,13 @@ class score_h5p_learning_element extends external_api {
 
         // get adler score
         try {
-            $scores = di::get(adler_score_helpers::class)::get_achieved_scores(null, null, $adler_scores);
+            $results = di::get(adler_score_helpers::class)::get_completion_state_and_achieved_scores(null, null, $adler_scores);
         } catch (moodle_exception $e) {
             $logger->error('Failed to get adler scores, but xapi statements are already processed');
             throw new moodle_exception('failed_to_get_adler_score', 'local_adler', '', $e->getMessage());
         }
 
         // convert $scores to return format
-        return ['data' => di::get(lib::class)::convert_adler_score_array_format_to_response_structure($scores)];
+        return ['data' => di::get(lib::class)::convert_adler_score_array_format_to_response_structure($results)];
     }
 }

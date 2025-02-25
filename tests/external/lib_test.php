@@ -119,18 +119,21 @@ class lib_test extends adler_externallib_testcase {
                 'expected' => [[
                     'module_id' => 1,
                     'score' => 1.0,
+                    'completed' => true
                 ]],
-                'test' => [1 => 1.0]
+                'test' => [1 => ['score' => 1.0, 'completion_state' => true]]
             ],
             [
                 'expected' => [[
                     'module_id' => 1,
                     'score' => 1.0,
+                    'completed' => true
                 ], [
                     'module_id' => 2,
                     'score' => 2.0,
+                    'completed' => true
                 ]],
-                'test' => [1 => 1.0, 2 => 2.0]
+                'test' => [1 => ['score' => 1.0, 'completion_state' => true], 2 => ['score' => 2.0, 'completion_state' => true]]
             ],
             [
                 'expected' => [[

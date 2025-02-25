@@ -143,7 +143,7 @@ class adler_score_test extends adler_testcase {
         }
 
         if ($test['user_param'] === 'id') {
-            $test['user_param'] = (int) $this->user->id;
+            $test['user_param'] = (int)$this->user->id;
         }
 
         // inject the mock into the container
@@ -266,6 +266,19 @@ class adler_score_test extends adler_testcase {
         }
 
         $this->assertEquals($expect_score, $result);
+    }
+
+    public function test_get_completion_state() {
+        $this->set_up_course_with_primitive_element(true, true);
+
+        $adler_score = new adler_score($this->url_module_cm_info);
+        $this->assertFalse($adler_score->get_completion_state());
+
+        $completion = new completion_info($this->course);
+        $completion->set_module_viewed($this->url_module_cm_info);
+
+        $adler_score = new adler_score($this->url_module_cm_info);
+        $this->assertTrue($adler_score->get_completion_state());
     }
 
     private function set_up_course_with_h5p_grade_element() {

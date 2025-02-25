@@ -8,7 +8,7 @@ use moodle_exception;
 
 class adler_score_helpers {
     /** Get adler-scores for given array of course_module ids.
-     * Similar to get_achieved_scores, but returns adler_score objects.
+     * Similar to get_completion_state_and_achieved_scores, but returns adler_score objects.
      * @param $module_ids array course_module ids
      * @param int|null $user_id If null, the current user will be used
      * @return array of adler-Scores (format: [$module_id => adler_score]), entry contains false if adler_score entry could not be created
@@ -34,15 +34,17 @@ class adler_score_helpers {
         return $adler_scores;
     }
 
-    /** Get list with achieved scores for every given module_id.
-     * Similar to get_adler_score_objects, but only returns the achieved score.
+    /** Get list with achieved scores and completion state for every given module_id.
+     * Similar to get_adler_score_objects, but only returns these attributes.
      * @param array|null $module_ids only required if $adler_scores is null
      * @param int|null $user_id If null, the current user will be used
-     * @param array|null $adler_scores If null, the adler_scores will be calculated. Otherwise, the given array will be used.
+     * @param adler_score[]|null $adler_scores If null, the adler_scores will be calculated. Otherwise, the given array will be used.
      * @return array of achieved scores [0=>0.5, 1=>0.7, ...], entry contains false if score could not be calculated
      * @throws moodle_exception
+     *
+     * @deprecated use adler_score object directly, see {@link get_adler_score_objects}
      */
-    public static function get_achieved_scores(?array $module_ids, int $user_id = null, array $adler_scores = null): array {
+    public static function get_completion_state_and_achieved_scores(?array $module_ids, int $user_id = null, array $adler_scores = null): array {
         if ($adler_scores === null) {
             $adler_scores = static::get_adler_score_objects($module_ids, $user_id);
         }
@@ -52,7 +54,10 @@ class adler_score_helpers {
             if ($adler_score === false) {
                 $achieved_scores[$cmid] = false;
             } else {
-                $achieved_scores[$cmid] = $adler_score->get_score_by_completion_state();
+                $achieved_scores[$cmid] = [
+                    'score' => $adler_score->get_score_by_completion_state(),
+                    'completion_state' => $adler_score->get_completion_state()
+                ];
             }
         }
         return $achieved_scores;

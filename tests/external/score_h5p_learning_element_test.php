@@ -92,13 +92,19 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
             [
                 'exception_get_adler_score_objects' => false,
                 'core_xapi_statement_post_error' => null,
-                'get_achieved_scores_response' => [0=>0.5, 1=>0.7],
+                'get_achieved_scores_response' => [
+                    0 => ['score' => 0.5, 'completion_state' => true],
+                    1 => ['score' => 0.7, 'completion_state' => true]
+                ],
                 'get_achived_scores_exception' => false,
             ],
             [
                 'exception_get_adler_score_objects' => false,
                 'core_xapi_statement_post_error' => ['error' => true, 'exception' => (object)['message' => 'error']],
-                'get_achieved_scores_response' => [0=>0.5, 1=>0.7],
+                'get_achieved_scores_response' => [
+                    0 => ['score' => 0.5, 'completion_state' => true],
+                    1 => ['score' => 0.7, 'completion_state' => true]
+                ],
                 'get_achived_scores_exception' => false,
             ],
             [
@@ -138,17 +144,17 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
             $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')->andReturn([42]);
 
             if ($core_xapi_statement_post_error == null) {
-                $score_h5p_learning_element_mock->shouldReceive('call_external_function')->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)->andReturn(['error'=>false]);
+                $score_h5p_learning_element_mock->shouldReceive('call_external_function')->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)->andReturn(['error' => false]);
             } else {
                 $score_h5p_learning_element_mock->shouldReceive('call_external_function')->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)->andReturn($core_xapi_statement_post_error);
                 $this->expectException(moodle_exception::class);
             }
         }
         if ($get_achived_scores_exception) {
-            $adler_score_helpers_mock->shouldReceive('get_achieved_scores')->andThrow(moodle_exception::class);
+            $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')->andThrow(moodle_exception::class);
             $this->expectException(moodle_exception::class);
         } else {
-            $adler_score_helpers_mock->shouldReceive('get_achieved_scores')->andReturn($get_achieved_scores_response);
+            $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')->andReturn($get_achieved_scores_response);
         }
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
@@ -160,7 +166,7 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
         $result = $score_h5p_learning_element_mock::execute($xapi);
 
 
-        $this->assertEquals(['data' =>[42]], $result);
+        $this->assertEquals(['data' => [42]], $result);
     }
 
     /**

@@ -72,27 +72,37 @@ class adler_score_helpers_test extends adler_testcase {
 
     public function provide_test_get_achieved_scores_data(): array {
         return [
-            'default' => [[
+            'default' => [
                 'exception' => null,
                 'exception_msg' => null,
                 'exception_at_index' => null,
-                'expected_result' => [0, 2, 4, false],
+                'expected_result' => [
+                    ['score' => 0, 'completion_state' => true],
+                    ['score' => 2, 'completion_state' => true],
+                    ['score' => 4, 'completion_state' => true],
+                    false
+                ],
                 'expected_exception' => false,
-            ]],
-            'completion not enabled' => [[
+            ],
+            'completion not enabled' => [
                 'exception' => moodle_exception::class,
                 'exception_msg' => 'completion_not_enabled',
                 'exception_at_index' => 1,
-                'expected_result' => [0, false, 4, false],
+                'expected_result' => [
+                    ['score' => 0, 'completion_state' => true],
+                    false,
+                    ['score' => 4, 'completion_state' => true],
+                    false
+                ],
                 'expected_exception' => moodle_exception::class,
-            ]],
-            'other moodle exception' => [[
+            ],
+            'other moodle exception' => [
                 'exception' => moodle_exception::class,
                 'exception_msg' => 'blub',
                 'exception_at_index' => 1,
                 'expected_result' => null,
                 'expected_exception' => moodle_exception::class,
-            ]]
+            ]
         ];
     }
 
@@ -101,35 +111,38 @@ class adler_score_helpers_test extends adler_testcase {
      *
      *  # ANF-ID: [MVP9, MVP8, MVP7]
      */
-    public function test_get_achieved_scores($data) {
+    public function test_get_achieved_scores($exception, $exception_msg, $exception_at_index, $expected_result, $expected_exception) {
         // create 3 adler_score objects and mock get_score_by_completion_state
         for ($i = 0; $i < 3; $i++) {
-            if ($data['exception'] === moodle_exception::class && $data['exception_at_index'] === $i) {
+            if ($exception === moodle_exception::class && $exception_at_index === $i) {
                 $adler_score_objects[] = Mockery::mock(adler_score::class)
                     ->shouldReceive('get_score_by_completion_state')
-                    ->andThrow(new $data['exception']($data['exception_msg']))
+                    ->andThrow(new $exception($exception_msg))
                     ->getMock();
             } else {
                 $adler_score_objects[] = Mockery::mock(adler_score::class)
                     ->shouldReceive('get_score_by_completion_state')
                     ->andReturn((float)$i * 2)
                     ->getMock();
+                $adler_score_objects[$i]
+                    ->shouldReceive('get_completion_state')
+                    ->andReturn(true);
             }
         }
         $adler_score_objects[] = false;
 
-        if ($data['expected_exception'] !== false) {
-            $this->expectException($data['expected_exception']);
-            if ($data['exception_msg'] !== null) {
-                $this->expectExceptionMessage($data['exception_msg']);
+        if ($expected_exception !== false) {
+            $this->expectException($expected_exception);
+            if ($exception_msg !== null) {
+                $this->expectExceptionMessage($exception_msg);
             }
         }
 
         // call function
-        $result = adler_score_helpers::get_achieved_scores(null, null, $adler_score_objects);
+        $result = adler_score_helpers::get_completion_state_and_achieved_scores(null, null, $adler_score_objects);
 
         // check result
-        $this->assertEquals($data['expected_result'], $result);
+        $this->assertEquals($expected_result, $result);
     }
 
     /**
@@ -145,8 +158,15 @@ class adler_score_helpers_test extends adler_testcase {
                 ->shouldReceive('get_score_by_completion_state')
                 ->andReturn((float)$i * 2)
                 ->getMock();
+            $adler_score_objects[$i]
+                ->shouldReceive('get_completion_state')
+                ->andReturn(true);
         }
-        $expected_result = [0, 2, 4];
+        $expected_result = [
+            ['score' => 0, 'completion_state' => true],
+            ['score' => 2, 'completion_state' => true],
+            ['score' => 4, 'completion_state' => true],
+        ];
 
         // mock get_adler_score_objects
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class)->makePartial();
@@ -155,9 +175,9 @@ class adler_score_helpers_test extends adler_testcase {
             ->andReturn($adler_score_objects);
 
         // call function
-        $result = $adler_score_helpers_mock::get_achieved_scores($module_ids, $user_id);
+        $result = $adler_score_helpers_mock::get_completion_state_and_achieved_scores($module_ids, $user_id);
 
         // check result
-        $this->assertEquals($expected_result, $result);
+        $this->assertEqualsCanonicalizing($expected_result, $result);
     }
 }
