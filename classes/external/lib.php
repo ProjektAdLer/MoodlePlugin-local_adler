@@ -7,6 +7,8 @@ use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use invalid_parameter_exception;
+use local_adler\adler_score;
+use moodle_exception;
 
 class lib {
     public static function get_adler_score_response_multiple_structure(): external_function_parameters {
@@ -34,28 +36,24 @@ class lib {
     }
 
     /**
-     * Convert an array of adler scores in format [<module_id>=>['score'=>1, 'completion_state'=>true],..]
-     * to the response structure ['module_id'=><module_id>, 'score'=><score>, 'completed'=><completion_state>]
-     *
-     * @param array[] $results
-     * @throws invalid_parameter_exception
+     * @param adler_score[] $results [cmid => adler_score|false]
+     * @return array ['module_id'=><module_id>, 'score'=><score>, 'completed'=><completion_state>]
+     * @throws moodle_exception
      */
     public static function convert_adler_score_array_format_to_response_structure(array $results): array {
         $response_data = array();
-        foreach ($results as $module_id => $result) {
-            if (!(is_array($result) || is_bool($result))) {
-                throw new invalid_parameter_exception('score must be an array or a boolean');
-            }
-
-            if ($result !== false) {
+        /** @var int $cmid */
+        /** @var adler_score|false $adler_score */
+        foreach ($results as $cmid => $adler_score) {
+            if ($adler_score === false) {
                 $response_data[] = array(
-                    'module_id' => $module_id,
-                    'score' => (float)$result['score'],
-                    'completed' => $result['completion_state']
+                    'module_id' => $cmid
                 );
             } else {
                 $response_data[] = array(
-                    'module_id' => $module_id
+                    'module_id' => $adler_score->get_cmid(),
+                    'score' => (float)$adler_score->get_score_by_completion_state(),
+                    'completed' => $adler_score->get_completion_state()
                 );
             }
         }

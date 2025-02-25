@@ -52,15 +52,20 @@ class score_get_course_scores_test extends adler_externallib_testcase {
         $expected_result = [];
         for ($i = 0; $i < $element_count; $i++) {
             $module = $this->getDataGenerator()->create_module('page', ['course' => $course->id]);
-            $adler_score_helpers_mock_get_achieved_scores_return[$module->id] = [
-                'score' => $i * 2,
-                'completion_state' => true
+            $adler_score_helpers_mock_get_achieved_scores_return[$module->id] = Mockery::mock('adler_score', [
+                'get_cmid' => $module->id,
+                'get_completion_state' => true,
+                'get_score_by_completion_state' => $i * 2.0
+            ]);
+            $expected_result[] = [
+                'module_id' => $module->id,
+                'score' => $i * 2.0,
+                'completed' => true
             ];
-            $expected_result[] = ['moduleid' => $module->id, 'score' => $i * 2, 'completion_state' => true];
         }
         // adler score mock
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
-        $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')
+        $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')
             ->andReturn($adler_score_helpers_mock_get_achieved_scores_return);
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 

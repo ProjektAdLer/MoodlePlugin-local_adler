@@ -21,7 +21,7 @@ use stdClass;
  */
 class adler_score {
     private logger $logger;
-    private object $course_module;
+    private cm_info $course_module;
     private int $user_id;
     protected stdClass $score_item;
     private adler_course_module_repository $adler_course_module_repository;
@@ -57,6 +57,10 @@ class adler_score {
             $this->logger->error('Could not get adler score record for cmid ' . $this->course_module->id . ': ' . $e->getMessage());
             throw new not_an_adler_cm_exception();
         }
+    }
+
+    public function get_cmid(): int {
+        return $this->course_module->id;
     }
 
     /**

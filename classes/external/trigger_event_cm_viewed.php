@@ -78,12 +78,7 @@ class trigger_event_cm_viewed extends external_api {
 
         // return adler score
         $adler_score = new adler_score($course_module_cm_info);
-        return ['data' => lib::convert_adler_score_array_format_to_response_structure([
-            $course_module->id => [
-                'score' => $adler_score->get_score_by_completion_state(),
-                'completion_state' => $adler_score->get_completion_state()
-            ]
-        ])];
+        return ['data' => lib::convert_adler_score_array_format_to_response_structure([$course_module->id => $adler_score])];
     }
 
     /**

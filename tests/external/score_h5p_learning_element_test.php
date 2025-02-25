@@ -92,32 +92,18 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
             [
                 'exception_get_adler_score_objects' => false,
                 'core_xapi_statement_post_error' => null,
-                'get_achieved_scores_response' => [
-                    0 => ['score' => 0.5, 'completion_state' => true],
-                    1 => ['score' => 0.7, 'completion_state' => true]
-                ],
-                'get_achived_scores_exception' => false,
             ],
             [
                 'exception_get_adler_score_objects' => false,
                 'core_xapi_statement_post_error' => ['error' => true, 'exception' => (object)['message' => 'error']],
-                'get_achieved_scores_response' => [
-                    0 => ['score' => 0.5, 'completion_state' => true],
-                    1 => ['score' => 0.7, 'completion_state' => true]
-                ],
-                'get_achived_scores_exception' => false,
             ],
             [
                 'exception_get_adler_score_objects' => false,
                 'core_xapi_statement_post_error' => null,
-                'get_achieved_scores_response' => null,
-                'get_achived_scores_exception' => true,
             ],
             [
                 'exception_get_adler_score_objects' => true,
                 'core_xapi_statement_post_error' => null,
-                'get_achieved_scores_response' => null,
-                'get_achived_scores_exception' => true,
             ]
         ];
     }
@@ -127,7 +113,7 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
      *
      * # ANF-ID: [MVP9]
      */
-    public function test_execute($exception_get_adler_score_objects, $core_xapi_statement_post_error, $get_achieved_scores_response, $get_achived_scores_exception) {
+    public function test_execute($exception_get_adler_score_objects, $core_xapi_statement_post_error) {
         $xapi = "blub";
 
         $score_h5p_learning_element_mock = Mockery::mock(score_h5p_learning_element::class)->makePartial();
@@ -137,29 +123,35 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
 
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
         if ($exception_get_adler_score_objects) {
-            $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')->andThrow(moodle_exception::class);
+            $this->expectException(moodle_exception::class);
+            $adler_score_helpers_mock
+                ->shouldReceive('get_adler_score_objects')
+                ->andThrow(moodle_exception::class);
             // should not proceed to xapi event if get_adler_score_objects throws an exception
             $score_h5p_learning_element_mock->shouldNotReceive('call_external_function');
         } else {
             $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')->andReturn([42]);
 
             if ($core_xapi_statement_post_error == null) {
-                $score_h5p_learning_element_mock->shouldReceive('call_external_function')->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)->andReturn(['error' => false]);
+                $score_h5p_learning_element_mock
+                    ->shouldReceive('call_external_function')
+                    ->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)
+                    ->andReturn(['error' => false]);
             } else {
-                $score_h5p_learning_element_mock->shouldReceive('call_external_function')->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)->andReturn($core_xapi_statement_post_error);
+                $score_h5p_learning_element_mock
+                    ->shouldReceive('call_external_function')
+                    ->with('core_xapi_statement_post', ['component' => 'mod_h5pactivity', 'requestjson' => $xapi], true)
+                    ->andReturn($core_xapi_statement_post_error);
                 $this->expectException(moodle_exception::class);
             }
-        }
-        if ($get_achived_scores_exception) {
-            $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')->andThrow(moodle_exception::class);
-            $this->expectException(moodle_exception::class);
-        } else {
-            $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')->andReturn($get_achieved_scores_response);
         }
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 
         $lib_mock = Mockery::mock(lib::class);
-        $lib_mock->shouldReceive('convert_adler_score_array_format_to_response_structure')->with($get_achieved_scores_response)->andReturn([42]);
+        $lib_mock
+            ->shouldReceive('convert_adler_score_array_format_to_response_structure')
+            ->with([42])
+            ->andReturn([42]);
         di::set(lib::class, $lib_mock);
 
 

@@ -72,22 +72,54 @@ class section_test extends adler_testcase {
         return [
             'completed' => [
                 'modules_list' => [1, 2, 3],
-                'scores_list' => [['score' => 50, 'completion_state' => true], ['score' => 50, 'completion_state' => true], ['score' => 50, 'completion_state' => true]],
+                'scores_list' => [
+                    Mockery::mock('adler_score', [
+                        'get_score_by_completion_state' => 50,
+                        'get_completion_state' => true
+                    ]),
+                    Mockery::mock('adler_score', [
+                        'get_score_by_completion_state' => 50,
+                        'get_completion_state' => true
+                    ]),
+                    Mockery::mock('adler_score', [
+                        'get_score_by_completion_state' => 50,
+                        'get_completion_state' => true
+                    ])
+                ],
                 'expected' => true
             ],
             'not completed' => [
                 'modules_list' => [1, 2],
-                'scores_list' => [['score' => 0, 'completion_state' => false], ['score' => 0, 'completion_state' => false]],
+                'scores_list' => [
+                    Mockery::mock('adler_score', [
+                        'get_score_by_completion_state' => 0,
+                        'get_completion_state' => false
+                    ]),
+                    Mockery::mock('adler_score', [
+                        'get_score_by_completion_state' => 0,
+                        'get_completion_state' => false
+                    ])
+                ],
                 'expected' => false
             ],
             'edge case completed' => [
                 'modules_list' => [1],
-                'scores_list' => [['score' => 100, 'completion_state' => true]],
+                'scores_list' => [
+                    Mockery::mock('adler_score', [
+                        'get_score_by_completion_state' => 100,
+                        'get_completion_state' => true
+                    ])
+                ],
                 'expected' => true
             ],
             'edge case not completed' => [
                 'modules_list' => [1],
-                'scores_list' => [['score' => 99.9, 'completion_state' => true]],
+                'scores_list' => [
+                    Mockery::mock('adler_score', [
+                        'get_score_by_completion_state' => 99.9,
+                        'get_completion_state' => true
+                    ])
+                ],
                 'expected' => false
             ],
         ];
@@ -120,7 +152,7 @@ class section_test extends adler_testcase {
         // Mock the adler_score_helpers
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
         $adler_score_helpers_mock
-            ->shouldReceive('get_completion_state_and_achieved_scores')
+            ->shouldReceive('get_adler_score_objects')
             ->with($modules_list, $user_id)
             ->andReturn($scores_list);
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);

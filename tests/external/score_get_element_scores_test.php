@@ -34,10 +34,22 @@ class score_get_element_scores_test extends adler_externallib_testcase {
         di::set(moodle_core::class, $moodle_core_mock);
 
         $adler_score_helpers_mock = Mockery::mock(adler_score_helpers::class);
-        $adler_score_helpers_mock->shouldReceive('get_completion_state_and_achieved_scores')->andReturn([
-            1 => ['score' => 0, 'completion_state' => true],
-            2 => ['score' => 5.0, 'completion_state' => true],
-            42 => ['score' => 42.0, 'completion_state' => true]
+        $adler_score_helpers_mock->shouldReceive('get_adler_score_objects')->andReturn([
+            1 => Mockery::mock('adler_score', [
+                'get_cmid' => 1,
+                'get_completion_state' => true,
+                'get_score_by_completion_state' => 0.0
+            ]),
+            2 => Mockery::mock('adler_score', [
+                'get_cmid' => 2,
+                'get_completion_state' => true,
+                'get_score_by_completion_state' => 5.0
+            ]),
+            42 => Mockery::mock('adler_score', [
+                'get_cmid' => 42,
+                'get_completion_state' => true,
+                'get_score_by_completion_state' => 42.0
+            ])
         ]);
         di::set(adler_score_helpers::class, $adler_score_helpers_mock);
 

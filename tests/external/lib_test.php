@@ -9,6 +9,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 use core_external\external_api;
 use invalid_parameter_exception;
 use local_adler\lib\adler_externallib_testcase;
+use Mockery;
 
 class lib_test extends adler_externallib_testcase {
     /**
@@ -111,19 +112,29 @@ class lib_test extends adler_externallib_testcase {
     }
 
     /**
+     * @dataProvider provideConvertAdlerScoreArrayFormatToResponseStructure
      * # ANF-ID: [MVP10, MVP9, MVP8, MVP7]
      */
-    public function test_convert_adler_score_array_format_to_response_structure() {
-        $testcases = [
-            [
+    public function test_convert_adler_score_array_format_to_response_structure(array $expected, array $test) {
+        $result = lib::convert_adler_score_array_format_to_response_structure($test);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function provideConvertAdlerScoreArrayFormatToResponseStructure(): array {
+        return [
+            'single score' => [
                 'expected' => [[
                     'module_id' => 1,
                     'score' => 1.0,
                     'completed' => true
                 ]],
-                'test' => [1 => ['score' => 1.0, 'completion_state' => true]]
+                'test' => [1 => Mockery::mock('adler_score', [
+                    'get_cmid' => 1,
+                    'get_completion_state' => true,
+                    'get_score_by_completion_state' => 1.0
+                ])]
             ],
-            [
+            'multiple scores' => [
                 'expected' => [[
                     'module_id' => 1,
                     'score' => 1.0,
@@ -133,23 +144,22 @@ class lib_test extends adler_externallib_testcase {
                     'score' => 2.0,
                     'completed' => true
                 ]],
-                'test' => [1 => ['score' => 1.0, 'completion_state' => true], 2 => ['score' => 2.0, 'completion_state' => true]]
+                'test' => [1 => Mockery::mock('adler_score', [
+                    'get_cmid' => 1,
+                    'get_completion_state' => true,
+                    'get_score_by_completion_state' => 1.0
+                ]), 2 => Mockery::mock('adler_score', [
+                    'get_cmid' => 2,
+                    'get_completion_state' => true,
+                    'get_score_by_completion_state' => 2.0
+                ])]
             ],
-            [
+            'false score' => [
                 'expected' => [[
                     'module_id' => 1,
                 ]],
                 'test' => [1 => false]
             ],
         ];
-
-        for ($i = 0; $i < count($testcases); $i++) {
-            $result = lib::convert_adler_score_array_format_to_response_structure($testcases[$i]['test']);
-            $this->assertEquals($testcases[$i]['expected'], $result);
-        }
-
-        // test invalid parameter exception
-        $this->expectException(invalid_parameter_exception::class);
-        lib::convert_adler_score_array_format_to_response_structure(["test"]);
     }
 }
