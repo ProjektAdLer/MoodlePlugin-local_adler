@@ -151,8 +151,10 @@ class observer_test extends adler_testcase {
             ->disableOriginalConstructor()
             ->getMock();
         $event->method('__get')
-            ->withConsecutive(['objectid'], ['courseid'])
-            ->willReturnOnConsecutiveCalls($sections[0]->id, $course->id);
+            ->willReturnMap([
+                ['objectid', $sections[0]->id],
+                ['courseid', $course->id],
+            ]);
 
         // call function
         observer::course_section_deleted($event);
@@ -205,8 +207,10 @@ class observer_test extends adler_testcase {
             ->disableOriginalConstructor()
             ->getMock();
         $event->method('__get')
-            ->withConsecutive(['objectid'], ['courseid'])
-            ->willReturnOnConsecutiveCalls($module1->cmid, $course->id);
+            ->willReturnMap([
+                ['objectid', $module1->cmid],
+                ['courseid', $course->id],
+            ]);
 
         // call function
         observer::course_module_deleted($event);
