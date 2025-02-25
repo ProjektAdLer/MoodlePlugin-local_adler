@@ -13,10 +13,10 @@ class upgrade_3_2_0_to_4_0_0_completionlib_test extends adler_testcase {
     public static function provide_execute_simple_learning_element_data(): array {
         return [
             'simple LE' => [
-                'module' => 'url'
+                'module_type' => 'url'
             ],
             'h5p LE' => [
-                'module' => 'h5pactivity'
+                'module_type' => 'h5pactivity'
             ]
         ];
     }
