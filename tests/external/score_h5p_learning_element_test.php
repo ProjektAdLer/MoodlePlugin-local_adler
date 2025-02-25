@@ -166,7 +166,7 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
      */
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
-        $lib_test = new lib_test();
+        $lib_test = new lib_test('');
         $lib_test->test_get_adler_score_response_multiple_structure(score_h5p_learning_element::class);
     }
 }

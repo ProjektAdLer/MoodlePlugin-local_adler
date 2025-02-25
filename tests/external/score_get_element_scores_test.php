@@ -149,6 +149,6 @@ class score_get_element_scores_test extends adler_externallib_testcase {
     public function test_execute_returns() {
         // this function just returns what get_adler_score_response_multiple_structure returns
         require_once(__DIR__ . '/lib_test.php');
-        (new lib_test())->test_get_adler_score_response_multiple_structure(score_get_element_scores::class);
+        (new lib_test(''))->test_get_adler_score_response_multiple_structure(score_get_element_scores::class);
     }
 }
