@@ -239,7 +239,7 @@ class observer_test extends adler_testcase {
     /**
      * @dataProvider provide_test_delete_non_existent_adler_cms_data
      */
-    public function test_delete_non_existent_adler_cms_perf($count_cms, $count_delete) {
+    public function test_delete_non_existent_adler_cms_perf($cm_count, $delete_count) {
         $this->markTestSkipped('Test performance of the implementation -> no point in running it during regular unit tests execution');
 
         $generator = $this->getDataGenerator();
@@ -253,7 +253,7 @@ class observer_test extends adler_testcase {
 
         // create cms in course
         $modules = [];
-        $count = $count_cms - $count_delete;
+        $count = $cm_count - $delete_count;
         for ($i = 0; $i < $count; $i++) {
             // log progress
             if ($i % 100 === 0) {
@@ -267,7 +267,7 @@ class observer_test extends adler_testcase {
 
 
         // create 100 adler scores without cms
-        for ($i = 0; $i < $count_delete; $i++) {
+        for ($i = 0; $i < $delete_count; $i++) {
             $adler_generator->create_adler_course_module($modules[count($modules) - 1]->cmid + 1 + $i);
         }
 
