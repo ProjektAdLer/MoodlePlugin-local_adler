@@ -223,7 +223,7 @@ class observer_test extends adler_testcase {
     }
 
 
-    public function generate_test_delete_non_existent_adler_cms_data() {
+    public static function provide_test_delete_non_existent_adler_cms_data() {
         return [
             '100/10' => ['cm_count' => 110, 'delete_count' => 10],
             '1k/10' => ['cm_count' => 1010, 'delete_count' => 10],
@@ -237,7 +237,7 @@ class observer_test extends adler_testcase {
 
 
     /**
-     * @dataProvider generate_test_delete_non_existent_adler_cms_data
+     * @dataProvider provide_test_delete_non_existent_adler_cms_data
      */
     public function test_delete_non_existent_adler_cms_perf($count_cms, $count_delete) {
         $this->markTestSkipped('Test performance of the implementation -> no point in running it during regular unit tests execution');

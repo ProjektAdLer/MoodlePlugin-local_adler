@@ -72,7 +72,7 @@ class score_get_element_scores_test extends adler_externallib_testcase {
         $this->assertEquals(42.0, $result['data'][2]['score']);
     }
 
-    public function execute_exceptions_provider() {
+    public static function provide_execute_exceptions_data(): array {
         return [
             'missing_record_exception' => [
                 'module_ids' => [1],
@@ -86,7 +86,7 @@ class score_get_element_scores_test extends adler_externallib_testcase {
     }
 
     /**
-     * @dataProvider execute_exceptions_provider
+     * @dataProvider provide_execute_exceptions_data
      * # ANF-ID: [MVP8]
      */
     public function test_execute_exceptions($module_ids, $exception) {
