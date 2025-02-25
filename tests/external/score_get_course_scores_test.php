@@ -17,7 +17,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 class score_get_course_scores_test extends adler_externallib_testcase {
-    public function provide_test_execute_data() {
+    public static function provide_test_execute_data() {
         return [
             'success' => [
                 'element_count' => 3,

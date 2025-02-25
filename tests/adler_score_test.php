@@ -47,7 +47,7 @@ class adler_score_test extends adler_testcase {
     }
 
 
-    public function provide_test_construct_data() {
+    public static function provide_test_construct_data() {
         // double array for each case because phpunit otherwise splits the object into individual params
         return [
             'default case' => [[
@@ -178,7 +178,7 @@ class adler_score_test extends adler_testcase {
         $this->assertEquals(17, $scoreItemProperty->getValue($result)->score);
     }
 
-    public function provide_test_get_primitive_score_data() {
+    public static function provide_test_get_primitive_score_data() {
         return [
             'complete' => [
                 'completion_enabled_cm' => true,

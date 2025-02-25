@@ -23,7 +23,7 @@ class adler_sections_repository_test extends adler_testcase {
         $this->adler_generator = $this->getDataGenerator()->get_plugin_generator('local_adler');
     }
 
-    public function provide_test_get_adler_section_by_uuid_data() {
+    public static function provide_test_get_adler_section_by_uuid_data() {
         return [
             'success' => [
                 'success' => true,

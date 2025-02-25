@@ -44,7 +44,7 @@ class moodle_core_repository_test extends adler_testcase {
         $this->assertEquals(false, $result);
     }
 
-    public function provide_true_false_data() {
+    public static function provide_true_false_data() {
         return [
             'true' => [true],
             'false' => [false]

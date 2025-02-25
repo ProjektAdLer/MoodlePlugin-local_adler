@@ -12,7 +12,7 @@ use moodle_database;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class adler_course_repository_test extends adler_testcase {
-    public function provide_test_course_is_adler_course_data(): array {
+    public static function provide_test_course_is_adler_course_data(): array {
         return [
             'is adler course' => [['course_exist' => true, 'is_adler_course' => true, 'expected' => true]],
             'is not adler course' => [['course_exist' => true, 'is_adler_course' => false, 'expected' => false]],

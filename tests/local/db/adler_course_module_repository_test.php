@@ -90,7 +90,7 @@ class adler_course_module_repository_test extends adler_testcase {
         $this->assertEquals(0, di::get(moodle_database::class)->count_records('local_adler_course_modules'));
     }
 
-    public function provide_record_for_cmid_exists_data(): array {
+    public static function provide_record_for_cmid_exists_data(): array {
         return [
             'record exists' => [true],
             'record does not exist' => [false]
@@ -119,7 +119,7 @@ class adler_course_module_repository_test extends adler_testcase {
         $this->assertEquals($record_exists, $result);
     }
 
-    public function provide_test_get_adler_course_module_by_uuid_data() {
+    public static function provide_test_get_adler_course_module_by_uuid_data() {
         return [
             'success' => [
                 'success' => true,

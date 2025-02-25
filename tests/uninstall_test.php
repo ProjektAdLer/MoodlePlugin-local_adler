@@ -37,7 +37,7 @@ class uninstall_test extends adler_testcase {
         }
     }
 
-    public function provide_test_remove_adler_objects_data() {
+    public static function provide_test_remove_adler_objects_data() {
         return [
             'simple 1' => [
                 'condition' => '{"op":"&","c":[{"type":"adler","condition":"(73)^(75)"}],"showc":[true]}',

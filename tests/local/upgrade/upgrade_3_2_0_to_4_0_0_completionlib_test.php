@@ -10,7 +10,7 @@ use local_adler\local\upgrade\upgrade_3_2_0_to_4_0_0_completionlib;
 require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 class upgrade_3_2_0_to_4_0_0_completionlib_test extends adler_testcase {
-    public function provide_execute_simple_learning_element_data(): array {
+    public static function provide_execute_simple_learning_element_data(): array {
         return [
             'simple LE' => [
                 'module' => 'url'

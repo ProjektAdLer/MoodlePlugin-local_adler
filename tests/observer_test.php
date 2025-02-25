@@ -80,7 +80,7 @@ class observer_test extends adler_testcase {
         }
     }
 
-    public function provide_test_course_deleted_data() {
+    public static function provide_test_course_deleted_data() {
         return [
             'default' => [['case' => 'default']],
             'no adler course' => [['case' => 'no_adler_course']],
@@ -116,7 +116,7 @@ class observer_test extends adler_testcase {
         }
     }
 
-    public function provide_test_course_section_deleted_data() {
+    public static function provide_test_course_section_deleted_data() {
         return [
             'default' => [['case' => 'default']],
             'no adler course' => [['case' => 'no_adler_course']],
@@ -165,7 +165,7 @@ class observer_test extends adler_testcase {
         }
     }
 
-    public function provide_test_course_module_deleted_data() {
+    public static function provide_test_course_module_deleted_data() {
         return [
             'default' => [['case' => 'default']],
             'no adler course' => [['case' => 'no_adler_course']],

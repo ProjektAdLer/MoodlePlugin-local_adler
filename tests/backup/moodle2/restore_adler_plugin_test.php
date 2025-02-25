@@ -325,7 +325,7 @@ class restore_adler_plugin_test extends adler_testcase {
         $this->assertEquals('blub', $res[0]->get_path());
     }
 
-    public function provide_test_process_adler_section_data() {
+    public static function provide_test_process_adler_section_data() {
         return [
             'full object' => [
                 'restore_data' => (object)[
@@ -389,7 +389,7 @@ class restore_adler_plugin_test extends adler_testcase {
         $restore_mock->process_adler_section($restore_data);
     }
 
-    public function provide_test_call_upgrade_3_2_0_to_4_0_0_completionlib_data() {
+    public static function provide_test_call_upgrade_3_2_0_to_4_0_0_completionlib_data() {
         return [
             'legacy course' => ['version' => null],
             'new course' => ['version' => '4.0.0'],

@@ -24,7 +24,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
  * @preserveGlobalState disabled
  */
 class score_h5p_learning_element_test extends adler_externallib_testcase {
-    public function provide_test_get_module_ids_from_xapi_data() {
+    public static function provide_test_get_module_ids_from_xapi_data() {
         return [
             [
                 'xapi' => '[{"actor":{"name":"student","mbox":"stu@dent.de","objectType":"Agent"},"verb":{"id":"http://adlnet.gov/expapi/verbs/answered","display":{"en-US":"answered"}},"object":{"id":"http://localhost/xapi/activity/41","objectType":"Activity","definition":{"extensions":{"http://h5p.org/x-api/h5p-local-content-id":"df8tub15w"},"name":{"en-US":"Anfügen am Ende einer einfach verketteten Liste"}}},"context":{"contextActivities":{"category":[{"id":"http://h5p.org/libraries/H5P.DragText-1.10","objectType":"Activity"}]}},"result":{"score":{"min":0,"max":6,"raw":0,"scaled":0},"completion":true,"duration":"PT0.97S","success":false}}]',
@@ -87,7 +87,7 @@ class score_h5p_learning_element_test extends adler_externallib_testcase {
         $this->assertEqualsCanonicalizing($expected_result, $res);
     }
 
-    public function provide_test_execute_data() {
+    public static function provide_test_execute_data() {
         return [
             [
                 'exception_get_adler_score_objects' => false,

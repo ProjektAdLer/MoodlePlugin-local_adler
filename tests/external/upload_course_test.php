@@ -58,7 +58,7 @@ class upload_course_test extends adler_externallib_testcase {
         return $filepath;
     }
 
-    public function provide_enrolment_option_test_data() {
+    public static function provide_enrolment_option_test_data() {
         return [
             'self enrolment active' => [
                 'enable_self_enrolment' => true
@@ -140,7 +140,7 @@ class upload_course_test extends adler_externallib_testcase {
     }
 
 
-    public function provide_test_execute_data() {
+    public static function provide_test_execute_data() {
         return [
             'success' => [
                 'upload_error' => UPLOAD_ERR_OK,
@@ -249,7 +249,7 @@ class upload_course_test extends adler_externallib_testcase {
     }
 
 
-    public function provide_test_execute_returns_data() {
+    public static function provide_test_execute_returns_data() {
         return [
             'success' => [
                 'success' => true,
@@ -277,7 +277,7 @@ class upload_course_test extends adler_externallib_testcase {
         }
     }
 
-    public function provide_test_execute_parameters_data() {
+    public static function provide_test_execute_parameters_data() {
         return [
             '1' => [
                 'data' => [

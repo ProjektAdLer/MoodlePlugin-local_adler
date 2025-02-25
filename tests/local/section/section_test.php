@@ -19,7 +19,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 class section_test extends adler_testcase {
-    public function provide_test_construct_data() {
+    public static function provide_test_construct_data() {
         return [
             'valid section' => [
                 'section_response' => (object)[
@@ -68,7 +68,7 @@ class section_test extends adler_testcase {
         }
     }
 
-    public function provide_test_is_completed_data() {
+    public static function provide_test_is_completed_data() {
         return [
             'completed' => [
                 'modules_list' => [1, 2, 3],
@@ -164,7 +164,7 @@ class section_test extends adler_testcase {
         $this->assertEquals($expected, $section->is_completed($user_id));
     }
 
-    public function provide_test_is_completed_integration_data() {
+    public static function provide_test_is_completed_integration_data() {
         return [
             'completed' => [
                 'cm_score' => 100,

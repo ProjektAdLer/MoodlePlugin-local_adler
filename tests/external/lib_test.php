@@ -120,7 +120,7 @@ class lib_test extends adler_externallib_testcase {
         $this->assertEquals($expected, $result);
     }
 
-    public function provideConvertAdlerScoreArrayFormatToResponseStructure(): array {
+    public static function provideConvertAdlerScoreArrayFormatToResponseStructure(): array {
         return [
             'single score' => [
                 'expected' => [[

@@ -20,7 +20,7 @@ require_once($CFG->dirroot . '/local/adler/tests/lib/adler_testcase.php');
 
 
 class get_element_ids_by_uuids_test extends adler_externallib_testcase {
-    public function provide_test_execute_data() {
+    public static function provide_test_execute_data() {
         return [
             'user enrolled in course' => [
                 'user_enrolled' => true
@@ -87,7 +87,7 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
         ]], $result);
     }
 
-    public function provide_test_get_moodle_and_context_id_data(): array {
+    public static function provide_test_get_moodle_and_context_id_data(): array {
         return [
             'test_section_element' => [
                 'element_type' => 'section',
@@ -201,7 +201,7 @@ class get_element_ids_by_uuids_test extends adler_externallib_testcase {
         }
     }
 
-    public function provide_test_execute_returns_data() {
+    public static function provide_test_execute_returns_data() {
         return [
             [
                 'data' => ['data' => [[
