@@ -26,3 +26,4 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Adler';
+$string['privacy:metadata'] = 'The Adler plugin does not store personal data.';
