@@ -116,7 +116,8 @@ class site_admin_login_test extends adler_externallib_testcase {
                 'enabled' => 1,
                 'restrictedusers' => 0,
                 'downloadfiles' => 0,
-                'uploadfiles' => 0
+                'uploadfiles' => 0,
+                'timecreated' => time()
             ];
             $service->id = $DB->insert_record('external_services', $service);
         }
@@ -156,7 +157,8 @@ class site_admin_login_test extends adler_externallib_testcase {
                 'enabled' => 1,
                 'restrictedusers' => 0,
                 'downloadfiles' => 0,
-                'uploadfiles' => 0
+                'uploadfiles' => 0,
+                'timecreated' => time()
             ];
             $service->id = $DB->insert_record('external_services', $service);
         }
