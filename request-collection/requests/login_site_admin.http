@@ -1,0 +1,30 @@
+### test login as site admin for adler_admin_service
+POST {{host}}/webservice/rest/simpleserver.php
+#POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wsfunction = local_adler_site_admin_login &
+moodlewsrestformat = json &
+wsusername = {{username}} &
+wspassword = {{password}} &
+username = {{username}} &
+password = {{password}}
+
+> {%
+    client.test("Response contains a valid token", () => {
+        client.assert(response.body.token, 'Response must contain a token');
+    });
+    client.global.set("moodleToken", response.body.token);
+%}
+
+### test request as site admin for adler_admin_service
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wsfunction = core_user_get_users &
+moodlewsrestformat = json &
+wstoken = {{moodleToken}}
+
+> {%
+    client.log(JSON.stringify(response.body, null, 4));
+%}
