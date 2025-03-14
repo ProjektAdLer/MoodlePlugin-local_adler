@@ -244,4 +244,50 @@ class moodle_core_repository_test extends adler_testcase {
         // Check the result
         $this->assertEquals('Updated Section Name', $updated_section->name);
     }
+
+    public function test_get_admin_services_site_admin_token() {
+        global $DB;
+        $moodle_core_repository = di::get(moodle_core_repository::class);
+
+        // Create a user
+        $user = $this->getDataGenerator()->create_user();
+
+        // Create the external service if it doesn't exist
+        $service = $DB->get_record('external_services', ['shortname' => 'adler_admin_service']);
+        if (!$service) {
+            $service = (object) [
+                'name' => 'Adler Admin Service',
+                'shortname' => 'adler_admin_service',
+                'enabled' => 1,
+                'restrictedusers' => 0,
+                'downloadfiles' => 0,
+                'uploadfiles' => 0
+            ];
+            $service->id = $DB->insert_record('external_services', $service);
+        }
+
+        // Create an external token for the user
+        $token_data = [
+            'token' => 'abc123xyz',
+            'userid' => $user->id,
+            'externalserviceid' => $service->id,
+            'contextid' => 1,
+            'creatorid' => 2,
+            'iprestriction' => null,
+            'validuntil' => null,
+            'timecreated' => time(),
+            'tokentype' => EXTERNAL_TOKEN_PERMANENT
+        ];
+        $token_id = $DB->insert_record('external_tokens', (object)$token_data);
+
+        // Call the function
+        $result = $moodle_core_repository->get_admin_services_site_admin_token($user->id);
+
+        // Check the result
+        $this->assertEquals($token_id, $result->id);
+        $this->assertEquals('abc123xyz', $result->token);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals($service->id, $result->externalserviceid);
+        $this->assertEquals(EXTERNAL_TOKEN_PERMANENT, $result->tokentype);
+    }
 }

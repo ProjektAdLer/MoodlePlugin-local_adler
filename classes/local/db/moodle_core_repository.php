@@ -21,7 +21,6 @@ class moodle_core_repository extends base_repository {
         return (int)$this->db->get_field('user', 'id', array('username' => $username));
     }
 
-
     /**
      * @param string $module name of the module
      * @param int $instance_id instance id of the module
@@ -111,5 +110,20 @@ class moodle_core_repository extends base_repository {
     public function update_moodle_section(stdClass $section): stdClass {
         $this->db->update_record('course_sections', $section);
         return $this->db->get_record('course_sections', ['id' => $section->id], '*', MUST_EXIST);
+    }
+
+    /**
+     * @throws dml_exception
+     */
+    public function get_admin_services_site_admin_token(int $user_id): stdClass {
+        return $this->db->get_record(
+            'external_tokens',
+            [
+                'userid' => $user_id,
+                'externalserviceid' => $this->db->get_field('external_services', 'id', ['shortname' => 'adler_admin_service'], MUST_EXIST),
+                'tokentype' => EXTERNAL_TOKEN_PERMANENT
+            ],
+            strictness: MUST_EXIST
+        );
     }
 }
