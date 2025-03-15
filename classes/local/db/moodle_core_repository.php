@@ -7,11 +7,27 @@ use dml_exception;
 use stdClass;
 
 class moodle_core_repository extends base_repository {
+    public function get_category_ids_where_user_has_role(int $user_id, int $role_id, int $context_level): array {
+        return $this->db->get_fieldset_sql(
+            "SELECT ctx.instanceid as category_id
+                 FROM {role_assignments} ra
+                 JOIN {context} ctx ON ra.contextid = ctx.id
+                 WHERE ra.userid = :userid 
+                 AND ra.roleid = :roleid
+                 AND ctx.contextlevel = :contextlevel",
+            [
+                'userid' => $user_id,
+                'roleid' => $role_id,
+                'contextlevel' => $context_level
+            ]
+        );
+    }
+
     /**
      * @throws dml_exception
      */
-    public function get_role_id_by_shortname(string $shortname): int|false {
-        return (int)$this->db->get_field('role', 'id', array('shortname' => $shortname));
+    public function get_role_id_by_shortname(string $shortname, int $strictness = IGNORE_MISSING): int|false {
+        return (int)$this->db->get_field('role', 'id', array('shortname' => $shortname), $strictness);
     }
 
     /**

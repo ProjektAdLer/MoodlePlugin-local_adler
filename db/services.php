@@ -30,7 +30,7 @@ $services = array(
 //            'core_course_create_categories',
 //            'core_role_assign_roles',
             'core_user_delete_users',
-            'core_user_get_users',
+//            'core_user_get_users',
             'enrol_self_enrol_user',
             'enrol_manual_enrol_users',
             'core_course_get_courses',
@@ -56,6 +56,15 @@ $functions = array(
         'ajax' => false,
         'services' => array('adler_admin_service'),
         'capabilities' => '',
+        'loginrequired' => true
+    ],
+    'local_adler_get_users_with_category_roles' => [
+        'classname' => 'local_adler\external\get_users_with_category_roles',
+        'description' => 'Get all users with a list of categories the user has the asked roles in',
+        'type' => 'read',
+        'ajax' => false,
+        'services' => array('adler_admin_service'),
+        'capabilities' => 'moodle/site:config, moodle/user:viewdetails',
         'loginrequired' => true
     ],
 
