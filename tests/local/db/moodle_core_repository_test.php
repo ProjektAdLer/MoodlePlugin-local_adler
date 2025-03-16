@@ -16,7 +16,7 @@ class moodle_core_repository_test extends adler_testcase {
     /**
      * Data provider for category role assignment tests
      */
-    public function provide_category_role_test_data() {
+    public static function provide_category_role_test_data() {
         return [
             'user_has_role' => [true, false, 1],
             'selective_assignment' => [true, true, 1],
