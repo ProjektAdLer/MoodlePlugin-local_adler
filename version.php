@@ -28,5 +28,5 @@ $plugin->release = '6.1.0-dev';
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->dependencies = array(
     'local_logging' => ANY_VERSION,
-    'local_declarativesetup' => '2025031500',
+    'local_declarativesetup' => '2025031600',
 );

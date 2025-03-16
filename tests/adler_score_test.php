@@ -27,6 +27,8 @@ class adler_score_test extends adler_testcase {
     private stdClass $module;
     private stdClass $user;
     private cm_info $url_module_cm_info;
+    private stdClass $h5p_module;
+    private stdClass $h5p_adler_cm;
 
     public function setUp(): void {
         parent::setUp();
