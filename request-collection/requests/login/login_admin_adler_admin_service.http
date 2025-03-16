@@ -5,8 +5,8 @@ Content-Type: application/x-www-form-urlencoded
 
 wsfunction = local_adler_site_admin_login &
 moodlewsrestformat = json &
-wsusername = {{username}} &
-wspassword = {{password}}
+wsusername = {{admin_username}} &
+wspassword = {{admin_password}}
 
 > {%
     client.log(JSON.stringify(response.body, null, 4));

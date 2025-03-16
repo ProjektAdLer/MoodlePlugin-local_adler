@@ -1,0 +1,11 @@
+### Get users with category roles
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken={{moodleToken}}
+&wsfunction=local_adler_get_users_with_category_roles
+&moodlewsrestformat=json
+&roles=editingteacher,manager
+&pagination[page]=0
+&pagination[per_page]=10
+
