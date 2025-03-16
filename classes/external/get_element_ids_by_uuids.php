@@ -18,31 +18,27 @@ use local_logging\logger;
 
 class get_element_ids_by_uuids extends external_api {
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(
-            array(
-                'elements' => new external_multiple_structure(
-                    new external_single_structure(
-                        array(
-                            'course_id' => new external_value(
-                                PARAM_TEXT,
-                                'course id',
-                                VALUE_REQUIRED
-                            ),
-                            'element_type' => new external_value(
-                                PARAM_TEXT,
-                                'element type, one of section, cm',
-                                VALUE_REQUIRED
-                            ),
-                            'uuid' => new external_value(
-                                PARAM_TEXT,
-                                'element uuid',
-                                VALUE_REQUIRED
-                            ),
-                        )
-                    )
-                )
+        return new external_function_parameters([
+            'elements' => new external_multiple_structure(
+                new external_single_structure([
+                    'course_id' => new external_value(
+                        PARAM_TEXT,
+                        'course id',
+                        VALUE_REQUIRED
+                    ),
+                    'element_type' => new external_value(
+                        PARAM_TEXT,
+                        'element type, one of section, cm',
+                        VALUE_REQUIRED
+                    ),
+                    'uuid' => new external_value(
+                        PARAM_TEXT,
+                        'element uuid',
+                        VALUE_REQUIRED
+                    ),
+                ])
             )
-        );
+        ]);
     }
 
     public static function execute_returns(): external_function_parameters {
@@ -62,7 +58,6 @@ class get_element_ids_by_uuids extends external_api {
                             PARAM_TEXT,
                             'element uuid',
                             VALUE_REQUIRED),
-
                         'moodle_id' => new external_value(
                             PARAM_INT,
                             'element moodle id',
