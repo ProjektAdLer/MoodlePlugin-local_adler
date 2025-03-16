@@ -15,7 +15,7 @@ class site_admin_login_test extends adler_externallib_testcase {
         $this->assertEmpty($params->keys);
     }
 
-    public function returns_data_provider(): array {
+    public static function returns_data_provider(): array {
         return [
             'standard token' => [
                 [
