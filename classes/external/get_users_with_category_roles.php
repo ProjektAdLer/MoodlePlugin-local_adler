@@ -76,9 +76,9 @@ class get_users_with_category_roles extends external_api {
      * @throws restricted_context_exception
      * @throws moodle_exception
      */
-    public static function execute(array $params): array {
+    public static function execute(string $roles, array $pagination): array {
         // Parameter validation
-        $params = self::validate_parameters(self::execute_parameters(), $params);
+        $params = self::validate_parameters(self::execute_parameters(), compact('roles', 'pagination'));
         $roles = empty($params['roles']) ? [] : array_map('trim', explode(',', $params['roles']));
 
         // Check permissions - require site admin capability

@@ -27,7 +27,7 @@ class get_users_with_category_roles_test extends adler_externallib_testcase {
         $this->setAdminUser();
 
         // Include the pagination parameter
-        $result = get_users_with_category_roles::execute(['roles' => '', 'pagination' => ['page' => 0, 'per_page' => 10]]);
+        $result = get_users_with_category_roles::execute('', ['page' => 0, 'per_page' => 10]);
 
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
@@ -51,19 +51,19 @@ class get_users_with_category_roles_test extends adler_externallib_testcase {
 
 
         // Test first page with 5 users per page
-        $result1 = get_users_with_category_roles::execute(['roles' => '', 'pagination' => ['page' => 0, 'per_page' => $per_page]]);
+        $result1 = get_users_with_category_roles::execute('', ['page' => 0, 'per_page' => $per_page]);
         $this->assertCount($per_page, $result1['data']);
 
         // Test second page with 5 users per page
-        $result2 = get_users_with_category_roles::execute(['roles' => '', 'pagination' => ['page' => 1, 'per_page' => $per_page]]);
-        $this->assertCount($total_user_count-$per_page, $result2['data']);
+        $result2 = get_users_with_category_roles::execute('', ['page' => 1, 'per_page' => $per_page]);
+        $this->assertCount($total_user_count - $per_page, $result2['data']);
 
         // Ensure different sets of users were returned
-        $ids_page1 = array_map(function($item) {
+        $ids_page1 = array_map(function ($item) {
             return $item['user']['id'];
         }, $result1['data']);
 
-        $ids_page2 = array_map(function($item) {
+        $ids_page2 = array_map(function ($item) {
             return $item['user']['id'];
         }, $result2['data']);
 
@@ -100,10 +100,10 @@ class get_users_with_category_roles_test extends adler_externallib_testcase {
 
         // Set admin user and execute with pagination
         $this->setAdminUser();
-        $result = get_users_with_category_roles::execute([
-            'roles' => 'teacher,manager',
-            'pagination' => ['page' => 0, 'per_page' => 50]
-        ]);
+        $result = get_users_with_category_roles::execute(
+            'teacher,manager',
+            ['page' => 0, 'per_page' => 50]
+        );
 
         // Assertions
         $this->assertArrayHasKey('data', $result);
@@ -163,10 +163,10 @@ class get_users_with_category_roles_test extends adler_externallib_testcase {
         $user = $this->getDataGenerator()->create_user();
 
         // Include pagination parameter
-        $result = get_users_with_category_roles::execute([
-            'roles' => 'teacher',
-            'pagination' => ['page' => 0, 'per_page' => 100]
-        ]);
+        $result = get_users_with_category_roles::execute(
+            'teacher',
+            ['page' => 0, 'per_page' => 100]
+        );
 
         // Find this user in the results
         $user_data = null;
