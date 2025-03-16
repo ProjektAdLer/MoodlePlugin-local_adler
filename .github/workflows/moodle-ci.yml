@@ -105,7 +105,7 @@ jobs:
       - name: Install moodle-plugin-ci
         run: |
           moodle-plugin-ci add-plugin ProjektAdLer/MoodlePluginLocalLogging
-          moodle-plugin-ci add-plugin ProjektAdLer/MoodlePluginLocalDeclarativesetup
+          moodle-plugin-ci add-plugin ProjektAdLer/MoodlePlugin-local_declarativesetup
           moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
