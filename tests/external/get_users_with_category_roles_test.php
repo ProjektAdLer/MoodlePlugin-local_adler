@@ -132,6 +132,8 @@ class get_users_with_category_roles_test extends adler_externallib_testcase {
         foreach ($user1_data['categories'] as $category) {
             if ($category['category'] == $category1_path && $category['role'] == 'teacher') {
                 $found_category1 = true;
+                // Verify category_id is correct
+                $this->assertEquals($category1->id, $category['category_id'], 'Category ID should match');
                 break;
             }
         }
@@ -149,6 +151,8 @@ class get_users_with_category_roles_test extends adler_externallib_testcase {
         foreach ($user2_data['categories'] as $category) {
             if ($category['category'] == $category2_path && $category['role'] == 'manager') {
                 $found_category2 = true;
+                // Verify category_id is correct
+                $this->assertEquals($category2->id, $category['category_id'], 'Category ID should match');
                 break;
             }
         }

@@ -56,6 +56,11 @@ class get_users_with_category_roles extends external_api {
                                     'Category path',
                                     VALUE_REQUIRED
                                 ),
+                                'category_id' => new external_value(
+                                    PARAM_INT,
+                                    'Category ID',
+                                    VALUE_REQUIRED
+                                ),
                                 'role' => new external_value(
                                     PARAM_TEXT,
                                     'Role shortname',
@@ -116,6 +121,7 @@ class get_users_with_category_roles extends external_api {
 
                     $categories[] = [
                         'category' => (string)$ccp,
+                        'category_id' => $ccp->get_category_id(),
                         'role' => $role['shortname']
                     ];
                 }
