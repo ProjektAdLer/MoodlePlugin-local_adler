@@ -36,7 +36,8 @@ $services = array(
             'core_course_get_courses',
             'core_enrol_get_enrolled_users',
             'core_course_get_categories',
-            'core_course_delete_categories'
+            'core_course_delete_categories',
+            'core_course_delete_courses'
         ),
         'requiredcapability' => 'moodle/site:config',  // not exactly the same as is_siteadmin() but as close as we can get "This capability is intended for administrators only. It is not set for any of the default roles."
         'restrictedusers' => 0,
