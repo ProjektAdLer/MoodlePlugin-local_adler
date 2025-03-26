@@ -1,0 +1,30 @@
+### POST request to log in to Moodle instance using Moodle Mobile API
+POST {{host}}/login/token.php
+Content-Type: application/x-www-form-urlencoded
+
+username = {{student_username}} &
+password = {{student_password}} &
+service = adler_services
+
+> {%
+    client.test("Response contains a valid token", () => {
+        client.assert(response.body.token, 'Response must contain a token');
+    });
+    client.global.set("moodleToken", response.body.token);
+%}
+
+
+### test request for mobile services
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken = {{moodleToken}} &
+wsfunction = core_webservice_get_site_info &
+moodlewsrestformat = json
+
+> {%
+    client.test("Response contains a valid site info", () => {
+        client.assert(response.body.sitename, 'Response must contain a site info');
+    });
+%}
+

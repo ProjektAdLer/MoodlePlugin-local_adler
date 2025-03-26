@@ -1,0 +1,73 @@
+### Create data export request
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken={{moodleToken}}
+&wsfunction=tool_dataprivacy_create_data_request
+&moodlewsrestformat=json
+&type=1
+&comments=Test export request from HTTP client
+
+> {%
+    client.test("Response contains a valid data request ID", () => {
+        client.assert(response.body.datarequestid, 'Response must contain a data request ID');
+    });
+    client.global.set("requestId", response.body.datarequestid);
+    client.log(`Created data request with ID: ${response.body.datarequestid}`);
+%}
+
+### Get data request created above
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken={{moodleToken}}
+&wsfunction=tool_dataprivacy_get_data_request
+&moodlewsrestformat=json
+&requestid={{requestId}}
+
+> {%
+    client.test("Response contains the correct data request", () => {
+        client.assert(response.status === 200, "Response status should be 200");
+        client.assert(response.body.requestid === client.global.get("requestId"),
+                     "Response should contain the correct request ID");
+    });
+%}
+
+### Get current user info based on token
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken={{moodleToken}}
+    &wsfunction=core_webservice_get_site_info
+    &moodlewsrestformat=json
+
+> {%
+    client.test("Successfully retrieved user info", () => {
+        client.assert(response.status === 200, "Response status should be 200");
+        client.assert(response.body.userid, "Response must contain a user ID");
+    });
+    client.global.set("currentUserId", response.body.userid);
+    client.log(`Current user ID: ${response.body.userid}`);
+%}
+
+### Get all export data requests for current user
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken={{moodleToken}}
+    &wsfunction=tool_dataprivacy_get_data_requests
+    &moodlewsrestformat=json
+    &types[0]=1
+    &userid={{currentUserId}}
+
+> {%
+    client.test("Response contains filtered data requests for current user", () => {
+        client.assert(response.status === 200, "Response status should be 200");
+        client.assert(Array.isArray(response.body.requests), "Response should contain a requests array");
+
+        if (response.body.requests.length > 0) {
+            const allForCurrentUser = response.body.requests.every(req => req.userid === client.global.get("currentUserId"));
+            client.assert(allForCurrentUser, "All returned requests should be for the current user");
+        }
+    });
+%}
