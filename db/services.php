@@ -11,7 +11,7 @@ $services = array(
             'core_course_delete_courses',
             'tool_dataprivacy_create_data_request',
             'tool_dataprivacy_get_data_requests',
-            'tool_dataprivacy_get_data_request'
+//            'tool_dataprivacy_get_data_request'
         ), // web service functions of this service
         'requiredcapability' => '',                // if set, the web service user need this capability to access
         // any function of this service. For example: 'some/capability:specified'
