@@ -1,0 +1,9 @@
+### Get users with category roles
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken={{moodleToken}}
+&wsfunction=local_declarativesetup_create_course_cat_and_assign_user_role
+&moodlewsrestformat=json
+&elements[0][username]=student
+&elements[0][role]=adler_manager
