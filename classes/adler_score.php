@@ -54,7 +54,7 @@ class adler_score {
         try {
             $this->score_item = $this->adler_course_module_repository->get_adler_course_module_by_cmid($this->course_module->id);
         } catch (dml_exception $e) {
-            $this->logger->error('Could not get adler score record for cmid ' . $this->course_module->id . ': ' . $e->getMessage());
+            $this->logger->info('Could not get adler score record for cmid ' . $this->course_module->id . ': ' . $e->getMessage());
             throw new not_an_adler_cm_exception();
         }
     }
