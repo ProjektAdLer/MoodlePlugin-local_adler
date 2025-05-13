@@ -35,4 +35,6 @@ create file local/logging/infection.json5
 }
 ```
 
+Dieser Ansatz benötigt eine phpunit.xml im Plugin Ordner
+
 ./infection.phar -s --only-covered --configuration=local/logging/infection.json5
