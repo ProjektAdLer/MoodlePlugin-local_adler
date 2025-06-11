@@ -1,0 +1,13 @@
+### Create user "test" with password "test" using custom endpoint
+
+POST {{host}}/webservice/rest/server.php
+Content-Type: application/x-www-form-urlencoded
+
+wstoken={{moodleToken}}
+&wsfunction=local_adler_create_users
+&moodlewsrestformat=json
+&users[0][username]=test
+&users[0][password]=test
+&users[0][firstname]=Test
+&users[0][lastname]=User
+&users[0][email]=test@example.com

@@ -123,4 +123,12 @@ $functions = array(
         'capabilities' => '', // comma separated list of capabilities used by the function.
         'loginrequired' => true
     ),
+    'local_adler_create_users' => array(
+        'classname' => 'local_adler\external\create_users',
+        'description' => 'Site admin only endpoint. Create users bypassing password policy checks',
+        'type' => 'write',
+        'services' => array('adler_admin_service'),
+        'capabilities' => 'moodle/user:create',
+        'loginrequired' => true
+    ),
 );
