@@ -16,7 +16,6 @@ use core_user;
 
 global $CFG;
 require_once($CFG->dirroot . '/user/externallib.php');
-require_once($CFG->dirroot . '/user/lib.php');
 
 class create_users extends external_api {
 
@@ -38,9 +37,6 @@ class create_users extends external_api {
      * @throws moodle_exception
      */
     public static function execute($users) {
-//        global $CFG;
-//        require_once($CFG->dirroot . '/user/lib.php');
-
         // Validate using the same parameters as core
         $params = self::validate_parameters(self::execute_parameters(), array('users' => $users));
 
@@ -48,30 +44,22 @@ class create_users extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
 
-        // Enhanced admin-only check - ensure user is a site administrator
+        // Only site admins are allowed
         if (!is_siteadmin()) {
-            throw new moodle_exception('accessdenied', 'admin');
+            throw new moodle_exception('accessdenied');
         }
 
         $transaction = di::get(moodle_database::class)->start_delegated_transaction();
         $original_passwords = array();
-//        $original_auth_plugins = array();
 
         foreach ($params['users'] as $key => $user) {
             // Store the original password before modifying
             if (isset($user['password'])) {
-                $original_passwords[$key] = $user['password'];
+                $original_passwords[$user['username']] = $user['password'];
 
                 // Replace with a random strong password that will pass policy checks
                 $params['users'][$key]['password'] = generate_password(20);
-
-                // should be used if db transaction cannot be used
-//                $original_auth_plugins[$key] = isset($user['auth']) ? $user['auth'] : null;
-//                $params['users'][$key]['auth'] = 'nologin';
             }
-
-            // Or alternatively set createpassword to true (creates a random password and emails it)
-            // $params['users'][$key]['createpassword'] = true;
         }
 
         // Call the core API
@@ -79,10 +67,12 @@ class create_users extends external_api {
 
         // Now update the passwords directly in the database for each user
         foreach ($created_users as $user) {
-            $user = core_user::get_user($user['id']);
-            if (!empty($original_passwords[$key])) {
+            if (!empty($original_passwords[$user['username']])) {
                 // Update password without policy validation
-                update_internal_user_password($user, $original_passwords[$key]);
+                update_internal_user_password(
+                    core_user::get_user($user['id']),
+                    $original_passwords[$user['username']]
+                );
             }
         }
 
