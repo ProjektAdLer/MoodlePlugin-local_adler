@@ -11,6 +11,7 @@ use core_external\restricted_context_exception;
 use core_user_external;
 use dml_exception;
 use dml_transaction_exception;
+use local_adler\moodle_core;
 use moodle_database;
 use core_user;
 
@@ -50,6 +51,7 @@ class create_users extends external_api {
         }
 
         $transaction = di::get(moodle_database::class)->start_delegated_transaction();
+
         $original_passwords = array();
 
         foreach ($params['users'] as $key => $user) {
@@ -69,7 +71,7 @@ class create_users extends external_api {
         foreach ($created_users as $user) {
             if (!empty($original_passwords[$user['username']])) {
                 // Update password without policy validation
-                update_internal_user_password(
+                di::get(moodle_core::class)::update_internal_user_password(
                     core_user::get_user($user['id']),
                     $original_passwords[$user['username']]
                 );

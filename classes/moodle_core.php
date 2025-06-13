@@ -53,4 +53,9 @@ class moodle_core {
         }
         return false;
     }
+
+    /** alias for {@link update_internal_user_password()} */
+    public static function update_internal_user_password(...$args): bool {
+        return update_internal_user_password(...$args);
+    }
 }

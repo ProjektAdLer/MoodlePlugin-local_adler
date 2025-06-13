@@ -26,7 +26,7 @@ $services = array(
     'adler_admin_service' => array(
         'functions' => array(
             'local_declarativesetup_create_course_cat_and_assign_user_role',
-            'core_user_create_users',
+            'local_adler_create_users',
 //            'core_course_create_categories',
 //            'core_role_assign_roles',
             'core_user_delete_users',
