@@ -61,7 +61,7 @@ $functions = array(
     ],
     'local_adler_get_users_with_category_roles' => [
         'classname' => 'local_adler\external\get_users_with_category_roles',
-        'description' => 'Get all users with a list of categories the user has the asked roles in',
+        'description' => 'Get a list with an object for all users. The objects contains two fields. "user" with details about the user. "categories" all categories where the user has the roles specified in the parameter "roles".',
         'type' => 'read',
         'ajax' => false,
         'services' => array('adler_admin_service'),
