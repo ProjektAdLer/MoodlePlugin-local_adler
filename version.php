@@ -21,11 +21,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025061101;
+$plugin->version = 2025062700;
 $plugin->requires = 2024042200;  // Moodle version
 $plugin->component = 'local_adler';
-$plugin->release = '6.4.0-dev';
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->release = '6.5.0';
+$plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array(
     'local_logging' => ANY_VERSION,
     'local_declarativesetup' => '2025031600',
