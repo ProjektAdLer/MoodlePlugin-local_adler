@@ -1,0 +1,23 @@
+### Upload course (MBZ file)
+POST {{host}}/webservice/rest/server.php
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="wstoken"
+
+{{moodleToken}}
+--WebAppBoundary
+Content-Disposition: form-data; name="wsfunction"
+
+local_adler_upload_course
+--WebAppBoundary
+Content-Disposition: form-data; name="moodlewsrestformat"
+
+json
+
+--WebAppBoundary
+Content-Disposition: form-data; name="mbz"; filename="course.mbz"
+Content-Type: application/zip
+
+< C:\Users\Markus\tmp_sample_course\23120608_SoftwareEngineering\23120608_SoftwareEngineering.mbz
+--WebAppBoundary--

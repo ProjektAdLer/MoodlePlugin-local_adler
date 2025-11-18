@@ -16,14 +16,3 @@ wspassword = {{admin_password}}
     client.global.set("moodleToken", response.body.token);
 %}
 
-### test request as site admin for adler_admin_service
-POST {{host}}/webservice/rest/server.php
-Content-Type: application/x-www-form-urlencoded
-
-wsfunction = core_user_get_users &
-moodlewsrestformat = json &
-wstoken = {{moodleToken}}
-
-> {%
-    client.log(JSON.stringify(response.body, null, 4));
-%}
