@@ -13,7 +13,7 @@ version_file = os.path.join(pathlib.Path(__file__).parent.resolve(), "..", 'vers
 
 if not os.path.exists(version_file):
     print(f"version.php does not exist at {version_file}. Skipping.")
-    exit(1)
+    sys.exit(1)
 
 for line in fileinput.input(version_file, inplace=True):
     if line.startswith("$plugin->version"):
